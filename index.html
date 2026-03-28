@@ -6,6 +6,14 @@
   <title>DeepNexivra</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -25,27 +33,41 @@
     }
 
     h2 {
-      font-size: 24px;
-      color: #94a3b8;
+      font-size: 28px;
+      color: #e2e8f0;
+      margin-bottom: 10px;
     }
 
     p {
-      max-width: 700px;
+      max-width: 720px;
       line-height: 1.6;
       margin-top: 20px;
+      color: #cbd5e1;
+    }
+
+    .subheading {
+      font-size: 24px;
+      color: #94a3b8;
+      margin-top: 0;
     }
 
     .buttons {
       margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    button {
+    button,
+    .btn-link {
       padding: 12px 24px;
-      margin-right: 10px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .primary {
@@ -73,7 +95,8 @@
     .card {
       background: #1e293b;
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
+      border: 1px solid #334155;
     }
 
     .tool-box {
@@ -81,7 +104,8 @@
       padding: 24px;
       border-radius: 12px;
       margin-top: 30px;
-      max-width: 700px;
+      max-width: 760px;
+      border: 1px solid #334155;
     }
 
     .tool-box label {
@@ -89,16 +113,17 @@
       margin-top: 16px;
       margin-bottom: 6px;
       color: #cbd5e1;
+      font-weight: 600;
     }
 
     .tool-box input {
       width: 100%;
       padding: 12px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: 1px solid #334155;
       background: #0f172a;
       color: white;
-      box-sizing: border-box;
+      font-size: 15px;
     }
 
     .result {
@@ -108,12 +133,28 @@
       background: #0f172a;
       border: 1px solid #334155;
       line-height: 1.8;
+      color: #e2e8f0;
     }
 
     .footer-note {
       margin-top: 12px;
       color: #94a3b8;
       font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .hero-highlight {
+      color: #60a5fa;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 40px;
+      }
+
+      .subheading {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -121,15 +162,17 @@
 <body>
   <div class="container">
     <h1>DeepNexivra</h1>
-    <h2>Engineering Intelligence for a Smarter World</h2>
+    <p class="subheading">Engineering Intelligence for a Smarter World</p>
 
     <p>
-      Transforming complex operational challenges into optimized, data-driven decisions using advanced engineering intelligence systems.
+      DeepNexivra transforms complex operational challenges into optimized,
+      data-driven decisions using advanced engineering intelligence systems.
+      Built for workforce planning, cost optimization, and execution clarity.
     </p>
 
     <div class="buttons">
-      <button class="primary">Start Optimizing</button>
-      <button class="secondary">Explore Tools</button>
+      <a href="#workforce-tool" class="btn-link primary">Start Optimizing</a>
+      <a href="#dashboard" class="btn-link secondary">Explore Dashboard</a>
     </div>
 
     <div class="section">
@@ -143,10 +186,11 @@
       </div>
     </div>
 
-    <div class="section">
+    <div class="section" id="workforce-tool">
       <h2>Workforce Optimization Calculator</h2>
       <p>
-        Estimate staffing needs, identify shortage or surplus, and measure utilization based on workload and productivity inputs.
+        Estimate staffing needs, identify shortage or surplus, and measure
+        utilization based on workload and productivity inputs.
       </p>
 
       <div class="tool-box">
@@ -163,190 +207,193 @@
         <input type="number" id="productivity" placeholder="Enter productivity per hour" />
 
         <div class="buttons" style="margin-top:20px;">
-          <button class="primary" onclick="calculateWorkforce()">Calculate</button>
+          <button class="primary" onclick="calculateWorkforce()">Calculate Workforce</button>
         </div>
 
         <div class="result" id="result">
-          Results will appear here.
+          Workforce optimization results will appear here.
         </div>
 
         <div class="footer-note">
-          Formula basis: Required Staff = Required Workload ÷ (Shift Hours × Productivity per Staff)
+          Formula basis: Required Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="cost-tool">
+      <h2>Cost Optimization Tool</h2>
+      <p>
+        Estimate current labor cost, optimized labor cost, and potential savings
+        based on staffing, wage, and workload assumptions.
+      </p>
+
+      <div class="tool-box">
+        <label for="currentStaff">Current Staff</label>
+        <input type="number" id="currentStaff" placeholder="Enter current staff" />
+
+        <label for="hourlyWage">Hourly Wage ($)</label>
+        <input type="number" id="hourlyWage" placeholder="Enter hourly wage" />
+
+        <label for="costShiftHours">Shift Hours</label>
+        <input type="number" id="costShiftHours" placeholder="Enter shift hours" />
+
+        <label for="costWorkload">Required Workload (units per day)</label>
+        <input type="number" id="costWorkload" placeholder="Enter required workload" />
+
+        <label for="costProductivity">Productivity per Staff per Hour</label>
+        <input type="number" id="costProductivity" placeholder="Enter productivity per hour" />
+
+        <div class="buttons" style="margin-top:20px;">
+          <button class="primary" onclick="calculateCostOptimization()">Calculate Cost</button>
+        </div>
+
+        <div class="result" id="costResult">
+          Cost optimization results will appear here.
+        </div>
+
+        <div class="footer-note">
+          Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="dashboard">
+      <h2>Operations Dashboard</h2>
+      <p>
+        A live executive snapshot of workforce demand, utilization, savings
+        opportunity, and operational status.
+      </p>
+
+      <div class="cards">
+        <div class="card">
+          <div style="color:#94a3b8; font-size:14px;">Required Staff</div>
+          <div id="dashboardRequiredStaff" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+        </div>
+
+        <div class="card">
+          <div style="color:#94a3b8; font-size:14px;">Utilization</div>
+          <div id="dashboardUtilization" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+        </div>
+
+        <div class="card">
+          <div style="color:#94a3b8; font-size:14px;">Potential Savings</div>
+          <div id="dashboardSavings" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+        </div>
+
+        <div class="card">
+          <div style="color:#94a3b8; font-size:14px;">Operational Status</div>
+          <div id="dashboardStatus" style="font-size:24px; font-weight:bold; margin-top:10px;">Awaiting Input</div>
         </div>
       </div>
     </div>
   </div>
-  
-<div class="section">
-  <h2>Cost Optimization Tool</h2>
-  <p>
-    Estimate current labor cost, optimized labor cost, and potential savings based on staffing, wage, and workload assumptions.
-  </p>
 
-  <div class="tool-box">
-    <label for="currentStaff">Current Staff</label>
-    <input type="number" id="currentStaff" placeholder="Enter current staff" />
+  <script>
+    function calculateWorkforce() {
+      const availableStaff = parseFloat(document.getElementById("availableStaff").value);
+      const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
+      const shiftHours = parseFloat(document.getElementById("shiftHours").value);
+      const productivity = parseFloat(document.getElementById("productivity").value);
+      const resultBox = document.getElementById("result");
 
-    <label for="hourlyWage">Hourly Wage ($)</label>
-    <input type="number" id="hourlyWage" placeholder="Enter hourly wage" />
+      if (
+        isNaN(availableStaff) ||
+        isNaN(requiredWorkload) ||
+        isNaN(shiftHours) ||
+        isNaN(productivity) ||
+        availableStaff <= 0 ||
+        requiredWorkload <= 0 ||
+        shiftHours <= 0 ||
+        productivity <= 0
+      ) {
+        resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
+        return;
+      }
 
-    <label for="costShiftHours">Shift Hours</label>
-    <input type="number" id="costShiftHours" placeholder="Enter shift hours" />
+      const requiredStaff = requiredWorkload / (shiftHours * productivity);
+      const roundedRequiredStaff = Math.ceil(requiredStaff);
+      const difference = availableStaff - roundedRequiredStaff;
+      const utilization = (requiredStaff / availableStaff) * 100;
 
-    <label for="costWorkload">Required Workload (units per day)</label>
-    <input type="number" id="costWorkload" placeholder="Enter required workload" />
+      let status = "";
+      let recommendation = "";
 
-    <label for="costProductivity">Productivity per Staff per Hour</label>
-    <input type="number" id="costProductivity" placeholder="Enter productivity per hour" />
+      if (difference > 0) {
+        status = "Overstaffed";
+        recommendation = "Consider reducing shifts or reallocating staff to improve efficiency.";
+      } else if (difference < 0) {
+        status = "Understaffed";
+        recommendation = "Increase staffing or optimize productivity to meet demand.";
+      } else {
+        status = "Optimally Staffed";
+        recommendation = "Maintain current staffing levels.";
+      }
 
-    <div class="buttons" style="margin-top:20px;">
-      <button class="primary" onclick="calculateCostOptimization()">Calculate Cost</button>
-    </div>
+      resultBox.innerHTML =
+        "<strong>Required Staff:</strong> " + roundedRequiredStaff + "<br>" +
+        "<strong>Status:</strong> " + status + "<br>" +
+        "<strong>Utilization:</strong> " + utilization.toFixed(2) + "%<br><br>" +
+        "<strong>Recommendation:</strong> " + recommendation;
 
-    <div class="result" id="costResult">
-      Cost optimization results will appear here.
-    </div>
-
-    <div class="footer-note">
-      Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff)
-    </div>
-  </div>
-</div>
-  
-<div class="section">
-  <h2>Operations Dashboard</h2>
-  <p>
-    A live executive snapshot of workforce demand, utilization, savings opportunity, and operational status.
-  </p>
-
-  <div class="cards">
-    <div class="card">
-      <div style="color:#94a3b8; font-size:14px;">Required Staff</div>
-      <div id="dashboardRequiredStaff" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-    </div>
-
-    <div class="card">
-      <div style="color:#94a3b8; font-size:14px;">Utilization</div>
-      <div id="dashboardUtilization" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-    </div>
-
-    <div class="card">
-      <div style="color:#94a3b8; font-size:14px;">Potential Savings</div>
-      <div id="dashboardSavings" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-    </div>
-
-    <div class="card">
-      <div style="color:#94a3b8; font-size:14px;">Operational Status</div>
-      <div id="dashboardStatus" style="font-size:24px; font-weight:bold; margin-top:10px;">Awaiting Input</div>
-    </div>
-  </div>
-</div>
-  
-<script>
-  function calculateWorkforce() {
-    const availableStaff = parseFloat(document.getElementById("availableStaff").value);
-    const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
-    const shiftHours = parseFloat(document.getElementById("shiftHours").value);
-    const productivity = parseFloat(document.getElementById("productivity").value);
-    const resultBox = document.getElementById("result");
-
-    if (
-      isNaN(availableStaff) ||
-      isNaN(requiredWorkload) ||
-      isNaN(shiftHours) ||
-      isNaN(productivity) ||
-      availableStaff <= 0 ||
-      shiftHours <= 0 ||
-      productivity <= 0
-    ) {
-      resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
-      return;
+      document.getElementById("dashboardRequiredStaff").innerText = roundedRequiredStaff;
+      document.getElementById("dashboardUtilization").innerText = utilization.toFixed(2) + "%";
+      document.getElementById("dashboardStatus").innerText = status;
     }
 
-    const requiredStaff = requiredWorkload / (shiftHours * productivity);
-    const roundedRequiredStaff = Math.ceil(requiredStaff);
-    const difference = availableStaff - roundedRequiredStaff;
-    const utilization = (requiredStaff / availableStaff) * 100;
+    function calculateCostOptimization() {
+      const currentStaff = parseFloat(document.getElementById("currentStaff").value);
+      const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
+      const costShiftHours = parseFloat(document.getElementById("costShiftHours").value);
+      const costWorkload = parseFloat(document.getElementById("costWorkload").value);
+      const costProductivity = parseFloat(document.getElementById("costProductivity").value);
+      const resultBox = document.getElementById("costResult");
 
-    let status = "";
-    let recommendation = "";
+      if (
+        isNaN(currentStaff) ||
+        isNaN(hourlyWage) ||
+        isNaN(costShiftHours) ||
+        isNaN(costWorkload) ||
+        isNaN(costProductivity) ||
+        currentStaff <= 0 ||
+        hourlyWage <= 0 ||
+        costShiftHours <= 0 ||
+        costWorkload <= 0 ||
+        costProductivity <= 0
+      ) {
+        resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
+        return;
+      }
 
-    if (difference > 0) {
-      status = "Overstaffed";
-      recommendation = "Consider reducing shifts or reallocating staff to improve efficiency.";
-    } else if (difference < 0) {
-      status = "Understaffed";
-      recommendation = "Increase staffing or optimize productivity to meet demand.";
-    } else {
-      status = "Optimally Staffed";
-      recommendation = "Maintain current staffing levels.";
+      const optimalStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
+      const currentLaborCost = currentStaff * hourlyWage * costShiftHours;
+      const optimizedLaborCost = optimalStaff * hourlyWage * costShiftHours;
+      const savings = currentLaborCost - optimizedLaborCost;
+
+      let status = "";
+      let recommendation = "";
+
+      if (savings > 0) {
+        status = "Cost Reduction Opportunity Identified";
+        recommendation = "Current staffing appears higher than required workload demand. Consider reallocating labor or reducing excess staffing.";
+      } else if (savings < 0) {
+        status = "Current Staffing May Be Under Target";
+        recommendation = "Current staffing may be too low for the workload. Consider adding staff or improving productivity.";
+      } else {
+        status = "Cost Structure Appears Optimized";
+        recommendation = "Current staffing and labor cost appear aligned with operational demand.";
+      }
+
+      resultBox.innerHTML =
+        "<strong>Optimal Staff Required:</strong> " + optimalStaff + "<br>" +
+        "<strong>Current Labor Cost:</strong> $" + currentLaborCost.toFixed(2) + "<br>" +
+        "<strong>Optimized Labor Cost:</strong> $" + optimizedLaborCost.toFixed(2) + "<br>" +
+        "<strong>Potential Savings:</strong> $" + Math.max(savings, 0).toFixed(2) + "<br><br>" +
+        "<strong>Status:</strong> " + status + "<br>" +
+        "<strong>Recommendation:</strong> " + recommendation;
+
+      document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
+      document.getElementById("dashboardStatus").innerText = status;
     }
-
-    resultBox.innerHTML =
-      "<strong>Required Staff:</strong> " + roundedRequiredStaff + "<br>" +
-      "<strong>Status:</strong> " + status + "<br>" +
-      "<strong>Utilization:</strong> " + utilization.toFixed(2) + "%<br><br>" +
-      "<strong>Recommendation:</strong> " + recommendation;
-  }
-
-document.getElementById("dashboardRequiredStaff").innerText = roundedRequiredStaff;
-document.getElementById("dashboardUtilization").innerText = utilization.toFixed(2) + "%";
-document.getElementById("dashboardStatus").innerText = status;
-  
-  function calculateCostOptimization() {
-    const currentStaff = parseFloat(document.getElementById("currentStaff").value);
-    const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
-    const costShiftHours = parseFloat(document.getElementById("costShiftHours").value);
-    const costWorkload = parseFloat(document.getElementById("costWorkload").value);
-    const costProductivity = parseFloat(document.getElementById("costProductivity").value);
-    const resultBox = document.getElementById("costResult");
-
-    if (
-      isNaN(currentStaff) ||
-      isNaN(hourlyWage) ||
-      isNaN(costShiftHours) ||
-      isNaN(costWorkload) ||
-      isNaN(costProductivity) ||
-      currentStaff <= 0 ||
-      hourlyWage <= 0 ||
-      costShiftHours <= 0 ||
-      costWorkload <= 0 ||
-      costProductivity <= 0
-    ) {
-      resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
-      return;
-    }
-
-    const optimalStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
-    const currentLaborCost = currentStaff * hourlyWage * costShiftHours;
-    const optimizedLaborCost = optimalStaff * hourlyWage * costShiftHours;
-    const savings = currentLaborCost - optimizedLaborCost;
-
-    let status = "";
-    let recommendation = "";
-
-    if (savings > 0) {
-      status = "Cost Reduction Opportunity Identified";
-      recommendation = "Current staffing appears higher than required workload demand. Consider reallocating labor or reducing excess staffing.";
-    } else if (savings < 0) {
-      status = "Current Staffing May Be Under Target";
-      recommendation = "Current staffing may be too low for the workload. Consider adding staff or improving productivity.";
-    } else {
-      status = "Cost Structure Appears Optimized";
-      recommendation = "Current staffing and labor cost appear aligned with operational demand.";
-    }
-
-    resultBox.innerHTML =
-      "<strong>Optimal Staff Required:</strong> " + optimalStaff + "<br>" +
-      "<strong>Current Labor Cost:</strong> $" + currentLaborCost.toFixed(2) + "<br>" +
-      "<strong>Optimized Labor Cost:</strong> $" + optimizedLaborCost.toFixed(2) + "<br>" +
-      "<strong>Potential Savings:</strong> $" + Math.max(savings, 0).toFixed(2) + "<br><br>" +
-      "<strong>Status:</strong> " + status + "<br>" +
-      "<strong>Recommendation:</strong> " + recommendation;
-  }
-
-document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
-document.getElementById("dashboardStatus").innerText = status;
-</script>
+  </script>
 </body>
 </html>
