@@ -30,7 +30,7 @@
     }
 
     p {
-      max-width: 600px;
+      max-width: 700px;
       line-height: 1.6;
       margin-top: 20px;
     }
@@ -75,13 +75,51 @@
       padding: 20px;
       border-radius: 10px;
     }
+
+    .tool-box {
+      background: #1e293b;
+      padding: 24px;
+      border-radius: 12px;
+      margin-top: 30px;
+      max-width: 700px;
+    }
+
+    .tool-box label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+    }
+
+    .tool-box input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: white;
+      box-sizing: border-box;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      line-height: 1.8;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 14px;
+    }
   </style>
 </head>
 
 <body>
-
   <div class="container">
-
     <h1>DeepNexivra</h1>
     <h2>Engineering Intelligence for a Smarter World</h2>
 
@@ -105,7 +143,80 @@
       </div>
     </div>
 
+    <div class="section">
+      <h2>Workforce Optimization Calculator</h2>
+      <p>
+        Estimate staffing needs, identify shortage or surplus, and measure utilization based on workload and productivity inputs.
+      </p>
+
+      <div class="tool-box">
+        <label for="availableStaff">Available Staff</label>
+        <input type="number" id="availableStaff" placeholder="Enter available staff" />
+
+        <label for="requiredWorkload">Required Workload (units per day)</label>
+        <input type="number" id="requiredWorkload" placeholder="Enter required workload" />
+
+        <label for="shiftHours">Shift Hours</label>
+        <input type="number" id="shiftHours" placeholder="Enter shift hours" />
+
+        <label for="productivity">Productivity per Staff per Hour</label>
+        <input type="number" id="productivity" placeholder="Enter productivity per hour" />
+
+        <div class="buttons" style="margin-top:20px;">
+          <button class="primary" onclick="calculateWorkforce()">Calculate</button>
+        </div>
+
+        <div class="result" id="result">
+          Results will appear here.
+        </div>
+
+        <div class="footer-note">
+          Formula basis: Required Staff = Required Workload ÷ (Shift Hours × Productivity per Staff)
+        </div>
+      </div>
+    </div>
   </div>
 
+  <script>
+    function calculateWorkforce() {
+      const availableStaff = parseFloat(document.getElementById("availableStaff").value);
+      const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
+      const shiftHours = parseFloat(document.getElementById("shiftHours").value);
+      const productivity = parseFloat(document.getElementById("productivity").value);
+      const resultBox = document.getElementById("result");
+
+      if (
+        isNaN(availableStaff) ||
+        isNaN(requiredWorkload) ||
+        isNaN(shiftHours) ||
+        isNaN(productivity) ||
+        shiftHours <= 0 ||
+        productivity <= 0
+      ) {
+        resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
+        return;
+      }
+
+      const requiredStaff = requiredWorkload / (shiftHours * productivity);
+      const roundedRequiredStaff = Math.ceil(requiredStaff);
+      const difference = availableStaff - roundedRequiredStaff;
+      const utilization = (requiredStaff / availableStaff) * 100;
+
+      let staffingMessage = "";
+      if (difference > 0) {
+        staffingMessage = `Surplus Staff: ${difference}`;
+      } else if (difference < 0) {
+        staffingMessage = `Staff Shortage: ${Math.abs(difference)}`;
+      } else {
+        staffingMessage = "Staffing is exactly matched to demand.";
+      }
+
+      resultBox.innerHTML = `
+        <strong>Required Staff:</strong> ${roundedRequiredStaff}<br>
+        <strong>${staffingMessage}</strong><br>
+        <strong>Estimated Utilization:</strong> ${utilization.toFixed(2)}%
+      `;
+    }
+  </script>
 </body>
 </html>
