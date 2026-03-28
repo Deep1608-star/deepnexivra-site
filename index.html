@@ -178,45 +178,51 @@
   </div>
 
   <script>
-    function calculateWorkforce() {
-      const availableStaff = parseFloat(document.getElementById("availableStaff").value);
-      const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
-      const shiftHours = parseFloat(document.getElementById("shiftHours").value);
-      const productivity = parseFloat(document.getElementById("productivity").value);
-      const resultBox = document.getElementById("result");
+  function calculateWorkforce() {
+    const availableStaff = parseFloat(document.getElementById("availableStaff").value);
+    const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
+    const shiftHours = parseFloat(document.getElementById("shiftHours").value);
+    const productivity = parseFloat(document.getElementById("productivity").value);
+    const resultBox = document.getElementById("result");
 
-      if (
-        isNaN(availableStaff) ||
-        isNaN(requiredWorkload) ||
-        isNaN(shiftHours) ||
-        isNaN(productivity) ||
-        shiftHours <= 0 ||
-        productivity <= 0
-      ) {
-        resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
-        return;
-      }
-
-      const requiredStaff = requiredWorkload / (shiftHours * productivity);
-      const roundedRequiredStaff = Math.ceil(requiredStaff);
-      const difference = availableStaff - roundedRequiredStaff;
-      const utilization = (requiredStaff / availableStaff) * 100;
-
-      let staffingMessage = "";
-      if (difference > 0) {
-        staffingMessage = `Surplus Staff: ${difference}`;
-      } else if (difference < 0) {
-        staffingMessage = `Staff Shortage: ${Math.abs(difference)}`;
-      } else {
-        staffingMessage = "Staffing is exactly matched to demand.";
-      }
-
-      resultBox.innerHTML = `
-        <strong>Required Staff:</strong> ${roundedRequiredStaff}<br>
-        <strong>${staffingMessage}</strong><br>
-        <strong>Estimated Utilization:</strong> ${utilization.toFixed(2)}%
-      `;
+    if (
+      isNaN(availableStaff) ||
+      isNaN(requiredWorkload) ||
+      isNaN(shiftHours) ||
+      isNaN(productivity) ||
+      shiftHours <= 0 ||
+      productivity <= 0
+    ) {
+      resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
+      return;
     }
-  </script>
+
+    const requiredStaff = requiredWorkload / (shiftHours * productivity);
+    const roundedRequiredStaff = Math.ceil(requiredStaff);
+    const difference = availableStaff - roundedRequiredStaff;
+    const utilization = (requiredStaff / availableStaff) * 100;
+
+    let status = "";
+    let recommendation = "";
+
+    if (difference > 0) {
+      status = "Overstaffed";
+      recommendation = "Consider reducing shifts or reallocating staff to improve efficiency.";
+    } else if (difference < 0) {
+      status = "Understaffed";
+      recommendation = "Increase staffing or optimize productivity to meet demand.";
+    } else {
+      status = "Optimally Staffed";
+      recommendation = "Maintain current staffing levels.";
+    }
+
+    resultBox.innerHTML = `
+      <strong>Required Staff:</strong> ${roundedRequiredStaff}<br>
+      <strong>Status:</strong> ${status}<br>
+      <strong>Utilization:</strong> ${utilization.toFixed(2)}%<br><br>
+      <strong>Recommendation:</strong> ${recommendation}
+    `;
+  }
+</script>
 </body>
 </html>
