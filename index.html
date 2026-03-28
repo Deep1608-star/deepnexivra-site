@@ -289,6 +289,10 @@
       "<strong>Recommendation:</strong> " + recommendation;
   }
 
+document.getElementById("dashboardRequiredStaff").innerText = roundedRequiredStaff;
+document.getElementById("dashboardUtilization").innerText = utilization.toFixed(2) + "%";
+document.getElementById("dashboardStatus").innerText = status;
+  
   function calculateCostOptimization() {
     const currentStaff = parseFloat(document.getElementById("currentStaff").value);
     const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
@@ -340,6 +344,9 @@
       "<strong>Status:</strong> " + status + "<br>" +
       "<strong>Recommendation:</strong> " + recommendation;
   }
+
+document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
+document.getElementById("dashboardStatus").innerText = status;
 </script>
 </body>
 </html>
