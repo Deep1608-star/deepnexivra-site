@@ -229,7 +229,7 @@
       border-radius: 18px;
       padding: 28px;
       margin-top: 26px;
-      max-width: 820px;
+      max-width: 900px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
 
@@ -242,7 +242,8 @@
     }
 
     .tool-box input,
-    .tool-box textarea {
+    .tool-box textarea,
+    .tool-box select {
       width: 100%;
       padding: 13px 14px;
       border-radius: 10px;
@@ -260,7 +261,8 @@
     }
 
     .tool-box input:focus,
-    .tool-box textarea:focus {
+    .tool-box textarea:focus,
+    .tool-box select:focus {
       border-color: #3b82f6;
     }
 
@@ -397,6 +399,7 @@
         <a href="#capabilities">Capabilities</a>
         <a href="#workforce-tool">Workforce Tool</a>
         <a href="#cost-tool">Cost Tool</a>
+        <a href="#scenario-lab">Scenario Lab</a>
         <a href="#dashboard">Dashboard</a>
         <a href="#contact">Contact</a>
       </div>
@@ -412,12 +415,12 @@
           <p>
             DeepNexivra transforms complex operational challenges into optimized,
             data-driven decisions. Built for workforce planning, cost optimization,
-            utilization improvement, and operational clarity.
+            scenario simulation, utilization improvement, and operational clarity.
           </p>
 
           <div class="buttons">
             <a href="#workforce-tool" class="btn primary">Start Optimizing</a>
-            <a href="#dashboard" class="btn secondary">Explore Dashboard</a>
+            <a href="#scenario-lab" class="btn secondary">Open Scenario Lab</a>
             <a href="#contact" class="btn ghost">Request Review</a>
           </div>
         </div>
@@ -451,7 +454,7 @@
     <h2>Core Capabilities</h2>
     <p>
       A practical foundation for workforce optimization, labor cost analysis,
-      operational control, and decision-support workflows.
+      scenario modeling, operational control, and decision-support workflows.
     </p>
 
     <div class="cards">
@@ -468,8 +471,8 @@
         <div class="card-text">Quantify labor cost, optimized staffing cost, and potential savings opportunities.</div>
       </div>
       <div class="card">
-        <div class="card-title">Decision Support</div>
-        <div class="card-text">Move from raw numbers to clear recommendations that can guide operational action.</div>
+        <div class="card-title">Scenario Simulation</div>
+        <div class="card-text">Model future operational conditions and compare their impact on staffing and cost.</div>
       </div>
     </div>
   </div>
@@ -542,6 +545,65 @@
 
       <div class="footer-note">
         Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="scenario-lab">
+    <h2>Scenario Lab</h2>
+    <p>
+      Simulate future operating conditions and compare projected staffing, utilization,
+      labor cost, and decision impact before action is taken.
+    </p>
+
+    <div class="tool-box">
+      <label for="scenarioType">Scenario Type</label>
+      <select id="scenarioType">
+        <option value="demand_up">Demand Increase</option>
+        <option value="demand_down">Demand Decrease</option>
+        <option value="productivity_up">Productivity Improvement</option>
+        <option value="productivity_down">Productivity Decline</option>
+        <option value="wage_up">Wage Increase</option>
+        <option value="wage_down">Wage Decrease</option>
+        <option value="staff_up">Increase Staff</option>
+        <option value="staff_down">Reduce Staff</option>
+      </select>
+
+      <label for="scenarioPercent">Scenario Change (%)</label>
+      <input type="number" id="scenarioPercent" placeholder="Enter percent change, e.g. 10" />
+
+      <div class="buttons">
+        <button class="primary" onclick="calculateScenarioLab()">Run Scenario</button>
+      </div>
+
+      <div class="dashboard-grid" style="margin-top:24px;">
+        <div class="dashboard-card">
+          <div class="dashboard-label">Projected Required Staff</div>
+          <div class="dashboard-value" id="scenarioRequiredStaff">--</div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="dashboard-label">Projected Utilization</div>
+          <div class="dashboard-value" id="scenarioUtilization">--</div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="dashboard-label">Projected Labor Cost</div>
+          <div class="dashboard-value" id="scenarioLaborCost">--</div>
+        </div>
+
+        <div class="dashboard-card">
+          <div class="dashboard-label">Cost Change vs Baseline</div>
+          <div class="dashboard-value" id="scenarioCostDelta">--</div>
+        </div>
+      </div>
+
+      <div class="result" id="scenarioResult">
+        Scenario results and strategic recommendation will appear here.
+      </div>
+
+      <div class="footer-note">
+        Scenario Lab uses your current workforce and cost inputs as the baseline operating model.
       </div>
     </div>
   </div>
@@ -770,6 +832,140 @@
 
       document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
       setStatusChip(status, statusType);
+    }
+
+    function calculateScenarioLab() {
+      const availableStaff = parseFloat(document.getElementById("availableStaff").value);
+      const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
+      const shiftHours = parseFloat(document.getElementById("shiftHours").value);
+      const productivity = parseFloat(document.getElementById("productivity").value);
+
+      const currentStaff = parseFloat(document.getElementById("currentStaff").value);
+      const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
+      const costShiftHours = parseFloat(document.getElementById("costShiftHours").value);
+      const costWorkload = parseFloat(document.getElementById("costWorkload").value);
+      const costProductivity = parseFloat(document.getElementById("costProductivity").value);
+
+      const scenarioType = document.getElementById("scenarioType").value;
+      const scenarioPercent = parseFloat(document.getElementById("scenarioPercent").value);
+      const resultBox = document.getElementById("scenarioResult");
+
+      if (
+        isNaN(availableStaff) ||
+        isNaN(requiredWorkload) ||
+        isNaN(shiftHours) ||
+        isNaN(productivity) ||
+        isNaN(currentStaff) ||
+        isNaN(hourlyWage) ||
+        isNaN(costShiftHours) ||
+        isNaN(costWorkload) ||
+        isNaN(costProductivity) ||
+        isNaN(scenarioPercent) ||
+        availableStaff <= 0 ||
+        requiredWorkload <= 0 ||
+        shiftHours <= 0 ||
+        productivity <= 0 ||
+        currentStaff <= 0 ||
+        hourlyWage <= 0 ||
+        costShiftHours <= 0 ||
+        costWorkload <= 0 ||
+        costProductivity <= 0 ||
+        scenarioPercent <= 0
+      ) {
+        resultBox.innerHTML = "Please complete the workforce and cost inputs above, then enter a valid positive scenario percentage.";
+        return;
+      }
+
+      const pct = scenarioPercent / 100;
+
+      let projectedWorkload = costWorkload;
+      let projectedProductivity = costProductivity;
+      let projectedWage = hourlyWage;
+      let projectedStaff = currentStaff;
+
+      if (scenarioType === "demand_up") {
+        projectedWorkload = costWorkload * (1 + pct);
+      } else if (scenarioType === "demand_down") {
+        projectedWorkload = costWorkload * (1 - pct);
+      } else if (scenarioType === "productivity_up") {
+        projectedProductivity = costProductivity * (1 + pct);
+      } else if (scenarioType === "productivity_down") {
+        projectedProductivity = costProductivity * (1 - pct);
+      } else if (scenarioType === "wage_up") {
+        projectedWage = hourlyWage * (1 + pct);
+      } else if (scenarioType === "wage_down") {
+        projectedWage = hourlyWage * (1 - pct);
+      } else if (scenarioType === "staff_up") {
+        projectedStaff = Math.ceil(currentStaff * (1 + pct));
+      } else if (scenarioType === "staff_down") {
+        projectedStaff = Math.max(1, Math.floor(currentStaff * (1 - pct)));
+      }
+
+      if (projectedProductivity <= 0 || projectedWorkload <= 0 || projectedWage <= 0 || projectedStaff <= 0) {
+        resultBox.innerHTML = "The selected scenario creates invalid operating conditions. Reduce the scenario percentage and try again.";
+        return;
+      }
+
+      const baselineRequiredStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
+      const projectedRequiredStaff = Math.ceil(projectedWorkload / (costShiftHours * projectedProductivity));
+      const baselineLaborCost = currentStaff * hourlyWage * costShiftHours;
+      const projectedLaborCost = projectedStaff * projectedWage * costShiftHours;
+      const costDelta = projectedLaborCost - baselineLaborCost;
+      const projectedUtilization = (projectedRequiredStaff / projectedStaff) * 100;
+      const staffingGap = projectedStaff - projectedRequiredStaff;
+
+      let recommendation = "";
+      let scenarioStatus = "";
+      let statusType = "yellow";
+
+      if (projectedUtilization > 95) {
+        scenarioStatus = "High Risk Scenario";
+        recommendation = "Projected utilization is extremely high. Consider adding staff, increasing productivity, or redesigning workflow before execution.";
+        statusType = "red";
+      } else if (projectedUtilization >= 80 && projectedUtilization <= 95) {
+        scenarioStatus = "Tight but Manageable";
+        recommendation = "Projected utilization is strong but close to operational limits. Monitor service levels and keep contingency options ready.";
+        statusType = "yellow";
+      } else if (projectedUtilization < 80 && staffingGap >= 0) {
+        scenarioStatus = "Capacity Available";
+        recommendation = "This scenario leaves spare capacity. Review whether cost, service level, and labor allocation are balanced appropriately.";
+        statusType = "green";
+      } else {
+        scenarioStatus = "Needs Review";
+        recommendation = "Review labor allocation and workload assumptions before acting on this scenario.";
+        statusType = "yellow";
+      }
+
+      const readableScenario = {
+        demand_up: "Demand Increase",
+        demand_down: "Demand Decrease",
+        productivity_up: "Productivity Improvement",
+        productivity_down: "Productivity Decline",
+        wage_up: "Wage Increase",
+        wage_down: "Wage Decrease",
+        staff_up: "Increase Staff",
+        staff_down: "Reduce Staff"
+      }[scenarioType];
+
+      document.getElementById("scenarioRequiredStaff").innerText = projectedRequiredStaff;
+      document.getElementById("scenarioUtilization").innerText = projectedUtilization.toFixed(2) + "%";
+      document.getElementById("scenarioLaborCost").innerText = "$" + projectedLaborCost.toFixed(2);
+      document.getElementById("scenarioCostDelta").innerText =
+        (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2);
+
+      resultBox.innerHTML =
+        "<strong>Scenario:</strong> " + readableScenario + " (" + scenarioPercent + "%)<br>" +
+        "<strong>Baseline Required Staff:</strong> " + baselineRequiredStaff + "<br>" +
+        "<strong>Projected Required Staff:</strong> " + projectedRequiredStaff + "<br>" +
+        "<strong>Projected Staff Capacity:</strong> " + projectedStaff + "<br>" +
+        "<strong>Projected Utilization:</strong> " + projectedUtilization.toFixed(2) + "%<br>" +
+        "<strong>Projected Labor Cost:</strong> $" + projectedLaborCost.toFixed(2) + "<br>" +
+        "<strong>Cost Change vs Baseline:</strong> " + (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2) + "<br>" +
+        "<strong>Staffing Gap / Surplus:</strong> " + staffingGap + "<br><br>" +
+        "<strong>Status:</strong> " + scenarioStatus + "<br>" +
+        "<strong>Recommendation:</strong> " + recommendation;
+
+      setStatusChip(scenarioStatus, statusType);
     }
 
     function sendReviewRequest() {
