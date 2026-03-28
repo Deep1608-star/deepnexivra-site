@@ -176,7 +176,41 @@
       </div>
     </div>
   </div>
+<div class="section">
+  <h2>Cost Optimization Tool</h2>
+  <p>
+    Estimate current labor cost, optimized labor cost, and potential savings based on staffing, wage, and workload assumptions.
+  </p>
 
+  <div class="tool-box">
+    <label for="currentStaff">Current Staff</label>
+    <input type="number" id="currentStaff" placeholder="Enter current staff" />
+
+    <label for="hourlyWage">Hourly Wage ($)</label>
+    <input type="number" id="hourlyWage" placeholder="Enter hourly wage" />
+
+    <label for="costShiftHours">Shift Hours</label>
+    <input type="number" id="costShiftHours" placeholder="Enter shift hours" />
+
+    <label for="costWorkload">Required Workload (units per day)</label>
+    <input type="number" id="costWorkload" placeholder="Enter required workload" />
+
+    <label for="costProductivity">Productivity per Staff per Hour</label>
+    <input type="number" id="costProductivity" placeholder="Enter productivity per hour" />
+
+    <div class="buttons" style="margin-top:20px;">
+      <button class="primary" onclick="calculateCostOptimization()">Calculate Cost</button>
+    </div>
+
+    <div class="result" id="costResult">
+      Cost optimization results will appear here.
+    </div>
+
+    <div class="footer-note">
+      Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff)
+    </div>
+  </div>
+</div>
   <script>
   function calculateWorkforce() {
     const availableStaff = parseFloat(document.getElementById("availableStaff").value);
