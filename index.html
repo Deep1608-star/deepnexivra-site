@@ -241,7 +241,8 @@
       font-weight: 600;
     }
 
-    .tool-box input {
+    .tool-box input,
+    .tool-box textarea {
       width: 100%;
       padding: 13px 14px;
       border-radius: 10px;
@@ -250,9 +251,16 @@
       color: white;
       font-size: 15px;
       outline: none;
+      font-family: inherit;
     }
 
-    .tool-box input:focus {
+    .tool-box textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .tool-box input:focus,
+    .tool-box textarea:focus {
       border-color: #3b82f6;
     }
 
@@ -329,6 +337,16 @@
       border-color: rgba(239, 68, 68, 0.35);
     }
 
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
     .footer {
       border-top: 1px solid #1e293b;
       margin-top: 40px;
@@ -338,7 +356,8 @@
     }
 
     @media (max-width: 900px) {
-      .hero-grid {
+      .hero-grid,
+      .form-grid {
         grid-template-columns: 1fr;
       }
 
@@ -560,23 +579,49 @@
   <div class="section" id="contact">
     <h2>Request an Optimization Review</h2>
     <p>
-      DeepNexivra helps transform operational complexity into measurable performance
-      improvement. Reach out to discuss workforce planning, labor cost analysis,
-      utilization improvement, and decision-support solutions.
+      Share your challenge directly below. This form prepares a structured request
+      and opens your email with the details pre-filled for fast outreach.
     </p>
 
     <div class="tool-box">
-      <div class="result">
-        <strong>Email:</strong> deepsandip2003@gmail.com<br><br>
-        <strong>Use Cases:</strong> Workforce planning, labor cost analysis, utilization improvement, operational decision support.
+      <div class="form-grid">
+        <div>
+          <label for="leadName">Full Name</label>
+          <input type="text" id="leadName" placeholder="Enter your name" />
+        </div>
+
+        <div>
+          <label for="leadEmail">Email Address</label>
+          <input type="email" id="leadEmail" placeholder="Enter your email" />
+        </div>
+
+        <div>
+          <label for="leadCompany">Company / Team</label>
+          <input type="text" id="leadCompany" placeholder="Enter company or team name" />
+        </div>
+
+        <div>
+          <label for="leadUseCase">Primary Use Case</label>
+          <input type="text" id="leadUseCase" placeholder="Example: workforce planning" />
+        </div>
+
+        <div class="full-width">
+          <label for="leadChallenge">Operational Challenge</label>
+          <textarea id="leadChallenge" placeholder="Describe the problem, current bottleneck, or optimization need"></textarea>
+        </div>
       </div>
 
       <div class="buttons">
-        <a href="mailto:deepsandip2003@gmail.com?subject=Optimization Review Request" class="btn primary">Request Review</a>
+        <button class="primary" onclick="sendReviewRequest()">Send Request</button>
+        <a href="mailto:deepsandip2003@gmail.com?subject=Optimization Review Request" class="btn secondary">Direct Email</a>
+      </div>
+
+      <div class="result" id="contactResult">
+        Your request preview and status will appear here.
       </div>
 
       <div class="footer-note">
-        You can switch this to a custom company email later.
+        Delivery email: <strong>deepsandip2003@gmail.com</strong>
       </div>
     </div>
   </div>
@@ -725,6 +770,40 @@
 
       document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
       setStatusChip(status, statusType);
+    }
+
+    function sendReviewRequest() {
+      const name = document.getElementById("leadName").value.trim();
+      const email = document.getElementById("leadEmail").value.trim();
+      const company = document.getElementById("leadCompany").value.trim();
+      const useCase = document.getElementById("leadUseCase").value.trim();
+      const challenge = document.getElementById("leadChallenge").value.trim();
+      const resultBox = document.getElementById("contactResult");
+
+      if (!name || !email || !challenge) {
+        resultBox.innerHTML = "Please fill in at least Full Name, Email Address, and Operational Challenge.";
+        return;
+      }
+
+      const subject = encodeURIComponent("Optimization Review Request - " + name);
+      const body = encodeURIComponent(
+        "Optimization Review Request\n\n" +
+        "Full Name: " + name + "\n" +
+        "Email Address: " + email + "\n" +
+        "Company / Team: " + (company || "Not provided") + "\n" +
+        "Primary Use Case: " + (useCase || "Not provided") + "\n\n" +
+        "Operational Challenge:\n" + challenge + "\n"
+      );
+
+      resultBox.innerHTML =
+        "<strong>Request Ready:</strong><br>" +
+        "Name: " + name + "<br>" +
+        "Email: " + email + "<br>" +
+        "Company / Team: " + (company || "Not provided") + "<br>" +
+        "Primary Use Case: " + (useCase || "Not provided") + "<br><br>" +
+        "<strong>Status:</strong> Opening your email client with the request pre-filled.";
+
+      window.location.href = "mailto:deepsandip2003@gmail.com?subject=" + subject + "&body=" + body;
     }
   </script>
 </body>
