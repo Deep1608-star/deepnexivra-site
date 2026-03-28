@@ -213,6 +213,35 @@
   </div>
 </div>
   
+<div class="section">
+  <h2>Operations Dashboard</h2>
+  <p>
+    A live executive snapshot of workforce demand, utilization, savings opportunity, and operational status.
+  </p>
+
+  <div class="cards">
+    <div class="card">
+      <div style="color:#94a3b8; font-size:14px;">Required Staff</div>
+      <div id="dashboardRequiredStaff" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+    </div>
+
+    <div class="card">
+      <div style="color:#94a3b8; font-size:14px;">Utilization</div>
+      <div id="dashboardUtilization" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+    </div>
+
+    <div class="card">
+      <div style="color:#94a3b8; font-size:14px;">Potential Savings</div>
+      <div id="dashboardSavings" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
+    </div>
+
+    <div class="card">
+      <div style="color:#94a3b8; font-size:14px;">Operational Status</div>
+      <div id="dashboardStatus" style="font-size:24px; font-weight:bold; margin-top:10px;">Awaiting Input</div>
+    </div>
+  </div>
+</div>
+  
 <script>
   function calculateWorkforce() {
     const availableStaff = parseFloat(document.getElementById("availableStaff").value);
