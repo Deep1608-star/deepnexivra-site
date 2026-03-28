@@ -213,60 +213,8 @@
   </div>
 </div>
   
-  <script>
+<script>
   function calculateWorkforce() {
-    function calculateCostOptimization() {
-  const currentStaff = parseFloat(document.getElementById("currentStaff").value);
-  const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
-  const costShiftHours = parseFloat(document.getElementById("costShiftHours").value);
-  const costWorkload = parseFloat(document.getElementById("costWorkload").value);
-  const costProductivity = parseFloat(document.getElementById("costProductivity").value);
-  const resultBox = document.getElementById("costResult");
-
-  if (
-    isNaN(currentStaff) ||
-    isNaN(hourlyWage) ||
-    isNaN(costShiftHours) ||
-    isNaN(costWorkload) ||
-    isNaN(costProductivity) ||
-    currentStaff <= 0 ||
-    hourlyWage <= 0 ||
-    costShiftHours <= 0 ||
-    costWorkload <= 0 ||
-    costProductivity <= 0
-  ) {
-    resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
-    return;
-  }
-
-  const optimalStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
-  const currentLaborCost = currentStaff * hourlyWage * costShiftHours;
-  const optimizedLaborCost = optimalStaff * hourlyWage * costShiftHours;
-  const savings = currentLaborCost - optimizedLaborCost;
-
-  let status = "";
-  let recommendation = "";
-
-  if (savings > 0) {
-    status = "Cost Reduction Opportunity Identified";
-    recommendation = "Current staffing appears higher than required workload demand. Consider reallocating labor or reducing excess staffing.";
-  } else if (savings < 0) {
-    status = "Current Staffing May Be Under Target";
-    recommendation = "Current staffing may be too low for the workload. Consider adding staff or improving productivity.";
-  } else {
-    status = "Cost Structure Appears Optimized";
-    recommendation = "Current staffing and labor cost appear aligned with operational demand.";
-  }
-
-  resultBox.innerHTML = `
-    <strong>Optimal Staff Required:</strong> ${optimalStaff}<br>
-    <strong>Current Labor Cost:</strong> $${currentLaborCost.toFixed(2)}<br>
-    <strong>Optimized Labor Cost:</strong> $${optimizedLaborCost.toFixed(2)}<br>
-    <strong>Potential Savings:</strong> $${Math.max(savings, 0).toFixed(2)}<br><br>
-    <strong>Status:</strong> ${status}<br>
-    <strong>Recommendation:</strong> ${recommendation}
-  `;
-}
     const availableStaff = parseFloat(document.getElementById("availableStaff").value);
     const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
     const shiftHours = parseFloat(document.getElementById("shiftHours").value);
@@ -278,6 +226,7 @@
       isNaN(requiredWorkload) ||
       isNaN(shiftHours) ||
       isNaN(productivity) ||
+      availableStaff <= 0 ||
       shiftHours <= 0 ||
       productivity <= 0
     ) {
@@ -304,12 +253,63 @@
       recommendation = "Maintain current staffing levels.";
     }
 
-    resultBox.innerHTML = `
-      <strong>Required Staff:</strong> ${roundedRequiredStaff}<br>
-      <strong>Status:</strong> ${status}<br>
-      <strong>Utilization:</strong> ${utilization.toFixed(2)}%<br><br>
-      <strong>Recommendation:</strong> ${recommendation}
-    `;
+    resultBox.innerHTML =
+      "<strong>Required Staff:</strong> " + roundedRequiredStaff + "<br>" +
+      "<strong>Status:</strong> " + status + "<br>" +
+      "<strong>Utilization:</strong> " + utilization.toFixed(2) + "%<br><br>" +
+      "<strong>Recommendation:</strong> " + recommendation;
+  }
+
+  function calculateCostOptimization() {
+    const currentStaff = parseFloat(document.getElementById("currentStaff").value);
+    const hourlyWage = parseFloat(document.getElementById("hourlyWage").value);
+    const costShiftHours = parseFloat(document.getElementById("costShiftHours").value);
+    const costWorkload = parseFloat(document.getElementById("costWorkload").value);
+    const costProductivity = parseFloat(document.getElementById("costProductivity").value);
+    const resultBox = document.getElementById("costResult");
+
+    if (
+      isNaN(currentStaff) ||
+      isNaN(hourlyWage) ||
+      isNaN(costShiftHours) ||
+      isNaN(costWorkload) ||
+      isNaN(costProductivity) ||
+      currentStaff <= 0 ||
+      hourlyWage <= 0 ||
+      costShiftHours <= 0 ||
+      costWorkload <= 0 ||
+      costProductivity <= 0
+    ) {
+      resultBox.innerHTML = "Please enter valid positive numbers in all fields.";
+      return;
+    }
+
+    const optimalStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
+    const currentLaborCost = currentStaff * hourlyWage * costShiftHours;
+    const optimizedLaborCost = optimalStaff * hourlyWage * costShiftHours;
+    const savings = currentLaborCost - optimizedLaborCost;
+
+    let status = "";
+    let recommendation = "";
+
+    if (savings > 0) {
+      status = "Cost Reduction Opportunity Identified";
+      recommendation = "Current staffing appears higher than required workload demand. Consider reallocating labor or reducing excess staffing.";
+    } else if (savings < 0) {
+      status = "Current Staffing May Be Under Target";
+      recommendation = "Current staffing may be too low for the workload. Consider adding staff or improving productivity.";
+    } else {
+      status = "Cost Structure Appears Optimized";
+      recommendation = "Current staffing and labor cost appear aligned with operational demand.";
+    }
+
+    resultBox.innerHTML =
+      "<strong>Optimal Staff Required:</strong> " + optimalStaff + "<br>" +
+      "<strong>Current Labor Cost:</strong> $" + currentLaborCost.toFixed(2) + "<br>" +
+      "<strong>Optimized Labor Cost:</strong> $" + optimizedLaborCost.toFixed(2) + "<br>" +
+      "<strong>Potential Savings:</strong> $" + Math.max(savings, 0).toFixed(2) + "<br><br>" +
+      "<strong>Status:</strong> " + status + "<br>" +
+      "<strong>Recommendation:</strong> " + recommendation;
   }
 </script>
 </body>
