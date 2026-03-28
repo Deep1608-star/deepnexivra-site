@@ -17,301 +17,602 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
+      background: #0b1120;
+      color: #ffffff;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(11, 17, 32, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .nav-inner {
+      max-width: 1150px;
+      margin: auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.4px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .nav-links a {
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at top right, rgba(59,130,246,0.18), transparent 28%),
+        radial-gradient(circle at left center, rgba(14,165,233,0.12), transparent 30%),
+        linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+      border-bottom: 1px solid #1e293b;
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1150px;
       margin: auto;
-      padding: 60px 20px;
+      padding: 70px 20px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 30px;
+      align-items: center;
     }
 
     h1 {
-      font-size: 56px;
-      margin-bottom: 10px;
-    }
-
-    h2 {
-      font-size: 28px;
-      color: #e2e8f0;
-      margin-bottom: 10px;
-    }
-
-    p {
-      max-width: 720px;
-      line-height: 1.6;
-      margin-top: 20px;
-      color: #cbd5e1;
+      font-size: 64px;
+      line-height: 1.05;
+      margin: 0 0 14px;
     }
 
     .subheading {
       font-size: 24px;
-      color: #94a3b8;
+      color: #93c5fd;
+      margin: 0;
+    }
+
+    .hero p,
+    .section p {
+      max-width: 760px;
+      line-height: 1.7;
+      color: #cbd5e1;
+      font-size: 16px;
+    }
+
+    .hero-panel {
+      background: linear-gradient(180deg, #0f172a, #111c34);
+      border: 1px solid #1e293b;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    .hero-panel h3 {
       margin-top: 0;
+      margin-bottom: 14px;
+      color: #e2e8f0;
+      font-size: 18px;
+    }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .mini-card {
+      background: #0b1120;
+      border: 1px solid #23324b;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .mini-card .label {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .mini-card .value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 8px;
     }
 
     .buttons {
-      margin-top: 30px;
+      margin-top: 28px;
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
     }
 
-    button,
-    .btn-link {
-      padding: 12px 24px;
+    .btn,
+    button {
+      padding: 12px 22px;
+      border-radius: 10px;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 700;
       font-size: 15px;
-      text-decoration: none;
-      display: inline-block;
+      transition: 0.2s ease;
+    }
+
+    .btn:hover,
+    button:hover {
+      transform: translateY(-1px);
     }
 
     .primary {
       background: #3b82f6;
-      color: white;
+      color: #ffffff;
     }
 
     .secondary {
       background: transparent;
+      color: #93c5fd;
       border: 1px solid #3b82f6;
-      color: #3b82f6;
+    }
+
+    .ghost {
+      background: #172033;
+      color: #e2e8f0;
+      border: 1px solid #334155;
     }
 
     .section {
-      margin-top: 80px;
+      padding: 70px 20px;
+      max-width: 1150px;
+      margin: auto;
+    }
+
+    .section h2 {
+      font-size: 32px;
+      margin: 0 0 12px;
+      color: #f8fafc;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 20px;
-      margin-top: 30px;
+      margin-top: 28px;
     }
 
     .card {
-      background: #1e293b;
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid #334155;
+      background: #111c34;
+      border: 1px solid #23324b;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #f8fafc;
+    }
+
+    .card-text {
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 15px;
     }
 
     .tool-box {
-      background: #1e293b;
-      padding: 24px;
-      border-radius: 12px;
-      margin-top: 30px;
-      max-width: 760px;
-      border: 1px solid #334155;
+      background: #111c34;
+      border: 1px solid #23324b;
+      border-radius: 18px;
+      padding: 28px;
+      margin-top: 26px;
+      max-width: 820px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
 
     .tool-box label {
       display: block;
       margin-top: 16px;
-      margin-bottom: 6px;
-      color: #cbd5e1;
+      margin-bottom: 7px;
+      color: #e2e8f0;
       font-weight: 600;
     }
 
     .tool-box input {
       width: 100%;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 13px 14px;
+      border-radius: 10px;
       border: 1px solid #334155;
-      background: #0f172a;
+      background: #0b1120;
       color: white;
       font-size: 15px;
+      outline: none;
+    }
+
+    .tool-box input:focus {
+      border-color: #3b82f6;
     }
 
     .result {
       margin-top: 20px;
       padding: 16px;
-      border-radius: 8px;
-      background: #0f172a;
+      border-radius: 12px;
+      background: #0b1120;
       border: 1px solid #334155;
-      line-height: 1.8;
+      line-height: 1.9;
       color: #e2e8f0;
     }
 
     .footer-note {
-      margin-top: 12px;
+      margin-top: 14px;
       color: #94a3b8;
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
-    @media (max-width: 768px) {
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 28px;
+    }
+
+    .dashboard-card {
+      background: #111c34;
+      border: 1px solid #23324b;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .dashboard-label {
+      color: #94a3b8;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-value {
+      font-size: 30px;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .status-chip {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 8px;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+    }
+
+    .status-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+
+    .status-yellow {
+      background: rgba(234, 179, 8, 0.15);
+      color: #fde68a;
+      border-color: rgba(234, 179, 8, 0.35);
+    }
+
+    .status-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .footer {
+      border-top: 1px solid #1e293b;
+      margin-top: 40px;
+      padding: 28px 20px 50px;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
       h1 {
-        font-size: 40px;
+        font-size: 46px;
       }
 
       .subheading {
         font-size: 20px;
       }
     }
+
+    @media (max-width: 640px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+
+      .container,
+      .section {
+        padding-top: 50px;
+        padding-bottom: 50px;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <h1>DeepNexivra</h1>
-    <p class="subheading">Engineering Intelligence for a Smarter World</p>
-
-    <p>
-      DeepNexivra transforms complex operational challenges into optimized,
-      data-driven decisions using advanced engineering intelligence systems.
-      Built for workforce planning, cost optimization, and execution clarity.
-    </p>
-
-    <div class="buttons">
-      <a href="#workforce-tool" class="btn-link primary">Start Optimizing</a>
-      <a href="#dashboard" class="btn-link secondary">Explore Dashboard</a>
-      <a href="#contact" class="btn-link secondary">Request Review</a>
-    </div>
-
-    <div class="section">
-      <h2>Core Capabilities</h2>
-
-      <div class="cards">
-        <div class="card">Operations Optimization</div>
-        <div class="card">Workforce Intelligence</div>
-        <div class="card">Data Analytics Engine</div>
-        <div class="card">Automation Systems</div>
+  <div class="nav">
+    <div class="nav-inner">
+      <div class="brand">DeepNexivra</div>
+      <div class="nav-links">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#workforce-tool">Workforce Tool</a>
+        <a href="#cost-tool">Cost Tool</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#contact">Contact</a>
       </div>
     </div>
+  </div>
 
-    <div class="section" id="workforce-tool">
-      <h2>Workforce Optimization Calculator</h2>
-      <p>
-        Estimate staffing needs, identify shortage or surplus, and measure
-        utilization based on workload and productivity inputs.
-      </p>
+  <div class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <p class="subheading">Engineering Intelligence for a Smarter World</p>
+          <h1>Optimize operations with structured decision intelligence.</h1>
+          <p>
+            DeepNexivra transforms complex operational challenges into optimized,
+            data-driven decisions. Built for workforce planning, cost optimization,
+            utilization improvement, and operational clarity.
+          </p>
 
-      <div class="tool-box">
-        <label for="availableStaff">Available Staff</label>
-        <input type="number" id="availableStaff" placeholder="Enter available staff" />
-
-        <label for="requiredWorkload">Required Workload (units per day)</label>
-        <input type="number" id="requiredWorkload" placeholder="Enter required workload" />
-
-        <label for="shiftHours">Shift Hours</label>
-        <input type="number" id="shiftHours" placeholder="Enter shift hours" />
-
-        <label for="productivity">Productivity per Staff per Hour</label>
-        <input type="number" id="productivity" placeholder="Enter productivity per hour" />
-
-        <div class="buttons" style="margin-top:20px;">
-          <button class="primary" onclick="calculateWorkforce()">Calculate Workforce</button>
+          <div class="buttons">
+            <a href="#workforce-tool" class="btn primary">Start Optimizing</a>
+            <a href="#dashboard" class="btn secondary">Explore Dashboard</a>
+            <a href="#contact" class="btn ghost">Request Review</a>
+          </div>
         </div>
 
-        <div class="result" id="result">
-          Workforce optimization results will appear here.
-        </div>
-
-        <div class="footer-note">
-          Formula basis: Required Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
-        </div>
-      </div>
-    </div>
-
-    <div class="section" id="cost-tool">
-      <h2>Cost Optimization Tool</h2>
-      <p>
-        Estimate current labor cost, optimized labor cost, and potential savings
-        based on staffing, wage, and workload assumptions.
-      </p>
-
-      <div class="tool-box">
-        <label for="currentStaff">Current Staff</label>
-        <input type="number" id="currentStaff" placeholder="Enter current staff" />
-
-        <label for="hourlyWage">Hourly Wage ($)</label>
-        <input type="number" id="hourlyWage" placeholder="Enter hourly wage" />
-
-        <label for="costShiftHours">Shift Hours</label>
-        <input type="number" id="costShiftHours" placeholder="Enter shift hours" />
-
-        <label for="costWorkload">Required Workload (units per day)</label>
-        <input type="number" id="costWorkload" placeholder="Enter required workload" />
-
-        <label for="costProductivity">Productivity per Staff per Hour</label>
-        <input type="number" id="costProductivity" placeholder="Enter productivity per hour" />
-
-        <div class="buttons" style="margin-top:20px;">
-          <button class="primary" onclick="calculateCostOptimization()">Calculate Cost</button>
-        </div>
-
-        <div class="result" id="costResult">
-          Cost optimization results will appear here.
-        </div>
-
-        <div class="footer-note">
-          Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
-        </div>
-      </div>
-    </div>
-
-    <div class="section" id="dashboard">
-      <h2>Operations Dashboard</h2>
-      <p>
-        A live executive snapshot of workforce demand, utilization, savings
-        opportunity, and operational status.
-      </p>
-
-      <div class="cards">
-        <div class="card">
-          <div style="color:#94a3b8; font-size:14px;">Required Staff</div>
-          <div id="dashboardRequiredStaff" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-        </div>
-
-        <div class="card">
-          <div style="color:#94a3b8; font-size:14px;">Utilization</div>
-          <div id="dashboardUtilization" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-        </div>
-
-        <div class="card">
-          <div style="color:#94a3b8; font-size:14px;">Potential Savings</div>
-          <div id="dashboardSavings" style="font-size:32px; font-weight:bold; margin-top:10px;">--</div>
-        </div>
-
-        <div class="card">
-          <div style="color:#94a3b8; font-size:14px;">Operational Status</div>
-          <div id="dashboardStatus" style="font-size:24px; font-weight:bold; margin-top:10px;">Awaiting Input</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section" id="contact">
-      <h2>Request an Optimization Review</h2>
-      <p>
-        DeepNexivra helps transform operational complexity into measurable
-        performance improvement. Reach out to discuss workforce planning,
-        cost optimization, and decision-support solutions.
-      </p>
-
-      <div class="tool-box">
-        <div class="result">
-          <strong>Email:</strong> deepsandip2003@gmail.com<br><br>
-          <strong>Use Cases:</strong> Workforce planning, labor cost analysis, utilization improvement, operational decision support.
-        </div>
-
-        <div class="buttons" style="margin-top:20px;">
-          <a href="mailto:deepsandip2003@gmail.com?subject=Optimization Review Request" class="btn-link primary">
-            Request Review
-          </a>
-        </div>
-
-        <div class="footer-note">
-          You can switch this to a custom company email later.
+        <div class="hero-panel">
+          <h3>Strategic Value Snapshot</h3>
+          <div class="mini-metrics">
+            <div class="mini-card">
+              <div class="label">Focus</div>
+              <div class="value">Ops</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Core Engine</div>
+              <div class="value">IE + Data</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Primary Use</div>
+              <div class="value">Planning</div>
+            </div>
+            <div class="mini-card">
+              <div class="label">Decision Style</div>
+              <div class="value">Actionable</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+  <div class="section" id="capabilities">
+    <h2>Core Capabilities</h2>
+    <p>
+      A practical foundation for workforce optimization, labor cost analysis,
+      operational control, and decision-support workflows.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-title">Operations Optimization</div>
+        <div class="card-text">Convert workload and resource inputs into structured operational decisions.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Workforce Intelligence</div>
+        <div class="card-text">Estimate staffing demand, utilization, and workforce alignment with real workload.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Cost Optimization</div>
+        <div class="card-text">Quantify labor cost, optimized staffing cost, and potential savings opportunities.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Decision Support</div>
+        <div class="card-text">Move from raw numbers to clear recommendations that can guide operational action.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="workforce-tool">
+    <h2>Workforce Optimization Calculator</h2>
+    <p>
+      Estimate staffing needs, identify shortage or surplus, and measure utilization
+      based on workload and productivity inputs.
+    </p>
+
+    <div class="tool-box">
+      <label for="availableStaff">Available Staff</label>
+      <input type="number" id="availableStaff" placeholder="Enter available staff" />
+
+      <label for="requiredWorkload">Required Workload (units per day)</label>
+      <input type="number" id="requiredWorkload" placeholder="Enter required workload" />
+
+      <label for="shiftHours">Shift Hours</label>
+      <input type="number" id="shiftHours" placeholder="Enter shift hours" />
+
+      <label for="productivity">Productivity per Staff per Hour</label>
+      <input type="number" id="productivity" placeholder="Enter productivity per hour" />
+
+      <div class="buttons">
+        <button class="primary" onclick="calculateWorkforce()">Calculate Workforce</button>
+        <button class="ghost" onclick="loadDemoData()">Load Demo Data</button>
+      </div>
+
+      <div class="result" id="result">
+        Workforce optimization results will appear here.
+      </div>
+
+      <div class="footer-note">
+        Formula basis: Required Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="cost-tool">
+    <h2>Cost Optimization Tool</h2>
+    <p>
+      Estimate current labor cost, optimized labor cost, and potential savings
+      based on staffing, wage, and workload assumptions.
+    </p>
+
+    <div class="tool-box">
+      <label for="currentStaff">Current Staff</label>
+      <input type="number" id="currentStaff" placeholder="Enter current staff" />
+
+      <label for="hourlyWage">Hourly Wage ($)</label>
+      <input type="number" id="hourlyWage" placeholder="Enter hourly wage" />
+
+      <label for="costShiftHours">Shift Hours</label>
+      <input type="number" id="costShiftHours" placeholder="Enter shift hours" />
+
+      <label for="costWorkload">Required Workload (units per day)</label>
+      <input type="number" id="costWorkload" placeholder="Enter required workload" />
+
+      <label for="costProductivity">Productivity per Staff per Hour</label>
+      <input type="number" id="costProductivity" placeholder="Enter productivity per hour" />
+
+      <div class="buttons">
+        <button class="primary" onclick="calculateCostOptimization()">Calculate Cost</button>
+      </div>
+
+      <div class="result" id="costResult">
+        Cost optimization results will appear here.
+      </div>
+
+      <div class="footer-note">
+        Formula basis: Optimal Staff = Required Workload ÷ (Shift Hours × Productivity per Staff per Hour)
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="dashboard">
+    <h2>Operations Dashboard</h2>
+    <p>
+      A live executive snapshot of staffing demand, utilization, savings opportunity,
+      and current operational status.
+    </p>
+
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <div class="dashboard-label">Required Staff</div>
+        <div class="dashboard-value" id="dashboardRequiredStaff">--</div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-label">Utilization</div>
+        <div class="dashboard-value" id="dashboardUtilization">--</div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-label">Potential Savings</div>
+        <div class="dashboard-value" id="dashboardSavings">--</div>
+      </div>
+
+      <div class="dashboard-card">
+        <div class="dashboard-label">Operational Status</div>
+        <div id="dashboardStatus" class="status-chip">Awaiting Input</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="contact">
+    <h2>Request an Optimization Review</h2>
+    <p>
+      DeepNexivra helps transform operational complexity into measurable performance
+      improvement. Reach out to discuss workforce planning, labor cost analysis,
+      utilization improvement, and decision-support solutions.
+    </p>
+
+    <div class="tool-box">
+      <div class="result">
+        <strong>Email:</strong> deepsandip2003@gmail.com<br><br>
+        <strong>Use Cases:</strong> Workforce planning, labor cost analysis, utilization improvement, operational decision support.
+      </div>
+
+      <div class="buttons">
+        <a href="mailto:deepsandip2003@gmail.com?subject=Optimization Review Request" class="btn primary">Request Review</a>
+      </div>
+
+      <div class="footer-note">
+        You can switch this to a custom company email later.
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2026 DeepNexivra. Engineering intelligence for operational optimization.
+  </div>
+
   <script>
+    function setStatusChip(statusText, type) {
+      const statusElement = document.getElementById("dashboardStatus");
+      statusElement.className = "status-chip";
+      statusElement.innerText = statusText;
+
+      if (type === "green") {
+        statusElement.classList.add("status-green");
+      } else if (type === "yellow") {
+        statusElement.classList.add("status-yellow");
+      } else if (type === "red") {
+        statusElement.classList.add("status-red");
+      }
+    }
+
+    function loadDemoData() {
+      document.getElementById("availableStaff").value = 120;
+      document.getElementById("requiredWorkload").value = 5000;
+      document.getElementById("shiftHours").value = 7.5;
+      document.getElementById("productivity").value = 120;
+
+      document.getElementById("currentStaff").value = 120;
+      document.getElementById("hourlyWage").value = 25.91;
+      document.getElementById("costShiftHours").value = 7.5;
+      document.getElementById("costWorkload").value = 5000;
+      document.getElementById("costProductivity").value = 120;
+    }
+
     function calculateWorkforce() {
       const availableStaff = parseFloat(document.getElementById("availableStaff").value);
       const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
@@ -340,16 +641,20 @@
 
       let status = "";
       let recommendation = "";
+      let statusType = "";
 
       if (difference > 0) {
         status = "Overstaffed";
         recommendation = "Consider reducing shifts or reallocating staff to improve efficiency.";
+        statusType = "yellow";
       } else if (difference < 0) {
         status = "Understaffed";
         recommendation = "Increase staffing or optimize productivity to meet demand.";
+        statusType = "red";
       } else {
         status = "Optimally Staffed";
         recommendation = "Maintain current staffing levels.";
+        statusType = "green";
       }
 
       resultBox.innerHTML =
@@ -360,7 +665,7 @@
 
       document.getElementById("dashboardRequiredStaff").innerText = roundedRequiredStaff;
       document.getElementById("dashboardUtilization").innerText = utilization.toFixed(2) + "%";
-      document.getElementById("dashboardStatus").innerText = status;
+      setStatusChip(status, statusType);
     }
 
     function calculateCostOptimization() {
@@ -394,16 +699,20 @@
 
       let status = "";
       let recommendation = "";
+      let statusType = "";
 
       if (savings > 0) {
         status = "Cost Reduction Opportunity Identified";
         recommendation = "Current staffing appears higher than required workload demand. Consider reallocating labor or reducing excess staffing.";
+        statusType = "green";
       } else if (savings < 0) {
         status = "Current Staffing May Be Under Target";
         recommendation = "Current staffing may be too low for the workload. Consider adding staff or improving productivity.";
+        statusType = "red";
       } else {
         status = "Cost Structure Appears Optimized";
         recommendation = "Current staffing and labor cost appear aligned with operational demand.";
+        statusType = "yellow";
       }
 
       resultBox.innerHTML =
@@ -415,7 +724,7 @@
         "<strong>Recommendation:</strong> " + recommendation;
 
       document.getElementById("dashboardSavings").innerText = "$" + Math.max(savings, 0).toFixed(2);
-      document.getElementById("dashboardStatus").innerText = status;
+      setStatusChip(status, statusType);
     }
   </script>
 </body>
