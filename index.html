@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepNexivra — Executive Intelligence Suite v1</title>
+  <title>DeepNexivra — Learning & Intelligence Suite v1</title>
 
   <style>
     * {
@@ -35,7 +35,7 @@
     }
 
     .nav-inner {
-      max-width: 1240px;
+      max-width: 1280px;
       margin: auto;
       padding: 16px 20px;
       display: flex;
@@ -71,7 +71,7 @@
     }
 
     .container {
-      max-width: 1240px;
+      max-width: 1280px;
       margin: auto;
       padding: 72px 20px;
     }
@@ -84,7 +84,7 @@
     }
 
     h1 {
-      font-size: 60px;
+      font-size: 58px;
       line-height: 1.05;
       margin: 0 0 14px;
     }
@@ -108,7 +108,7 @@
     .section p {
       color: #cbd5e1;
       line-height: 1.7;
-      max-width: 840px;
+      max-width: 900px;
     }
 
     .hero-panel {
@@ -139,13 +139,116 @@
     }
 
     .mini-card .value {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       margin-top: 8px;
     }
 
-    .buttons {
+    .section {
+      max-width: 1280px;
+      margin: auto;
+      padding: 72px 20px;
+    }
+
+    .tool-box,
+    .panel,
+    .card,
+    .dashboard-card,
+    .summary-card,
+    .unit-card,
+    .chart-card,
+    .benchmark-card,
+    .insight-card,
+    .brief-panel {
+      background: #111c34;
+      border: 1px solid #23324b;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+    }
+
+    .tool-box {
       margin-top: 24px;
+    }
+
+    .cards,
+    .dashboard-grid,
+    .summary-grid,
+    .units-grid,
+    .chart-grid,
+    .benchmark-grid,
+    .insight-grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .cards {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .dashboard-grid,
+    .summary-grid,
+    .benchmark-grid,
+    .insight-grid,
+    .chart-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .units-grid {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .tool-box label,
+    .unit-card label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 7px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .tool-box input,
+    .tool-box textarea,
+    .tool-box select,
+    .unit-card input,
+    .unit-card select,
+    .unit-card textarea {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0b1120;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .tool-box textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .tool-box input:focus,
+    .tool-box textarea:focus,
+    .tool-box select:focus,
+    .unit-card input:focus {
+      border-color: #3b82f6;
+    }
+
+    .buttons {
+      margin-top: 22px;
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
@@ -197,90 +300,11 @@
       border: 1px solid #b91c1c;
     }
 
-    .section {
-      max-width: 1240px;
-      margin: auto;
-      padding: 72px 20px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 18px;
-      margin-top: 24px;
-    }
-
-    .card,
-    .panel,
-    .dashboard-card,
-    .summary-card,
-    .unit-card {
-      background: #111c34;
-      border: 1px solid #23324b;
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    }
-
-    .card-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #f8fafc;
-    }
-
-    .card-text {
-      color: #cbd5e1;
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    .tool-box {
-      background: #111c34;
-      border: 1px solid #23324b;
-      border-radius: 18px;
-      padding: 28px;
-      margin-top: 26px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-    }
-
-    .tool-box label {
-      display: block;
-      margin-top: 14px;
-      margin-bottom: 7px;
-      color: #e2e8f0;
-      font-weight: 600;
-    }
-
-    .tool-box input,
-    .tool-box textarea,
-    .tool-box select {
-      width: 100%;
-      padding: 13px 14px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      background: #0b1120;
-      color: white;
-      font-size: 15px;
-      outline: none;
-      font-family: inherit;
-    }
-
-    .tool-box textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    .tool-box input:focus,
-    .tool-box textarea:focus,
-    .tool-box select:focus {
-      border-color: #3b82f6;
-    }
-
-    .result {
+    .result,
+    .brief-box {
       margin-top: 18px;
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 14px;
       background: #0b1120;
       border: 1px solid #334155;
       line-height: 1.8;
@@ -295,35 +319,29 @@
       line-height: 1.6;
     }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .full-width {
-      grid-column: 1 / -1;
-    }
-
-    .dashboard-grid,
-    .summary-grid,
-    .units-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-top: 24px;
-    }
-
-    .dashboard-label {
+    .dashboard-label,
+    .benchmark-label {
       color: #94a3b8;
       font-size: 13px;
       margin-bottom: 10px;
     }
 
     .dashboard-value {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 700;
       color: #f8fafc;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 15px;
     }
 
     .status-chip,
@@ -331,7 +349,9 @@
     .rec-chip,
     .constraint-chip,
     .unit-chip,
-    .selected-chip {
+    .selected-chip,
+    .confidence-chip,
+    .benchmark-chip {
       display: inline-block;
       padding: 8px 14px;
       border-radius: 999px;
@@ -343,12 +363,38 @@
       border: 1px solid #334155;
     }
 
+    .green-chip {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+
+    .yellow-chip {
+      background: rgba(234, 179, 8, 0.15);
+      color: #fde68a;
+      border-color: rgba(234, 179, 8, 0.35);
+    }
+
+    .red-chip {
+      background: rgba(239, 68, 68, 0.15);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .blue-chip {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+
     .status-green,
     .risk-low,
     .rec-strong,
     .constraint-good,
     .unit-healthy,
-    .selected-active {
+    .selected-active,
+    .confidence-high,
+    .benchmark-healthy {
       background: rgba(34, 197, 94, 0.15);
       color: #86efac;
       border-color: rgba(34, 197, 94, 0.35);
@@ -358,7 +404,9 @@
     .risk-moderate,
     .rec-caution,
     .constraint-warning,
-    .unit-watch {
+    .unit-watch,
+    .confidence-moderate,
+    .benchmark-warning {
       background: rgba(234, 179, 8, 0.15);
       color: #fde68a;
       border-color: rgba(234, 179, 8, 0.35);
@@ -369,7 +417,9 @@
     .rec-reject,
     .constraint-breach,
     .unit-stressed,
-    .unit-critical {
+    .unit-critical,
+    .confidence-low,
+    .benchmark-critical {
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
       border-color: rgba(239, 68, 68, 0.35);
@@ -386,6 +436,32 @@
       font-weight: 700;
     }
 
+    .unit-grid-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .metric-line {
+      color: #cbd5e1;
+      font-size: 14px;
+      line-height: 1.7;
+      margin-top: 6px;
+    }
+
+    .winner-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .winner-metric {
+      color: #e2e8f0;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
     .table-wrap {
       margin-top: 24px;
       overflow-x: auto;
@@ -397,7 +473,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 1380px;
+      min-width: 1450px;
     }
 
     th,
@@ -420,70 +496,64 @@
       border-bottom: none;
     }
 
-    .winner-name {
-      font-size: 20px;
-      font-weight: 700;
-      color: #93c5fd;
-      margin-bottom: 8px;
+    .chart-rows {
+      display: grid;
+      gap: 14px;
+      margin-top: 10px;
     }
 
-    .winner-metric {
-      color: #e2e8f0;
-      line-height: 1.7;
+    .chart-row-label {
       font-size: 14px;
+      color: #cbd5e1;
+      margin-bottom: 4px;
     }
 
-    .decision-center,
-    .brief-panel {
-      margin-top: 26px;
-      background: linear-gradient(180deg, #111c34, #0f172a);
-      border: 1px solid #23324b;
-      border-radius: 18px;
-      padding: 24px;
+    .bar-track {
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      background: #0b1120;
+      border: 1px solid #334155;
+      overflow: hidden;
+      position: relative;
     }
 
-    .decision-center h3,
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .bar-predicted {
+      background: #3b82f6;
+    }
+
+    .bar-actual {
+      background: #22c55e;
+    }
+
+    .bar-variance {
+      background: #f59e0b;
+    }
+
+    .bar-benchmark {
+      background: #a855f7;
+    }
+
+    .bar-caption {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .insight-card h3,
+    .chart-card h3,
+    .benchmark-card h3 {
+      margin-bottom: 10px;
+    }
+
     .brief-panel h3 {
       margin-top: 0;
       font-size: 24px;
-    }
-
-    .decision-center p,
-    .decision-center li,
-    .brief-panel p,
-    .brief-panel li {
-      color: #cbd5e1;
-      line-height: 1.7;
-    }
-
-    .decision-center ul,
-    .brief-panel ul {
-      padding-left: 20px;
-    }
-
-    .unit-grid-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .unit-card h3 {
-      margin: 0 0 10px;
-    }
-
-    .metric-line {
-      color: #cbd5e1;
-      font-size: 14px;
-      line-height: 1.7;
-      margin-top: 6px;
-    }
-
-    .brief-box {
-      background: #0b1120;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 16px;
-      margin-top: 16px;
     }
 
     .footer {
@@ -502,7 +572,7 @@
       }
 
       h1 {
-        font-size: 46px;
+        font-size: 44px;
       }
 
       .subheading {
@@ -517,7 +587,7 @@
       }
 
       h1 {
-        font-size: 38px;
+        font-size: 36px;
       }
 
       .container,
@@ -530,10 +600,13 @@
     @media print {
       .nav,
       .hero,
-      #contact,
       .buttons,
+      #contact,
       .footer,
-      #capabilities {
+      #capabilities,
+      #visual-dashboard,
+      #confidence-insight,
+      #benchmark-center {
         display: none !important;
       }
 
@@ -543,21 +616,20 @@
       }
 
       .section,
-      .brief-panel,
       .tool-box,
-      .card,
+      .unit-card,
       .summary-card,
       .dashboard-card,
-      .unit-card {
+      .brief-panel,
+      .brief-box,
+      .result,
+      .chart-card,
+      .benchmark-card,
+      .insight-card {
         box-shadow: none !important;
         border: 1px solid #ccc !important;
         background: white !important;
         color: black !important;
-      }
-
-      .brief-panel,
-      #decision-brief {
-        display: block !important;
       }
     }
   </style>
@@ -573,8 +645,11 @@
         <a href="#constraints">Constraints</a>
         <a href="#scenario-lab">Scenario Lab</a>
         <a href="#decision-universe">Universe</a>
+        <a href="#outcome-capture">Actuals</a>
+        <a href="#visual-dashboard">Visuals</a>
+        <a href="#benchmark-center">Benchmarks</a>
+        <a href="#confidence-insight">Insights</a>
         <a href="#decision-brief">Brief</a>
-        <a href="#contact">Contact</a>
       </div>
     </div>
   </div>
@@ -583,17 +658,17 @@
     <div class="container">
       <div class="hero-grid">
         <div>
-          <p class="subheading">Executive Intelligence Suite v1</p>
-          <h1>Simulate the operation, compare futures, and issue a decision memo.</h1>
+          <p class="subheading">Learning & Intelligence Suite v1</p>
+          <h1>Predict the operation, record reality, and learn from the gap.</h1>
           <p>
-            DeepNexivra now includes a multi-unit operational twin, constraint-aware scenario
-            simulation, upgraded decision memory, executive recommendation logic, and a printable
-            decision brief for real-world action.
+            DeepNexivra now closes the loop between forecast and execution. Build the operational twin,
+            compare futures, choose a path, record actual results, analyze variance, benchmark health,
+            score confidence, and generate an executive-grade intelligence brief.
           </p>
 
           <div class="buttons">
             <a href="#operational-twin" class="btn primary">Build Operational Twin</a>
-            <a href="#decision-universe" class="btn secondary">Open Decision Universe</a>
+            <a href="#outcome-capture" class="btn secondary">Record Actual Outcomes</a>
             <a href="#decision-brief" class="btn ghost">Generate Brief</a>
           </div>
         </div>
@@ -602,20 +677,20 @@
           <h3>What this release adds</h3>
           <div class="mini-metrics">
             <div class="mini-card">
-              <div class="label">Twin</div>
-              <div class="value">4 Units</div>
+              <div class="label">Tracking</div>
+              <div class="value">Actual vs Predicted</div>
             </div>
             <div class="mini-card">
-              <div class="label">Memory</div>
-              <div class="value">v2</div>
+              <div class="label">Visuals</div>
+              <div class="value">Charts</div>
             </div>
             <div class="mini-card">
-              <div class="label">Recommendations</div>
-              <div class="value">v2</div>
+              <div class="label">Benchmarks</div>
+              <div class="value">Context Layer</div>
             </div>
             <div class="mini-card">
-              <div class="label">Output</div>
-              <div class="value">Decision Brief</div>
+              <div class="label">Confidence</div>
+              <div class="value">Scored</div>
             </div>
           </div>
         </div>
@@ -624,29 +699,28 @@
   </div>
 
   <div class="section" id="capabilities">
-    <h2>Executive Intelligence Suite v1</h2>
+    <h2>Learning & Intelligence Suite v1</h2>
     <p>
-      This release transforms DeepNexivra into a constraint-aware operational twin prototype.
-      Model multiple units, simulate local or global changes, compare saved futures, and produce
-      an executive-ready recommendation summary.
+      This release upgrades DeepNexivra from a recommendation system into a learning operational intelligence platform.
+      It now supports the full loop: model, simulate, choose, execute, compare, benchmark, and learn.
     </p>
 
     <div class="cards">
       <div class="card">
-        <div class="card-title">Operational Twin v1</div>
-        <div class="card-text">Model up to 4 units with staff, workload, hours, productivity, and wage — then aggregate the full system.</div>
+        <div class="card-title">Actual vs Predicted Tracking</div>
+        <div class="card-text">Record what really happened after choosing a scenario and compare the outcome against the forecast.</div>
       </div>
       <div class="card">
-        <div class="card-title">Decision Memory v2</div>
-        <div class="card-text">Save scenarios, compare them side by side, mark a preferred option, and remove weak paths.</div>
+        <div class="card-title">Visual Comparison Layer</div>
+        <div class="card-text">See forecast vs reality, scenario ranking, unit variance, and benchmark position in visual form.</div>
       </div>
       <div class="card">
-        <div class="card-title">Recommendation Center v2</div>
-        <div class="card-text">See Best Overall, Cheapest Viable, Safest Viable, and Rejected Options with explanation logic.</div>
+        <div class="card-title">Benchmark Engine</div>
+        <div class="card-text">Judge utilization, staffing fit, cost pressure, and resilience against target operating ranges.</div>
       </div>
       <div class="card">
-        <div class="card-title">Exportable Decision Brief</div>
-        <div class="card-text">Generate a print-ready decision memo that can be saved as PDF for leadership use.</div>
+        <div class="card-title">Confidence & AI-Style Insight</div>
+        <div class="card-text">Generate structured intelligence narratives and confidence scoring around the chosen path.</div>
       </div>
     </div>
   </div>
@@ -654,7 +728,7 @@
   <div class="section" id="case-setup">
     <h2>Case Setup</h2>
     <p>
-      Define the operational case so DeepNexivra can frame the recommendation in a more executive-ready way.
+      Define the operating case so every recommendation, outcome, and decision brief is grounded in a clear business context.
     </p>
 
     <div class="tool-box">
@@ -678,16 +752,16 @@
 
         <div class="full-width">
           <label for="decisionObjective">Decision Objective</label>
-          <textarea id="decisionObjective" placeholder="Example: Evaluate whether productivity improvement is better than staff reduction under current budget pressure"></textarea>
+          <textarea id="decisionObjective" placeholder="Example: Decide whether targeted productivity improvement is superior to staff reduction under budget pressure"></textarea>
         </div>
-      </div>
-
-      <div class="result" id="caseSummaryBox">
-        Your case summary will appear here and feed into the Decision Brief.
       </div>
 
       <div class="buttons">
         <button class="primary" onclick="renderCaseSummary()">Update Case Summary</button>
+      </div>
+
+      <div class="result" id="caseSummaryBox">
+        Your case summary will appear here.
       </div>
     </div>
   </div>
@@ -695,7 +769,7 @@
   <div class="section" id="operational-twin">
     <h2>Operational Twin v1</h2>
     <p>
-      Build the operation across up to 4 units. Each unit is modeled independently, then aggregated into one system-wide operating view.
+      Build up to 4 operating units. Each unit is modeled independently, then rolled into one system-wide operational state.
     </p>
 
     <div class="tool-box">
@@ -705,7 +779,7 @@
           <div class="unit-grid-inner">
             <div>
               <label for="unit1Name">Unit Name</label>
-              <input type="text" id="unit1Name" placeholder="Example: Accessioning" />
+              <input type="text" id="unit1Name" placeholder="Accessioning" />
             </div>
             <div>
               <label for="unit1Staff">Available Staff</label>
@@ -736,7 +810,7 @@
           <div class="unit-grid-inner">
             <div>
               <label for="unit2Name">Unit Name</label>
-              <input type="text" id="unit2Name" placeholder="Example: Processing" />
+              <input type="text" id="unit2Name" placeholder="Processing" />
             </div>
             <div>
               <label for="unit2Staff">Available Staff</label>
@@ -767,7 +841,7 @@
           <div class="unit-grid-inner">
             <div>
               <label for="unit3Name">Unit Name</label>
-              <input type="text" id="unit3Name" placeholder="Example: Logistics" />
+              <input type="text" id="unit3Name" placeholder="Logistics" />
             </div>
             <div>
               <label for="unit3Staff">Available Staff</label>
@@ -798,7 +872,7 @@
           <div class="unit-grid-inner">
             <div>
               <label for="unit4Name">Unit Name</label>
-              <input type="text" id="unit4Name" placeholder="Example: Support" />
+              <input type="text" id="unit4Name" placeholder="Support" />
             </div>
             <div>
               <label for="unit4Staff">Available Staff</label>
@@ -830,7 +904,7 @@
         <button class="ghost" onclick="loadTwinDemoData()">Load Demo Twin</button>
       </div>
 
-      <div class="dashboard-grid" id="systemTotalsGrid">
+      <div class="dashboard-grid">
         <div class="dashboard-card">
           <div class="dashboard-label">Total Available Staff</div>
           <div class="dashboard-value" id="systemTotalStaff">--</div>
@@ -860,17 +934,13 @@
       <div class="result" id="systemSummaryBox">
         System-level summary will appear here after twin calculation.
       </div>
-
-      <div class="footer-note">
-        Units with zero or blank values are ignored. Use demo mode for a faster live experience.
-      </div>
     </div>
   </div>
 
   <div class="section" id="constraints">
     <h2>Constraint Panel</h2>
     <p>
-      Set the limits that define a viable decision. Hard constraints determine validity. Soft constraints add warning pressure and influence scenario ranking.
+      Define the limits that determine whether a scenario is merely attractive or actually viable.
     </p>
 
     <div class="tool-box">
@@ -932,7 +1002,8 @@
   <div class="section" id="scenario-lab">
     <h2>Scenario Lab</h2>
     <p>
-      Run a scenario either across the whole operation or against one selected unit. DeepNexivra recalculates unit outputs, system totals, constraint fit, and recommendation class.
+      Run a scenario globally or against one chosen unit. The system recalculates projected unit outputs,
+      projected system totals, constraint fit, and the recommendation class.
     </p>
 
     <div class="tool-box">
@@ -966,17 +1037,12 @@
 
         <div id="scenarioTargetWrap" style="display:none;">
           <label for="scenarioTargetUnit">Target Unit</label>
-          <select id="scenarioTargetUnit">
-            <option value="0">Unit 1</option>
-            <option value="1">Unit 2</option>
-            <option value="2">Unit 3</option>
-            <option value="3">Unit 4</option>
-          </select>
+          <select id="scenarioTargetUnit"></select>
         </div>
 
         <div class="full-width">
           <label for="scenarioNote">Scenario Note (optional)</label>
-          <textarea id="scenarioNote" placeholder="Example: Testing productivity improvement in Processing only during demand pressure"></textarea>
+          <textarea id="scenarioNote" placeholder="Example: Testing productivity improvement in Processing only while keeping the rest of the operation unchanged"></textarea>
         </div>
       </div>
 
@@ -1005,7 +1071,7 @@
       </div>
 
       <div class="result" id="scenarioResult">
-        Scenario results, unit impact, and recommendation logic will appear here.
+        Scenario results and recommendation logic will appear here.
       </div>
 
       <div class="result" id="scenarioUnitImpactBox">
@@ -1017,7 +1083,7 @@
   <div class="section" id="decision-universe">
     <h2>Decision Universe</h2>
     <p>
-      Save tested futures, compare them under the same constraint profile, mark a preferred scenario, and let DeepNexivra identify the strongest path.
+      Save scenarios, compare them side by side, mark a preferred path, and let DeepNexivra rank the strongest options.
     </p>
 
     <div class="summary-grid">
@@ -1042,7 +1108,7 @@
       <div class="summary-card" id="selectedScenarioCard">
         <h3>Selected Scenario</h3>
         <div class="winner-name">No scenario selected</div>
-        <div class="winner-metric">You can mark one saved scenario as your preferred path.</div>
+        <div class="winner-metric">Mark one saved scenario as your preferred path.</div>
       </div>
     </div>
 
@@ -1076,18 +1142,119 @@
       </table>
     </div>
 
-    <div class="decision-center" id="recommendationCenter">
-      <h3>Recommendation Center v2</h3>
-      <p>
-        Save at least one scenario to generate a comparison-driven recommendation stack.
-      </p>
+    <div class="brief-box" id="recommendationCenter">
+      Recommendation Center will appear here after saving scenarios.
+    </div>
+  </div>
+
+  <div class="section" id="outcome-capture">
+    <h2>Outcome Capture Center</h2>
+    <p>
+      Record what actually happened for the selected scenario. This powers variance analysis, benchmarks, confidence scoring, and the learning memo.
+    </p>
+
+    <div class="tool-box">
+      <div id="outcomeCaptureIntro" class="result">
+        Select a saved scenario in Decision Universe to record actual outcomes.
+      </div>
+
+      <div id="outcomeCaptureFormArea"></div>
+
+      <div class="buttons" id="outcomeButtons" style="display:none;">
+        <button class="primary" onclick="saveActualOutcomes()">Save Actual Outcomes</button>
+        <button class="ghost" onclick="populateProjectedAsActual()">Load Projected Values</button>
+        <button class="danger" onclick="clearActualOutcomeForSelected()">Clear Actual Outcome</button>
+      </div>
+
+      <div class="result" id="outcomeCaptureResult">
+        Actual outcome result will appear here.
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="visual-dashboard">
+    <h2>Visual Intelligence Dashboard</h2>
+    <p>
+      See the decision universe, predicted vs actual performance, and variance by unit in visual form.
+    </p>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Scenario Score Comparison</h3>
+        <div id="scenarioScoreChart" class="chart-rows">
+          No scenarios saved yet.
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Predicted vs Actual Cost</h3>
+        <div id="costComparisonChart" class="chart-rows">
+          Save a selected scenario and actual outcome to generate this chart.
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Predicted vs Actual Utilization</h3>
+        <div id="utilizationComparisonChart" class="chart-rows">
+          Save a selected scenario and actual outcome to generate this chart.
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Unit Variance Chart</h3>
+        <div id="unitVarianceChart" class="chart-rows">
+          Save a selected scenario and actual outcome to generate this chart.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="benchmark-center">
+    <h2>Benchmark Center</h2>
+    <p>
+      Compare actual outcomes against target ranges for utilization, staffing fit, labor cost pressure, and resilience.
+    </p>
+
+    <div class="benchmark-grid" id="benchmarkGrid">
+      <div class="benchmark-card">
+        Benchmarks will appear here after saving actual outcomes.
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="confidence-insight">
+    <h2>Confidence & Intelligence Center</h2>
+    <p>
+      DeepNexivra evaluates recommendation confidence and generates structured, AI-style intelligence narratives based on forecast quality and actual outcomes.
+    </p>
+
+    <div class="insight-grid">
+      <div class="insight-card" id="confidenceCard">
+        <h3>Confidence Score</h3>
+        <p>Confidence scoring will appear here.</p>
+      </div>
+
+      <div class="insight-card" id="recommendationNarrativeCard">
+        <h3>Recommendation Narrative</h3>
+        <p>Recommendation narrative will appear here.</p>
+      </div>
+
+      <div class="insight-card" id="outcomeNarrativeCard">
+        <h3>Outcome Narrative</h3>
+        <p>Outcome narrative will appear here after saving actual outcomes.</p>
+      </div>
+
+      <div class="insight-card" id="learningNarrativeCard">
+        <h3>Learning Narrative</h3>
+        <p>Learning narrative will appear here after variance and confidence are calculated.</p>
+      </div>
     </div>
   </div>
 
   <div class="section" id="decision-brief">
     <h2>Decision Brief</h2>
     <p>
-      Generate an executive-ready summary of the current case, baseline, constraints, decision universe, and recommended path.
+      Generate an executive-ready summary of the case, operational twin, constraints, decision universe, actual outcomes, benchmarks, confidence, and learning signals.
     </p>
 
     <div class="brief-panel">
@@ -1105,7 +1272,7 @@
   <div class="section" id="contact">
     <h2>Request an Optimization Review</h2>
     <p>
-      Share your challenge directly below. This prepares a structured request and opens your email client with the details pre-filled.
+      Share your challenge directly below. This opens your email client with the request pre-filled.
     </p>
 
     <div class="tool-box">
@@ -1148,13 +1315,15 @@
   </div>
 
   <div class="footer">
-    © 2026 DeepNexivra. Executive Intelligence Suite v1.
+    © 2026 DeepNexivra. Learning & Intelligence Suite v1.
   </div>
 
   <script>
-    const STORAGE_SCENARIOS = "deepnexivra_exec_suite_scenarios_v1";
-    const STORAGE_CONSTRAINTS = "deepnexivra_exec_suite_constraints_v1";
-    const STORAGE_SELECTED = "deepnexivra_exec_suite_selected_v1";
+    const STORAGE_TWIN = "deepnexivra_lis_twin_v1";
+    const STORAGE_CONSTRAINTS = "deepnexivra_lis_constraints_v1";
+    const STORAGE_SCENARIOS = "deepnexivra_lis_scenarios_v1";
+    const STORAGE_SELECTED = "deepnexivra_lis_selected_scenario_v1";
+    const STORAGE_ACTUALS = "deepnexivra_lis_actuals_v1";
 
     const DEFAULT_CONSTRAINTS = {
       maxLaborBudget: 25000,
@@ -1174,79 +1343,63 @@
       return Math.max(min, Math.min(max, value));
     }
 
-    function money(value) {
+    function fmtMoney(value) {
       return "$" + Number(value).toFixed(2);
     }
 
-    function percent(value) {
+    function fmtPercent(value) {
       return Number(value).toFixed(2) + "%";
     }
 
-    function setStatusChip(elementId, text, type) {
-      const el = document.getElementById(elementId);
-      el.className = "status-chip";
-      el.innerText = text;
-
-      if (type === "green") el.classList.add("status-green");
-      if (type === "yellow") el.classList.add("status-yellow");
-      if (type === "red") el.classList.add("status-red");
+    function safeNumber(value) {
+      return isNaN(value) ? 0 : Number(value);
     }
 
-    function getRecommendationCss(label) {
-      if (label === "Strongly Recommend") return "rec-chip rec-strong";
-      if (label === "Recommend") return "rec-chip rec-good";
-      if (label === "Consider with Caution") return "rec-chip rec-caution";
-      return "rec-chip rec-reject";
-    }
-
-    function getRiskCss(label) {
-      if (label === "Low Risk") return "risk-chip risk-low";
-      if (label === "Moderate Risk") return "risk-chip risk-moderate";
-      return "risk-chip risk-high";
-    }
-
-    function getConstraintCss(summary) {
-      if (summary === "Compliant") return "constraint-chip constraint-good";
-      if (summary === "Hard Constraint Breach") return "constraint-chip constraint-breach";
-      return "constraint-chip constraint-warning";
-    }
-
-    function getUnitStatusCss(status) {
-      if (status === "Healthy") return "unit-chip unit-healthy";
-      if (status === "Watch") return "unit-chip unit-watch";
-      if (status === "Stressed") return "unit-chip unit-stressed";
-      return "unit-chip unit-critical";
+    function byId(id) {
+      return document.getElementById(id);
     }
 
     function renderCaseSummary() {
-      const caseName = document.getElementById("caseName").value.trim() || "Unnamed Operational Case";
-      const operationType = document.getElementById("operationType").value;
-      const decisionObjective = document.getElementById("decisionObjective").value.trim() || "No decision objective provided yet.";
-
-      document.getElementById("caseSummaryBox").innerHTML =
-        "<strong>Case Name:</strong> " + caseName + "<br>" +
-        "<strong>Operation Type:</strong> " + operationType + "<br>" +
-        "<strong>Decision Objective:</strong> " + decisionObjective;
+      const meta = getCaseMeta();
+      byId("caseSummaryBox").innerHTML =
+        "<strong>Case Name:</strong> " + meta.caseName + "<br>" +
+        "<strong>Operation Type:</strong> " + meta.operationType + "<br>" +
+        "<strong>Decision Objective:</strong> " + meta.decisionObjective;
     }
 
     function getCaseMeta() {
       return {
-        caseName: document.getElementById("caseName").value.trim() || "Unnamed Operational Case",
-        operationType: document.getElementById("operationType").value,
-        decisionObjective: document.getElementById("decisionObjective").value.trim() || "No decision objective provided yet."
+        caseName: byId("caseName").value.trim() || "Unnamed Operational Case",
+        operationType: byId("operationType").value,
+        decisionObjective: byId("decisionObjective").value.trim() || "No decision objective provided yet."
       };
+    }
+
+    function setCaseMeta(meta) {
+      byId("caseName").value = meta.caseName || "";
+      byId("operationType").value = meta.operationType || "custom";
+      byId("decisionObjective").value = meta.decisionObjective || "";
     }
 
     function getUnitInput(index) {
       return {
-        index: index,
-        name: document.getElementById("unit" + index + "Name").value.trim(),
-        staff: parseFloat(document.getElementById("unit" + index + "Staff").value),
-        workload: parseFloat(document.getElementById("unit" + index + "Workload").value),
-        shift: parseFloat(document.getElementById("unit" + index + "Shift").value),
-        productivity: parseFloat(document.getElementById("unit" + index + "Productivity").value),
-        wage: parseFloat(document.getElementById("unit" + index + "Wage").value)
+        index,
+        name: byId("unit" + index + "Name").value.trim(),
+        staff: parseFloat(byId("unit" + index + "Staff").value),
+        workload: parseFloat(byId("unit" + index + "Workload").value),
+        shift: parseFloat(byId("unit" + index + "Shift").value),
+        productivity: parseFloat(byId("unit" + index + "Productivity").value),
+        wage: parseFloat(byId("unit" + index + "Wage").value)
       };
+    }
+
+    function setUnitInput(unit) {
+      byId("unit" + unit.index + "Name").value = unit.name || "";
+      byId("unit" + unit.index + "Staff").value = unit.staff || "";
+      byId("unit" + unit.index + "Workload").value = unit.workload || "";
+      byId("unit" + unit.index + "Shift").value = unit.shift || "";
+      byId("unit" + unit.index + "Productivity").value = unit.productivity || "";
+      byId("unit" + unit.index + "Wage").value = unit.wage || "";
     }
 
     function getAllUnitInputs() {
@@ -1269,29 +1422,41 @@
       );
     }
 
+    function classifyUnitStatus(utilization, gap) {
+      if (utilization > 100 || gap < 0) return "Critical";
+      if (utilization > 90 || gap <= 1) return "Stressed";
+      if (utilization > 85 || utilization < 70) return "Watch";
+      return "Healthy";
+    }
+
+    function classifySystemStatus(utilization, gap) {
+      if (utilization > 100 || gap < 0) return "Non-Viable";
+      if (utilization > 92) return "High Pressure";
+      if (utilization > 85 || gap <= 2) return "Caution";
+      return "Stable";
+    }
+
+    function unitChipClass(status) {
+      if (status === "Healthy") return "unit-chip unit-healthy";
+      if (status === "Watch") return "unit-chip unit-watch";
+      if (status === "Stressed") return "unit-chip unit-stressed";
+      return "unit-chip unit-critical";
+    }
+
     function deriveUnit(unit) {
-      const requiredStaffRaw = unit.workload / (unit.shift * unit.productivity);
-      const requiredStaff = Math.ceil(requiredStaffRaw);
+      const requiredStaff = Math.ceil(unit.workload / (unit.shift * unit.productivity));
       const utilization = (requiredStaff / unit.staff) * 100;
       const laborCost = unit.staff * unit.wage * unit.shift;
       const staffGap = unit.staff - requiredStaff;
-
-      let unitStatus = "Healthy";
-      if (utilization > 100 || staffGap < 0) {
-        unitStatus = "Critical";
-      } else if (utilization > 90 || staffGap <= 1) {
-        unitStatus = "Stressed";
-      } else if (utilization > 85 || utilization < 70) {
-        unitStatus = "Watch";
-      }
+      const unitStatus = classifyUnitStatus(utilization, staffGap);
 
       return {
         ...unit,
-        requiredStaff: requiredStaff,
-        utilization: utilization,
-        laborCost: laborCost,
-        staffGap: staffGap,
-        unitStatus: unitStatus
+        requiredStaff,
+        utilization,
+        laborCost,
+        staffGap,
+        unitStatus
       };
     }
 
@@ -1301,15 +1466,7 @@
       const totalLaborCost = units.reduce((sum, u) => sum + u.laborCost, 0);
       const systemUtilization = totalAvailableStaff > 0 ? (totalRequiredStaff / totalAvailableStaff) * 100 : 0;
       const systemGap = totalAvailableStaff - totalRequiredStaff;
-
-      let systemStatus = "Stable";
-      if (systemUtilization > 100 || systemGap < 0) {
-        systemStatus = "Non-Viable";
-      } else if (systemUtilization > 92) {
-        systemStatus = "High Pressure";
-      } else if (systemUtilization > 85 || systemGap <= 2) {
-        systemStatus = "Caution";
-      }
+      const systemStatus = classifySystemStatus(systemUtilization, systemGap);
 
       return {
         totalAvailableStaff,
@@ -1321,12 +1478,33 @@
       };
     }
 
+    function persistTwinState() {
+      if (twinState) {
+        localStorage.setItem(STORAGE_TWIN, JSON.stringify(twinState));
+      }
+    }
+
+    function loadTwinState() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_TWIN));
+        if (!stored) return;
+
+        twinState = stored;
+        if (stored.caseMeta) setCaseMeta(stored.caseMeta);
+        if (stored.units && stored.units.length) {
+          stored.units.forEach(setUnitInput);
+          renderTwinOutputs(stored);
+          updateScenarioTargetOptions();
+        }
+      } catch (e) {}
+    }
+
     function calculateOperationalTwin() {
       const rawUnits = getAllUnitInputs();
       const activeUnits = rawUnits.filter(isUnitActive).map(deriveUnit);
 
       if (!activeUnits.length) {
-        document.getElementById("systemSummaryBox").innerHTML = "Please complete at least one full unit with valid positive values.";
+        byId("systemSummaryBox").innerHTML = "Please complete at least one full unit with valid positive values.";
         return;
       }
 
@@ -1337,14 +1515,15 @@
       };
 
       renderTwinOutputs(twinState);
+      persistTwinState();
       renderCaseSummary();
-      renderDecisionBrief();
       updateScenarioTargetOptions();
+      renderDecisionBrief();
     }
 
     function renderTwinOutputs(state) {
       [1, 2, 3, 4].forEach(function (idx) {
-        const output = document.getElementById("unit" + idx + "Output");
+        const output = byId("unit" + idx + "Output");
         const unit = state.units.find(u => u.index === idx);
 
         if (!unit) {
@@ -1354,71 +1533,60 @@
 
         output.innerHTML =
           "<strong>" + unit.name + "</strong><br>" +
-          "<span class='" + getUnitStatusCss(unit.unitStatus) + "'>" + unit.unitStatus + "</span><br><br>" +
+          "<span class='" + unitChipClass(unit.unitStatus) + "'>" + unit.unitStatus + "</span><br><br>" +
           "<strong>Required Staff:</strong> " + unit.requiredStaff + "<br>" +
-          "<strong>Utilization:</strong> " + percent(unit.utilization) + "<br>" +
-          "<strong>Labor Cost:</strong> " + money(unit.laborCost) + "<br>" +
+          "<strong>Utilization:</strong> " + fmtPercent(unit.utilization) + "<br>" +
+          "<strong>Labor Cost:</strong> " + fmtMoney(unit.laborCost) + "<br>" +
           "<strong>Staff Gap / Surplus:</strong> " + unit.staffGap;
       });
 
-      document.getElementById("systemTotalStaff").innerText = state.system.totalAvailableStaff;
-      document.getElementById("systemRequiredStaff").innerText = state.system.totalRequiredStaff;
-      document.getElementById("systemUtilization").innerText = percent(state.system.systemUtilization);
-      document.getElementById("systemLaborCost").innerText = money(state.system.totalLaborCost);
-      document.getElementById("systemStaffGap").innerText = state.system.systemGap;
+      byId("systemTotalStaff").innerText = state.system.totalAvailableStaff;
+      byId("systemRequiredStaff").innerText = state.system.totalRequiredStaff;
+      byId("systemUtilization").innerText = fmtPercent(state.system.systemUtilization);
+      byId("systemLaborCost").innerText = fmtMoney(state.system.totalLaborCost);
+      byId("systemStaffGap").innerText = state.system.systemGap;
 
-      let statusType = "green";
-      if (state.system.systemStatus === "Caution") statusType = "yellow";
-      if (state.system.systemStatus === "High Pressure" || state.system.systemStatus === "Non-Viable") statusType = "red";
-      setStatusChip("systemStatus", state.system.systemStatus, statusType);
+      let cls = "status-green";
+      if (state.system.systemStatus === "Caution") cls = "status-yellow";
+      if (state.system.systemStatus === "High Pressure" || state.system.systemStatus === "Non-Viable") cls = "status-red";
 
-      document.getElementById("systemSummaryBox").innerHTML =
+      const status = byId("systemStatus");
+      status.className = "status-chip " + cls;
+      status.innerText = state.system.systemStatus;
+
+      byId("systemSummaryBox").innerHTML =
         "<strong>System Summary:</strong><br>" +
-        "The current operational twin models <strong>" + state.units.length + "</strong> active unit(s) with a total labor cost of <strong>" + money(state.system.totalLaborCost) + "</strong>. " +
-        "System utilization is <strong>" + percent(state.system.systemUtilization) + "</strong> with a total staffing gap / surplus of <strong>" + state.system.systemGap + "</strong>.";
+        "The operational twin models <strong>" + state.units.length + "</strong> active unit(s) with a total labor cost of <strong>" +
+        fmtMoney(state.system.totalLaborCost) + "</strong>. System utilization is <strong>" +
+        fmtPercent(state.system.systemUtilization) + "</strong> with a staffing gap / surplus of <strong>" +
+        state.system.systemGap + "</strong>.";
     }
 
     function loadTwinDemoData() {
-      document.getElementById("caseName").value = "Lab Ops Weekly Review";
-      document.getElementById("operationType").value = "lab";
-      document.getElementById("decisionObjective").value = "Compare global and single-unit interventions under current labor pressure and decide the highest-ROI operational path.";
+      setCaseMeta({
+        caseName: "Lab Ops Weekly Review",
+        operationType: "lab",
+        decisionObjective: "Compare global vs single-unit interventions under labor pressure and determine the strongest operational path."
+      });
 
-      document.getElementById("unit1Name").value = "Accessioning";
-      document.getElementById("unit1Staff").value = 24;
-      document.getElementById("unit1Workload").value = 1350;
-      document.getElementById("unit1Shift").value = 7.5;
-      document.getElementById("unit1Productivity").value = 8;
-      document.getElementById("unit1Wage").value = 24.5;
+      const demoUnits = [
+        { index: 1, name: "Accessioning", staff: 24, workload: 1350, shift: 7.5, productivity: 8, wage: 24.5 },
+        { index: 2, name: "Processing", staff: 36, workload: 2100, shift: 7.5, productivity: 8, wage: 27.5 },
+        { index: 3, name: "Logistics", staff: 18, workload: 900, shift: 7.5, productivity: 7, wage: 23.5 },
+        { index: 4, name: "Support", staff: 14, workload: 520, shift: 7.5, productivity: 5, wage: 25.0 }
+      ];
 
-      document.getElementById("unit2Name").value = "Processing";
-      document.getElementById("unit2Staff").value = 36;
-      document.getElementById("unit2Workload").value = 2100;
-      document.getElementById("unit2Shift").value = 7.5;
-      document.getElementById("unit2Productivity").value = 8;
-      document.getElementById("unit2Wage").value = 27.5;
-
-      document.getElementById("unit3Name").value = "Logistics";
-      document.getElementById("unit3Staff").value = 18;
-      document.getElementById("unit3Workload").value = 900;
-      document.getElementById("unit3Shift").value = 7.5;
-      document.getElementById("unit3Productivity").value = 7;
-      document.getElementById("unit3Wage").value = 23.5;
-
-      document.getElementById("unit4Name").value = "Support";
-      document.getElementById("unit4Staff").value = 14;
-      document.getElementById("unit4Workload").value = 520;
-      document.getElementById("unit4Shift").value = 7.5;
-      document.getElementById("unit4Productivity").value = 5;
-      document.getElementById("unit4Wage").value = 25.0;
-
-      document.getElementById("maxLaborBudget").value = 21000;
-      document.getElementById("minimumStaffingFloor").value = 85;
-      document.getElementById("preferredUtilizationMin").value = 75;
-      document.getElementById("preferredUtilizationMax").value = 85;
-      document.getElementById("maximumUtilization").value = 95;
-      document.getElementById("shortageTolerancePercent").value = 0;
-      document.getElementById("maxCostIncreasePercent").value = 10;
-      document.getElementById("minimumSavingsTargetPercent").value = 5;
+      demoUnits.forEach(setUnitInput);
+      setConstraintInputs({
+        maxLaborBudget: 21000,
+        minimumStaffingFloor: 85,
+        preferredUtilizationMin: 75,
+        preferredUtilizationMax: 85,
+        maximumUtilization: 95,
+        shortageTolerancePercent: 0,
+        maxCostIncreasePercent: 10,
+        minimumSavingsTargetPercent: 5
+      });
 
       renderCaseSummary();
       saveConstraints();
@@ -1426,11 +1594,11 @@
     }
 
     function updateScenarioTargetOptions() {
-      const select = document.getElementById("scenarioTargetUnit");
+      const select = byId("scenarioTargetUnit");
       select.innerHTML = "";
 
       if (!twinState || !twinState.units.length) {
-        select.innerHTML = "<option value='0'>Unit 1</option>";
+        select.innerHTML = "<option value='1'>Unit 1</option>";
         return;
       }
 
@@ -1443,37 +1611,39 @@
     }
 
     function toggleScenarioTargetUnit() {
-      const scope = document.getElementById("scenarioScope").value;
-      document.getElementById("scenarioTargetWrap").style.display = scope === "single" ? "block" : "none";
+      byId("scenarioTargetWrap").style.display = byId("scenarioScope").value === "single" ? "block" : "none";
     }
 
     function setConstraintInputs(constraints) {
-      document.getElementById("maxLaborBudget").value = constraints.maxLaborBudget;
-      document.getElementById("minimumStaffingFloor").value = constraints.minimumStaffingFloor;
-      document.getElementById("preferredUtilizationMin").value = constraints.preferredUtilizationMin;
-      document.getElementById("preferredUtilizationMax").value = constraints.preferredUtilizationMax;
-      document.getElementById("maximumUtilization").value = constraints.maximumUtilization;
-      document.getElementById("shortageTolerancePercent").value = constraints.shortageTolerancePercent;
-      document.getElementById("maxCostIncreasePercent").value = constraints.maxCostIncreasePercent;
-      document.getElementById("minimumSavingsTargetPercent").value = constraints.minimumSavingsTargetPercent;
+      byId("maxLaborBudget").value = constraints.maxLaborBudget;
+      byId("minimumStaffingFloor").value = constraints.minimumStaffingFloor;
+      byId("preferredUtilizationMin").value = constraints.preferredUtilizationMin;
+      byId("preferredUtilizationMax").value = constraints.preferredUtilizationMax;
+      byId("maximumUtilization").value = constraints.maximumUtilization;
+      byId("shortageTolerancePercent").value = constraints.shortageTolerancePercent;
+      byId("maxCostIncreasePercent").value = constraints.maxCostIncreasePercent;
+      byId("minimumSavingsTargetPercent").value = constraints.minimumSavingsTargetPercent;
     }
 
     function getConstraintInputs() {
       return {
-        maxLaborBudget: parseFloat(document.getElementById("maxLaborBudget").value),
-        minimumStaffingFloor: parseFloat(document.getElementById("minimumStaffingFloor").value),
-        preferredUtilizationMin: parseFloat(document.getElementById("preferredUtilizationMin").value),
-        preferredUtilizationMax: parseFloat(document.getElementById("preferredUtilizationMax").value),
-        maximumUtilization: parseFloat(document.getElementById("maximumUtilization").value),
-        shortageTolerancePercent: parseFloat(document.getElementById("shortageTolerancePercent").value),
-        maxCostIncreasePercent: parseFloat(document.getElementById("maxCostIncreasePercent").value),
-        minimumSavingsTargetPercent: parseFloat(document.getElementById("minimumSavingsTargetPercent").value)
+        maxLaborBudget: parseFloat(byId("maxLaborBudget").value),
+        minimumStaffingFloor: parseFloat(byId("minimumStaffingFloor").value),
+        preferredUtilizationMin: parseFloat(byId("preferredUtilizationMin").value),
+        preferredUtilizationMax: parseFloat(byId("preferredUtilizationMax").value),
+        maximumUtilization: parseFloat(byId("maximumUtilization").value),
+        shortageTolerancePercent: parseFloat(byId("shortageTolerancePercent").value),
+        maxCostIncreasePercent: parseFloat(byId("maxCostIncreasePercent").value),
+        minimumSavingsTargetPercent: parseFloat(byId("minimumSavingsTargetPercent").value)
       };
     }
 
     function validateConstraints(constraints) {
+      if (Object.values(constraints).some(v => isNaN(v))) {
+        return { valid: false, message: "Please complete all constraint fields with valid numbers." };
+      }
+
       if (
-        Object.values(constraints).some(v => isNaN(v)) ||
         constraints.maxLaborBudget <= 0 ||
         constraints.minimumStaffingFloor < 0 ||
         constraints.preferredUtilizationMin < 0 ||
@@ -1483,7 +1653,7 @@
         constraints.maxCostIncreasePercent < 0 ||
         constraints.minimumSavingsTargetPercent < 0
       ) {
-        return { valid: false, message: "Please complete all constraint fields with valid non-negative numbers. Budget and ceilings must be positive." };
+        return { valid: false, message: "Constraint values must be non-negative, and budget/ceilings must be positive." };
       }
 
       if (constraints.preferredUtilizationMin >= constraints.preferredUtilizationMax) {
@@ -1498,33 +1668,22 @@
     }
 
     function renderConstraintProfileCards(constraints) {
-      document.getElementById("constraintProfileCards").innerHTML =
-        "<div class='dashboard-card'><div class='dashboard-label'>Max Labor Budget</div><div class='dashboard-value'>" + money(constraints.maxLaborBudget) + "</div></div>" +
+      byId("constraintProfileCards").innerHTML =
+        "<div class='dashboard-card'><div class='dashboard-label'>Max Labor Budget</div><div class='dashboard-value'>" + fmtMoney(constraints.maxLaborBudget) + "</div></div>" +
         "<div class='dashboard-card'><div class='dashboard-label'>Minimum Total Staffing</div><div class='dashboard-value'>" + constraints.minimumStaffingFloor + "</div></div>" +
         "<div class='dashboard-card'><div class='dashboard-label'>Preferred Utilization Band</div><div class='dashboard-value'>" + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%</div></div>" +
         "<div class='dashboard-card'><div class='dashboard-label'>Hard Utilization Ceiling</div><div class='dashboard-value'>" + constraints.maximumUtilization + "%</div></div>";
     }
 
     function renderConstraintResultBox(constraints, prefix) {
-      document.getElementById("constraintResult").innerHTML =
+      byId("constraintResult").innerHTML =
         "<strong>" + prefix + "</strong><br>" +
-        "Hard constraints: budget ≤ " + money(constraints.maxLaborBudget) +
+        "Hard constraints: budget ≤ " + fmtMoney(constraints.maxLaborBudget) +
         ", total staffing ≥ " + constraints.minimumStaffingFloor +
         ", utilization ≤ " + constraints.maximumUtilization + "%, shortage tolerance ≤ " + constraints.shortageTolerancePercent + "%.<br>" +
-        "Soft preferences: utilization " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%, preferred max cost increase " +
-        constraints.maxCostIncreasePercent + "%, preferred savings target " + constraints.minimumSavingsTargetPercent + "%.";
-    }
-
-    function loadConstraints() {
-      let constraints = DEFAULT_CONSTRAINTS;
-      try {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_CONSTRAINTS));
-        if (stored) constraints = stored;
-      } catch (e) {}
-
-      setConstraintInputs(constraints);
-      renderConstraintProfileCards(constraints);
-      renderConstraintResultBox(constraints, "Active constraint profile loaded.");
+        "Soft preferences: utilization " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax +
+        "%, preferred max cost increase " + constraints.maxCostIncreasePercent + "%, preferred savings target " +
+        constraints.minimumSavingsTargetPercent + "%.";
     }
 
     function saveConstraints() {
@@ -1532,7 +1691,7 @@
       const validation = validateConstraints(constraints);
 
       if (!validation.valid) {
-        document.getElementById("constraintResult").innerHTML = validation.message;
+        byId("constraintResult").innerHTML = validation.message;
         return;
       }
 
@@ -1550,36 +1709,48 @@
       renderDecisionBrief();
     }
 
+    function loadConstraints() {
+      let constraints = DEFAULT_CONSTRAINTS;
+
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_CONSTRAINTS));
+        if (stored) constraints = stored;
+      } catch (e) {}
+
+      setConstraintInputs(constraints);
+      renderConstraintProfileCards(constraints);
+      renderConstraintResultBox(constraints, "Active constraint profile loaded.");
+    }
+
     function getActiveConstraints() {
       const constraints = getConstraintInputs();
       const validation = validateConstraints(constraints);
       return validation.valid ? constraints : null;
     }
 
-    function buildBaselineFromTwin() {
-      if (!twinState || !twinState.units.length) return null;
-      return {
-        caseMeta: getCaseMeta(),
-        units: JSON.parse(JSON.stringify(twinState.units)),
-        system: JSON.parse(JSON.stringify(twinState.system))
-      };
-    }
-
     function applyScenarioToUnits(baseUnits, scenarioType, pct, scope, targetIndex) {
       return baseUnits.map(function (unit) {
         const shouldApply = scope === "global" || unit.index === targetIndex;
-        if (!shouldApply) return deriveUnit({ ...unit });
+        const clone = {
+          index: unit.index,
+          name: unit.name,
+          staff: unit.staff,
+          workload: unit.workload,
+          shift: unit.shift,
+          productivity: unit.productivity,
+          wage: unit.wage
+        };
 
-        const clone = { ...unit };
-
-        if (scenarioType === "demand_up") clone.workload = clone.workload * (1 + pct);
-        if (scenarioType === "demand_down") clone.workload = clone.workload * (1 - pct);
-        if (scenarioType === "productivity_up") clone.productivity = clone.productivity * (1 + pct);
-        if (scenarioType === "productivity_down") clone.productivity = clone.productivity * (1 - pct);
-        if (scenarioType === "wage_up") clone.wage = clone.wage * (1 + pct);
-        if (scenarioType === "wage_down") clone.wage = clone.wage * (1 - pct);
-        if (scenarioType === "staff_up") clone.staff = Math.ceil(clone.staff * (1 + pct));
-        if (scenarioType === "staff_down") clone.staff = Math.max(1, Math.floor(clone.staff * (1 - pct)));
+        if (shouldApply) {
+          if (scenarioType === "demand_up") clone.workload = clone.workload * (1 + pct);
+          if (scenarioType === "demand_down") clone.workload = clone.workload * (1 - pct);
+          if (scenarioType === "productivity_up") clone.productivity = clone.productivity * (1 + pct);
+          if (scenarioType === "productivity_down") clone.productivity = clone.productivity * (1 - pct);
+          if (scenarioType === "wage_up") clone.wage = clone.wage * (1 + pct);
+          if (scenarioType === "wage_down") clone.wage = clone.wage * (1 - pct);
+          if (scenarioType === "staff_up") clone.staff = Math.ceil(clone.staff * (1 + pct));
+          if (scenarioType === "staff_down") clone.staff = Math.max(1, Math.floor(clone.staff * (1 - pct)));
+        }
 
         return deriveUnit(clone);
       });
@@ -1588,7 +1759,7 @@
     function evaluateConstraints(projectedUnits, projectedSystem, baselineSystem, constraints) {
       const hardBreaches = [];
       const softWarnings = [];
-      const shortageTolerance = constraints.shortageTolerancePercent / 100;
+      const tolerance = constraints.shortageTolerancePercent / 100;
 
       if (projectedSystem.totalLaborCost > constraints.maxLaborBudget) {
         hardBreaches.push("Labor budget cap exceeded");
@@ -1602,16 +1773,17 @@
         hardBreaches.push("Maximum utilization ceiling exceeded");
       }
 
-      const systemShortageThreshold = projectedSystem.totalRequiredStaff * (1 - shortageTolerance);
+      const systemShortageThreshold = projectedSystem.totalRequiredStaff * (1 - tolerance);
       if (projectedSystem.totalAvailableStaff < systemShortageThreshold) {
         hardBreaches.push("System staffing falls below shortage tolerance");
       }
 
       projectedUnits.forEach(function (unit) {
-        const unitShortageThreshold = unit.requiredStaff * (1 - shortageTolerance);
+        const unitShortageThreshold = unit.requiredStaff * (1 - tolerance);
         if (unit.staff < unitShortageThreshold) {
           softWarnings.push(unit.name + " staffing is below tolerance");
         }
+
         if (unit.utilization > constraints.maximumUtilization) {
           softWarnings.push(unit.name + " exceeds the hard utilization ceiling");
         } else if (
@@ -1633,9 +1805,9 @@
         softWarnings.push("Preferred savings target not achieved");
       }
 
-      let summary = "Compliant";
-      if (hardBreaches.length) summary = "Hard Constraint Breach";
-      else if (softWarnings.length) summary = softWarnings.length + " Warning" + (softWarnings.length > 1 ? "s" : "");
+      const summary = hardBreaches.length
+        ? "Hard Constraint Breach"
+        : (softWarnings.length ? softWarnings.length + " Warning" + (softWarnings.length > 1 ? "s" : "") : "Compliant");
 
       return {
         hardBreaches,
@@ -1647,8 +1819,22 @@
       };
     }
 
-    function scoreCostEfficiency(projected, baseline, constraints) {
-      const deltaPct = ((projected.totalLaborCost - baseline.totalLaborCost) / baseline.totalLaborCost) * 100;
+    function getScenarioLabel(type) {
+      const labels = {
+        demand_up: "Demand Increase",
+        demand_down: "Demand Decrease",
+        productivity_up: "Productivity Improvement",
+        productivity_down: "Productivity Decline",
+        wage_up: "Wage Increase",
+        wage_down: "Wage Decrease",
+        staff_up: "Increase Staff",
+        staff_down: "Reduce Staff"
+      };
+      return labels[type] || "Scenario";
+    }
+
+    function scoreCostEfficiency(projectedSystem, baselineSystem, constraints) {
+      const deltaPct = ((projectedSystem.totalLaborCost - baselineSystem.totalLaborCost) / baselineSystem.totalLaborCost) * 100;
       if (deltaPct <= -10) return 100;
       if (deltaPct <= 0) return 90;
       if (deltaPct <= constraints.maxCostIncreasePercent / 2) return 78;
@@ -1657,9 +1843,9 @@
       return 15;
     }
 
-    function scoreCapacityFit(projected, constraints) {
-      const gap = projected.totalAvailableStaff - projected.totalRequiredStaff;
-      const gapPct = (gap / projected.totalRequiredStaff) * 100;
+    function scoreCapacityFit(projectedSystem, constraints) {
+      const gap = projectedSystem.totalAvailableStaff - projectedSystem.totalRequiredStaff;
+      const gapPct = (gap / projectedSystem.totalRequiredStaff) * 100;
       if (gapPct >= 0 && gapPct <= 5) return 100;
       if (gapPct > 5 && gapPct <= 15) return 85;
       if (gapPct > 15 && gapPct <= 30) return 65;
@@ -1669,8 +1855,8 @@
       return 0;
     }
 
-    function scoreUtilizationHealth(projected, constraints) {
-      const u = projected.systemUtilization;
+    function scoreUtilizationHealth(projectedSystem, constraints) {
+      const u = projectedSystem.systemUtilization;
       if (u >= constraints.preferredUtilizationMin && u <= constraints.preferredUtilizationMax) return 100;
       if (u > constraints.preferredUtilizationMax && u <= constraints.maximumUtilization) return clamp(85 - (u - constraints.preferredUtilizationMax) * 6, 15, 85);
       if (u < constraints.preferredUtilizationMin) return clamp(85 - (constraints.preferredUtilizationMin - u) * 3, 20, 85);
@@ -1706,7 +1892,6 @@
 
     function getRiskLevel(projectedUnits, projectedSystem, evalObj) {
       if (!evalObj.viable) return "High Risk";
-
       const criticalUnits = projectedUnits.filter(u => u.unitStatus === "Critical").length;
       const stressedUnits = projectedUnits.filter(u => u.unitStatus === "Stressed").length;
 
@@ -1715,9 +1900,9 @@
       return "Low Risk";
     }
 
-    function getRiskRank(label) {
-      if (label === "Low Risk") return 1;
-      if (label === "Moderate Risk") return 2;
+    function getRiskRank(risk) {
+      if (risk === "Low Risk") return 1;
+      if (risk === "Moderate Risk") return 2;
       return 3;
     }
 
@@ -1729,53 +1914,39 @@
       return "Do Not Recommend";
     }
 
-    function getScenarioLabel(type) {
-      const labels = {
-        demand_up: "Demand Increase",
-        demand_down: "Demand Decrease",
-        productivity_up: "Productivity Improvement",
-        productivity_down: "Productivity Decline",
-        wage_up: "Wage Increase",
-        wage_down: "Wage Decrease",
-        staff_up: "Increase Staff",
-        staff_down: "Reduce Staff"
-      };
-      return labels[type] || "Scenario";
-    }
-
-    function buildNarrative(scenarioType, scopeText, targetUnitText, constraintEval, scores, riskLevel) {
+    function buildNarrative(scenarioType, scopeText, targetUnitText, evalObj, scores, riskLevel) {
       const reasons = [];
-      if (constraintEval.viable) reasons.push("stays inside the hard operating limits");
+      if (evalObj.viable) reasons.push("stays inside the hard operating limits");
       if (scores.utilizationHealthScore >= 85) reasons.push("keeps the system closer to the preferred utilization band");
-      if (scores.capacityFitScore >= 85) reasons.push("maintains stronger staffing fit across the operation");
-      if (scores.costEfficiencyScore >= 85) reasons.push("improves overall labor cost efficiency");
+      if (scores.capacityFitScore >= 85) reasons.push("maintains strong staffing fit");
+      if (scores.costEfficiencyScore >= 85) reasons.push("improves labor cost efficiency");
 
       const whyThisWon = reasons.length ? reasons.slice(0, 3).join(", ") : "balances the main decision dimensions better than weaker alternatives";
 
-      let tradeoff = "This path still needs post-decision monitoring.";
-      if (!constraintEval.viable) {
+      let tradeoff = "This path still needs operating review after implementation.";
+      if (!evalObj.viable) {
         tradeoff = "This path breaks one or more hard constraints and should not be treated as operationally valid.";
-      } else if (constraintEval.softWarnings.length) {
-        tradeoff = "It remains viable, but carries warning pressure around " + constraintEval.softWarnings.slice(0, 3).join(", ").toLowerCase() + ".";
+      } else if (evalObj.softWarnings.length) {
+        tradeoff = "It remains viable, but carries warning pressure around " + evalObj.softWarnings.slice(0, 3).join(", ").toLowerCase() + ".";
       } else if (scenarioType === "productivity_up") {
-        tradeoff = "The value depends on actually achieving the projected productivity improvement.";
+        tradeoff = "The gain depends on actually delivering the projected productivity improvement.";
       } else if (scenarioType === "staff_down") {
-        tradeoff = "Lower staffing can improve cost efficiency, but resilience becomes tighter under future shocks.";
+        tradeoff = "Lower staffing improves cost posture but can reduce resilience if demand or absenteeism spikes.";
       }
 
-      let nextAction = "Review this scenario against current operational assumptions before implementation.";
-      if (!constraintEval.viable) {
+      let nextAction = "Review this path against current operating assumptions before execution.";
+      if (!evalObj.viable) {
         nextAction = "Do not implement this scenario unless budget, staffing, or utilization assumptions change materially.";
       } else if (riskLevel === "Low Risk") {
-        nextAction = "Use this as a primary candidate and validate it through a short pilot or leadership review.";
+        nextAction = "Use this as a primary candidate and validate it through a short pilot or management review.";
       } else {
-        nextAction = "Proceed cautiously and monitor the system and affected units closely if this path is selected.";
+        nextAction = "Proceed cautiously and monitor system and unit stress closely if this path is selected.";
       }
 
       return {
-        whyThisWon: whyThisWon,
-        tradeoff: tradeoff,
-        nextAction: nextAction,
+        whyThisWon,
+        tradeoff,
+        nextAction,
         summary: getScenarioLabel(scenarioType) + " on " + scopeText + (targetUnitText ? " (" + targetUnitText + ")" : "")
       };
     }
@@ -1783,29 +1954,29 @@
     function calculateScenarioLab() {
       const constraints = getActiveConstraints();
       if (!constraints) {
-        document.getElementById("scenarioResult").innerHTML = "Your constraint profile is invalid. Fix the Constraint Panel first.";
+        byId("scenarioResult").innerHTML = "Your constraint profile is invalid. Fix the Constraint Panel first.";
         currentScenarioSnapshot = null;
-        document.getElementById("saveScenarioBtn").disabled = true;
+        byId("saveScenarioBtn").disabled = true;
         return;
       }
 
       if (!twinState || !twinState.units.length) {
-        document.getElementById("scenarioResult").innerHTML = "Build the operational twin first.";
+        byId("scenarioResult").innerHTML = "Build the operational twin first.";
         currentScenarioSnapshot = null;
-        document.getElementById("saveScenarioBtn").disabled = true;
+        byId("saveScenarioBtn").disabled = true;
         return;
       }
 
-      const scenarioType = document.getElementById("scenarioType").value;
-      const scenarioPercent = parseFloat(document.getElementById("scenarioPercent").value);
-      const scenarioScope = document.getElementById("scenarioScope").value;
-      const targetUnitIndex = parseInt(document.getElementById("scenarioTargetUnit").value, 10);
-      const scenarioNote = document.getElementById("scenarioNote").value.trim();
+      const scenarioType = byId("scenarioType").value;
+      const scenarioPercent = parseFloat(byId("scenarioPercent").value);
+      const scenarioScope = byId("scenarioScope").value;
+      const targetIndex = parseInt(byId("scenarioTargetUnit").value || "1", 10);
+      const note = byId("scenarioNote").value.trim();
 
       if (isNaN(scenarioPercent) || scenarioPercent <= 0) {
-        document.getElementById("scenarioResult").innerHTML = "Enter a valid positive scenario percentage.";
+        byId("scenarioResult").innerHTML = "Enter a valid positive scenario percentage.";
         currentScenarioSnapshot = null;
-        document.getElementById("saveScenarioBtn").disabled = true;
+        byId("saveScenarioBtn").disabled = true;
         return;
       }
 
@@ -1815,20 +1986,19 @@
         scenarioType,
         pct,
         scenarioScope,
-        targetUnitIndex
+        targetIndex
       );
 
       const projectedSystem = summarizeSystem(projectedUnits);
       const baselineSystem = twinState.system;
-
-      const constraintEval = evaluateConstraints(projectedUnits, projectedSystem, baselineSystem, constraints);
+      const evalObj = evaluateConstraints(projectedUnits, projectedSystem, baselineSystem, constraints);
 
       const scores = {
         costEfficiencyScore: scoreCostEfficiency(projectedSystem, baselineSystem, constraints),
         capacityFitScore: scoreCapacityFit(projectedSystem, constraints),
         utilizationHealthScore: scoreUtilizationHealth(projectedSystem, constraints),
-        constraintComplianceScore: scoreConstraintCompliance(constraintEval),
-        strategicQualityScore: scoreStrategicQuality(projectedUnits, projectedSystem, constraintEval, constraints)
+        constraintComplianceScore: scoreConstraintCompliance(evalObj),
+        strategicQualityScore: scoreStrategicQuality(projectedUnits, projectedSystem, evalObj, constraints)
       };
 
       const finalScore =
@@ -1838,24 +2008,20 @@
         scores.constraintComplianceScore * 0.20 +
         scores.strategicQualityScore * 0.10;
 
-      const riskLevel = getRiskLevel(projectedUnits, projectedSystem, constraintEval);
-      const recommendationClass = getRecommendationClass(finalScore, constraintEval.viable, riskLevel);
+      const riskLevel = getRiskLevel(projectedUnits, projectedSystem, evalObj);
+      const recommendationClass = getRecommendationClass(finalScore, evalObj.viable, riskLevel);
 
-      const targetUnit = scenarioScope === "single"
-        ? projectedUnits.find(u => u.index === targetUnitIndex)
-        : null;
-
+      const targetUnit = scenarioScope === "single" ? projectedUnits.find(u => u.index === targetIndex) : null;
       const narrative = buildNarrative(
         scenarioType,
         scenarioScope === "global" ? "all units" : "one unit",
         targetUnit ? targetUnit.name : "",
-        constraintEval,
+        evalObj,
         scores,
         riskLevel
       );
 
-      const scenarioName =
-        getScenarioLabel(scenarioType) + " +" + scenarioPercent + "%" +
+      const scenarioName = getScenarioLabel(scenarioType) + " +" + scenarioPercent + "%" +
         (scenarioScope === "single" && targetUnit ? " — " + targetUnit.name : " — Global");
 
       currentScenarioSnapshot = {
@@ -1867,15 +2033,16 @@
         scenarioPercent,
         scenarioScope,
         targetUnitName: targetUnit ? targetUnit.name : "All Units",
-        note: scenarioNote,
+        note,
         projectedUnits,
         projectedSystem,
-        baselineSystem,
+        baselineUnits: JSON.parse(JSON.stringify(twinState.units)),
+        baselineSystem: JSON.parse(JSON.stringify(twinState.system)),
         constraintsUsed: constraints,
-        hardBreaches: constraintEval.hardBreaches,
-        softWarnings: constraintEval.softWarnings,
-        constraintSummary: constraintEval.summary,
-        viable: constraintEval.viable,
+        hardBreaches: evalObj.hardBreaches,
+        softWarnings: evalObj.softWarnings,
+        constraintSummary: evalObj.summary,
+        viable: evalObj.viable,
         riskLevel,
         recommendationClass,
         finalScore: Number(finalScore.toFixed(1)),
@@ -1884,51 +2051,40 @@
         nextAction: narrative.nextAction
       };
 
-      document.getElementById("scenarioRequiredStaff").innerText = projectedSystem.totalRequiredStaff;
-      document.getElementById("scenarioUtilization").innerText = percent(projectedSystem.systemUtilization);
-      document.getElementById("scenarioLaborCost").innerText = money(projectedSystem.totalLaborCost);
+      byId("scenarioRequiredStaff").innerText = projectedSystem.totalRequiredStaff;
+      byId("scenarioUtilization").innerText = fmtPercent(projectedSystem.systemUtilization);
+      byId("scenarioLaborCost").innerText = fmtMoney(projectedSystem.totalLaborCost);
       const delta = projectedSystem.totalLaborCost - baselineSystem.totalLaborCost;
-      document.getElementById("scenarioCostDelta").innerText = (delta >= 0 ? "+" : "-") + money(Math.abs(delta));
+      byId("scenarioCostDelta").innerText = (delta >= 0 ? "+" : "-") + fmtMoney(Math.abs(delta));
 
-      const hardText = constraintEval.hardBreaches.length ? constraintEval.hardBreaches.join(", ") : "None";
-      const warningText = constraintEval.softWarnings.length ? constraintEval.softWarnings.slice(0, 5).join(", ") : "None";
-
-      document.getElementById("scenarioResult").innerHTML =
+      byId("scenarioResult").innerHTML =
         "<strong>Scenario:</strong> " + scenarioName + "<br>" +
-        "<strong>Scope:</strong> <span class='scope-highlight'>" + (scenarioScope === "global" ? "Global — All Units" : "Single Unit — " + (targetUnit ? targetUnit.name : "")) + "</span><br>" +
+        "<strong>Scope:</strong> <span class='scope-highlight'>" + (scenarioScope === "global" ? "Global — All Units" : "Single Unit — " + currentScenarioSnapshot.targetUnitName) + "</span><br>" +
         "<strong>Projected System Required Staff:</strong> " + projectedSystem.totalRequiredStaff + "<br>" +
         "<strong>Projected System Staff:</strong> " + projectedSystem.totalAvailableStaff + "<br>" +
-        "<strong>Projected System Utilization:</strong> " + percent(projectedSystem.systemUtilization) + "<br>" +
-        "<strong>Projected System Labor Cost:</strong> " + money(projectedSystem.totalLaborCost) + "<br>" +
-        "<strong>Constraint Fit:</strong> " + constraintEval.summary + "<br>" +
-        "<strong>Hard Breaches:</strong> " + hardText + "<br>" +
-        "<strong>Soft Warnings:</strong> " + warningText + "<br>" +
+        "<strong>Projected System Utilization:</strong> " + fmtPercent(projectedSystem.systemUtilization) + "<br>" +
+        "<strong>Projected System Labor Cost:</strong> " + fmtMoney(projectedSystem.totalLaborCost) + "<br>" +
+        "<strong>Constraint Fit:</strong> " + evalObj.summary + "<br>" +
+        "<strong>Hard Breaches:</strong> " + (evalObj.hardBreaches.length ? evalObj.hardBreaches.join(", ") : "None") + "<br>" +
+        "<strong>Soft Warnings:</strong> " + (evalObj.softWarnings.length ? evalObj.softWarnings.slice(0, 5).join(", ") : "None") + "<br>" +
         "<strong>Risk Level:</strong> " + riskLevel + "<br>" +
         "<strong>Recommendation:</strong> " + recommendationClass + "<br>" +
         "<strong>Decision Score:</strong> " + finalScore.toFixed(1) + "/100<br><br>" +
         "<strong>Why it scores this way:</strong> " + narrative.whyThisWon + "<br>" +
         "<strong>Tradeoff:</strong> " + narrative.tradeoff + "<br>" +
         "<strong>Next Action:</strong> " + narrative.nextAction +
-        (scenarioNote ? "<br><strong>Scenario Note:</strong> " + scenarioNote : "");
+        (note ? "<br><strong>Scenario Note:</strong> " + note : "");
 
-      document.getElementById("scenarioUnitImpactBox").innerHTML =
+      byId("scenarioUnitImpactBox").innerHTML =
         "<strong>Unit Impact Summary:</strong><br>" +
         projectedUnits.map(function (u) {
-          return (
-            "<div class='metric-line'><strong>" + u.name + ":</strong> " +
-            "Req. Staff " + u.requiredStaff +
-            ", Utilization " + percent(u.utilization) +
-            ", Labor Cost " + money(u.laborCost) +
-            ", Status <span class='" + getUnitStatusCss(u.unitStatus) + "'>" + u.unitStatus + "</span></div>"
-          );
+          return "<div class='metric-line'><strong>" + u.name + ":</strong> Required Staff " + u.requiredStaff +
+            ", Utilization " + fmtPercent(u.utilization) +
+            ", Labor Cost " + fmtMoney(u.laborCost) +
+            ", Status <span class='" + unitChipClass(u.unitStatus) + "'>" + u.unitStatus + "</span></div>";
         }).join("");
 
-      document.getElementById("saveScenarioBtn").disabled = false;
-
-      let statusType = "yellow";
-      if (recommendationClass === "Strongly Recommend" || recommendationClass === "Recommend") statusType = "green";
-      if (recommendationClass === "Do Not Recommend" || recommendationClass === "Non-Viable") statusType = "red";
-      setStatusChip("dashboardStatus", recommendationClass, statusType);
+      byId("saveScenarioBtn").disabled = false;
     }
 
     function getScenarioStore() {
@@ -1939,8 +2095,8 @@
       }
     }
 
-    function saveScenarioStore(scenarios) {
-      localStorage.setItem(STORAGE_SCENARIOS, JSON.stringify(scenarios));
+    function saveScenarioStore(store) {
+      localStorage.setItem(STORAGE_SCENARIOS, JSON.stringify(store));
     }
 
     function getSelectedScenarioId() {
@@ -1948,7 +2104,7 @@
     }
 
     function setSelectedScenarioId(id) {
-      localStorage.setItem(STORAGE_SELECTED, id);
+      localStorage.setItem(STORAGE_SELECTED, id || "");
     }
 
     function saveCurrentScenario() {
@@ -1957,13 +2113,17 @@
         return;
       }
 
-      const scenarios = getScenarioStore();
-      scenarios.push(currentScenarioSnapshot);
-      saveScenarioStore(scenarios);
+      const store = getScenarioStore();
+      store.push(currentScenarioSnapshot);
+      saveScenarioStore(store);
       renderDecisionUniverse();
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
       renderDecisionBrief();
 
-      const btn = document.getElementById("saveScenarioBtn");
+      const btn = byId("saveScenarioBtn");
       btn.innerText = "Scenario Saved";
       btn.disabled = true;
 
@@ -1974,30 +2134,48 @@
     }
 
     function deleteScenario(id) {
-      const filtered = getScenarioStore().filter(s => s.id !== id);
-      saveScenarioStore(filtered);
+      const store = getScenarioStore().filter(s => s.id !== id);
+      saveScenarioStore(store);
+
+      const actuals = getActualOutcomeStore();
+      delete actuals[id];
+      saveActualOutcomeStore(actuals);
 
       if (getSelectedScenarioId() === id) {
         setSelectedScenarioId("");
       }
 
       renderDecisionUniverse();
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
       renderDecisionBrief();
     }
 
     function clearDecisionUniverse() {
-      const ok = confirm("Clear all saved scenarios?");
+      const ok = confirm("Clear all saved scenarios and tracked actual outcomes?");
       if (!ok) return;
 
       localStorage.removeItem(STORAGE_SCENARIOS);
       localStorage.removeItem(STORAGE_SELECTED);
+      localStorage.removeItem(STORAGE_ACTUALS);
+
       renderDecisionUniverse();
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
       renderDecisionBrief();
     }
 
     function selectScenario(id) {
       setSelectedScenarioId(id);
       renderDecisionUniverse();
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
       renderDecisionBrief();
     }
 
@@ -2023,19 +2201,22 @@
       const candidates = getCandidateScenarios(scenarios);
       if (!candidates.length) return null;
       return candidates.slice().sort((a, b) => {
-        const r = getRiskRank(a.riskLevel) - getRiskRank(b.riskLevel);
-        if (r !== 0) return r;
-        const wa = a.softWarnings.length;
-        const wb = b.softWarnings.length;
-        if (wa !== wb) return wa - wb;
+        const riskDiff = getRiskRank(a.riskLevel) - getRiskRank(b.riskLevel);
+        if (riskDiff !== 0) return riskDiff;
+        const warnDiff = a.softWarnings.length - b.softWarnings.length;
+        if (warnDiff !== 0) return warnDiff;
         return b.finalScore - a.finalScore;
       })[0];
     }
 
-    function renderWinnerCard(elementId, title, scenario, fallback) {
-      const card = document.getElementById(elementId);
+    function renderWinnerCard(id, title, scenario, fallbackText) {
+      const card = byId(id);
+
       if (!scenario) {
-        card.innerHTML = "<h3>" + title + "</h3><div class='winner-name'>No saved scenarios yet</div><div class='winner-metric'>" + fallback + "</div>";
+        card.innerHTML =
+          "<h3>" + title + "</h3>" +
+          "<div class='winner-name'>No saved scenarios yet</div>" +
+          "<div class='winner-metric'>" + fallbackText + "</div>";
         return;
       }
 
@@ -2044,23 +2225,22 @@
         "<div class='winner-name'>" + scenario.scenarioName + "</div>" +
         "<div class='winner-metric'>" +
         "<strong>Score:</strong> " + scenario.finalScore + "/100<br>" +
-        "<strong>Utilization:</strong> " + percent(scenario.projectedSystem.systemUtilization) + "<br>" +
-        "<strong>Labor Cost:</strong> " + money(scenario.projectedSystem.totalLaborCost) + "<br>" +
+        "<strong>Utilization:</strong> " + fmtPercent(scenario.projectedSystem.systemUtilization) + "<br>" +
+        "<strong>Labor Cost:</strong> " + fmtMoney(scenario.projectedSystem.totalLaborCost) + "<br>" +
         "<strong>Constraint Fit:</strong> " + scenario.constraintSummary + "<br>" +
         "<strong>Recommendation:</strong> " + scenario.recommendationClass +
         "</div>";
     }
 
     function renderSelectedScenarioCard(scenarios) {
-      const selectedId = getSelectedScenarioId();
-      const selected = scenarios.find(s => s.id === selectedId);
-      const card = document.getElementById("selectedScenarioCard");
+      const selected = scenarios.find(s => s.id === getSelectedScenarioId());
+      const card = byId("selectedScenarioCard");
 
       if (!selected) {
         card.innerHTML =
           "<h3>Selected Scenario</h3>" +
           "<div class='winner-name'>No scenario selected</div>" +
-          "<div class='winner-metric'>You can mark one saved scenario as your preferred path.</div>";
+          "<div class='winner-metric'>Mark one saved scenario as your preferred path.</div>";
         return;
       }
 
@@ -2076,7 +2256,7 @@
     }
 
     function renderDecisionUniverseTable(scenarios) {
-      const tbody = document.getElementById("decisionUniverseTableBody");
+      const tbody = byId("decisionUniverseTableBody");
       const selectedId = getSelectedScenarioId();
 
       if (!scenarios.length) {
@@ -2092,18 +2272,19 @@
       tbody.innerHTML = sorted.map(function (s) {
         const scopeText = s.scenarioScope === "global" ? "Global" : "Single — " + s.targetUnitName;
         const selectedBadge = s.id === selectedId ? "<br><span class='selected-chip selected-active'>Selected</span>" : "";
+        const delta = s.projectedSystem.totalLaborCost - s.baselineSystem.totalLaborCost;
 
         return (
           "<tr>" +
             "<td><strong>" + s.scenarioName + "</strong>" + selectedBadge + "<br><span class='muted'>" + (s.note || "No note") + "</span></td>" +
             "<td>" + scopeText + "</td>" +
-            "<td><span class='" + getConstraintCss(s.constraintSummary) + "'>" + s.constraintSummary + "</span></td>" +
+            "<td><span class='" + (s.constraintSummary === "Compliant" ? "constraint-chip constraint-good" : (s.constraintSummary === "Hard Constraint Breach" ? "constraint-chip constraint-breach" : "constraint-chip constraint-warning")) + "'>" + s.constraintSummary + "</span></td>" +
             "<td>" + s.projectedSystem.totalRequiredStaff + "</td>" +
             "<td>" + s.projectedSystem.totalAvailableStaff + "</td>" +
-            "<td>" + percent(s.projectedSystem.systemUtilization) + "</td>" +
-            "<td>" + money(s.projectedSystem.totalLaborCost) + "</td>" +
-            "<td>" + (s.projectedSystem.totalLaborCost - s.baselineSystem.totalLaborCost >= 0 ? "+" : "-") + money(Math.abs(s.projectedSystem.totalLaborCost - s.baselineSystem.totalLaborCost)) + "</td>" +
-            "<td><span class='" + getRiskCss(s.riskLevel) + "'>" + s.riskLevel + "</span></td>" +
+            "<td>" + fmtPercent(s.projectedSystem.systemUtilization) + "</td>" +
+            "<td>" + fmtMoney(s.projectedSystem.totalLaborCost) + "</td>" +
+            "<td>" + (delta >= 0 ? "+" : "-") + fmtMoney(Math.abs(delta)) + "</td>" +
+            "<td><span class='" + (s.riskLevel === "Low Risk" ? "risk-chip risk-low" : (s.riskLevel === "Moderate Risk" ? "risk-chip risk-moderate" : "risk-chip risk-high")) + "'>" + s.riskLevel + "</span></td>" +
             "<td><span class='" + getRecommendationCss(s.recommendationClass) + "'>" + s.recommendationClass + "</span></td>" +
             "<td>" + s.finalScore + "</td>" +
             "<td>" +
@@ -2115,11 +2296,18 @@
       }).join("");
     }
 
+    function getRecommendationCss(label) {
+      if (label === "Strongly Recommend") return "rec-chip rec-strong";
+      if (label === "Recommend") return "rec-chip rec-good";
+      if (label === "Consider with Caution") return "rec-chip rec-caution";
+      return "rec-chip rec-reject";
+    }
+
     function renderRecommendationCenter(bestOverall, cheapestViable, safestViable, scenarios) {
-      const center = document.getElementById("recommendationCenter");
+      const center = byId("recommendationCenter");
 
       if (!bestOverall) {
-        center.innerHTML = "<h3>Recommendation Center v2</h3><p>No viable saved scenarios exist yet. Save scenarios first.</p>";
+        center.innerHTML = "Recommendation Center will appear here after saving scenarios.";
         return;
       }
 
@@ -2127,18 +2315,15 @@
       const rejected = scenarios.filter(s => !s.viable || s.recommendationClass === "Do Not Recommend" || s.recommendationClass === "Non-Viable");
 
       center.innerHTML =
-        "<h3>Recommendation Center v2</h3>" +
-        "<p><strong>Best Overall:</strong> " + bestOverall.scenarioName + "</p>" +
-        "<ul>" +
-          "<li><strong>Verdict:</strong> " + bestOverall.recommendationClass + "</li>" +
-          "<li><strong>Why it won:</strong> " + bestOverall.whyThisWon + ".</li>" +
-          "<li><strong>Tradeoff:</strong> " + bestOverall.tradeoff + "</li>" +
-          "<li><strong>Next action:</strong> " + bestOverall.nextAction + "</li>" +
-        "</ul>" +
-        "<p><strong>Cheapest Viable:</strong> " + (cheapestViable ? cheapestViable.scenarioName : "None") + "</p>" +
-        "<p><strong>Safest Viable:</strong> " + (safestViable ? safestViable.scenarioName : "None") + "</p>" +
-        "<p><strong>Rejected Options:</strong> " + (rejected.length ? rejected.map(s => s.scenarioName).join(", ") : "None currently rejected.") + "</p>" +
-        "<p><strong>Preferred User Selection:</strong> " + (selected ? selected.scenarioName : "No selected scenario yet.") + "</p>";
+        "<strong>Recommendation Center v2</strong><br><br>" +
+        "<strong>Best Overall:</strong> " + bestOverall.scenarioName + "<br>" +
+        "<strong>Why it wins:</strong> " + bestOverall.whyThisWon + ".<br>" +
+        "<strong>Tradeoff:</strong> " + bestOverall.tradeoff + "<br>" +
+        "<strong>Next Action:</strong> " + bestOverall.nextAction + "<br><br>" +
+        "<strong>Cheapest Viable:</strong> " + (cheapestViable ? cheapestViable.scenarioName : "None") + "<br>" +
+        "<strong>Safest Viable:</strong> " + (safestViable ? safestViable.scenarioName : "None") + "<br>" +
+        "<strong>Rejected Options:</strong> " + (rejected.length ? rejected.map(s => s.scenarioName).join(", ") : "None currently rejected.") + "<br>" +
+        "<strong>Preferred User Selection:</strong> " + (selected ? selected.scenarioName : "No selected scenario yet.");
     }
 
     function renderDecisionUniverse() {
@@ -2155,81 +2340,611 @@
       renderRecommendationCenter(bestOverall, cheapestViable, safestViable, scenarios);
     }
 
-    function renderDecisionBrief() {
-      const content = document.getElementById("decisionBriefContent");
+    function getActualOutcomeStore() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_ACTUALS)) || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveActualOutcomeStore(store) {
+      localStorage.setItem(STORAGE_ACTUALS, JSON.stringify(store));
+    }
+
+    function getSelectedScenario() {
+      const id = getSelectedScenarioId();
+      return getScenarioStore().find(s => s.id === id) || null;
+    }
+
+    function renderOutcomeCaptureCenter() {
+      const selected = getSelectedScenario();
+      const intro = byId("outcomeCaptureIntro");
+      const area = byId("outcomeCaptureFormArea");
+      const buttons = byId("outcomeButtons");
+      const result = byId("outcomeCaptureResult");
+
+      if (!selected) {
+        intro.innerHTML = "Select a saved scenario in Decision Universe to record actual outcomes.";
+        area.innerHTML = "";
+        buttons.style.display = "none";
+        result.innerHTML = "Actual outcome result will appear here.";
+        return;
+      }
+
+      const actualStore = getActualOutcomeStore();
+      const savedActual = actualStore[selected.id] || null;
+
+      intro.innerHTML =
+        "<strong>Selected Scenario:</strong> " + selected.scenarioName + "<br>" +
+        "<strong>Scope:</strong> " + (selected.scenarioScope === "global" ? "Global — All Units" : "Single Unit — " + selected.targetUnitName) + "<br>" +
+        "<strong>Projected System Utilization:</strong> " + fmtPercent(selected.projectedSystem.systemUtilization) + "<br>" +
+        "<strong>Projected System Labor Cost:</strong> " + fmtMoney(selected.projectedSystem.totalLaborCost);
+
+      area.innerHTML =
+        selected.projectedUnits.map(function (u) {
+          const prefix = "actual_" + selected.id + "_" + u.index + "_";
+          const preset = savedActual
+            ? savedActual.units.find(x => x.index === u.index)
+            : null;
+
+          return (
+            "<div class='unit-card' style='margin-top:16px;'>" +
+              "<h3>" + u.name + "</h3>" +
+              "<div class='muted'>Projected reference: Staff " + u.staff + ", Workload " + u.workload + ", Productivity " + u.productivity + ", Labor Cost " + fmtMoney(u.laborCost) + "</div>" +
+              "<div class='unit-grid-inner'>" +
+                "<div><label for='" + prefix + "staff'>Actual Staff</label><input type='number' id='" + prefix + "staff' value='" + (preset ? preset.actualStaff : u.staff) + "' /></div>" +
+                "<div><label for='" + prefix + "workload'>Actual Workload</label><input type='number' id='" + prefix + "workload' value='" + (preset ? preset.actualWorkload : u.workload) + "' /></div>" +
+                "<div><label for='" + prefix + "productivity'>Actual Productivity / Hr</label><input type='number' id='" + prefix + "productivity' value='" + (preset ? preset.actualProductivity : u.productivity) + "' /></div>" +
+                "<div><label for='" + prefix + "laborCost'>Actual Labor Cost ($)</label><input type='number' id='" + prefix + "laborCost' value='" + (preset ? preset.actualLaborCost : u.laborCost.toFixed(2)) + "' /></div>" +
+              "</div>" +
+            "</div>"
+          );
+        }).join("") +
+        "<div class='tool-box' style='margin-top:16px; padding:0; background:none; border:none; box-shadow:none;'>" +
+          "<label for='actualOutcomeNote'>Outcome Note (optional)</label>" +
+          "<textarea id='actualOutcomeNote' placeholder='Example: Logistics performed tighter than forecast due to courier delays'>" + (savedActual ? (savedActual.note || "") : "") + "</textarea>" +
+        "</div>";
+
+      buttons.style.display = "flex";
+
+      if (savedActual) {
+        result.innerHTML =
+          "<strong>Actual outcome saved.</strong><br>" +
+          "Captured at: " + new Date(savedActual.savedAt).toLocaleString() + "<br>" +
+          "System Utilization: " + fmtPercent(savedActual.system.systemUtilization) + "<br>" +
+          "System Labor Cost: " + fmtMoney(savedActual.system.totalLaborCost);
+      } else {
+        result.innerHTML = "No actual outcome saved yet for the selected scenario.";
+      }
+    }
+
+    function populateProjectedAsActual() {
+      renderOutcomeCaptureCenter();
+    }
+
+    function classifyActualFromInputs(projectedUnit, actualStaff, actualWorkload, actualProductivity, actualLaborCost) {
+      const actualRequiredStaff = Math.ceil(actualWorkload / (projectedUnit.shift * actualProductivity));
+      const actualUtilization = (actualRequiredStaff / actualStaff) * 100;
+      const actualGap = actualStaff - actualRequiredStaff;
+      const actualStatus = classifyUnitStatus(actualUtilization, actualGap);
+
+      return {
+        index: projectedUnit.index,
+        name: projectedUnit.name,
+        shift: projectedUnit.shift,
+        actualStaff,
+        actualWorkload,
+        actualProductivity,
+        actualLaborCost,
+        actualRequiredStaff,
+        actualUtilization,
+        actualGap,
+        actualStatus
+      };
+    }
+
+    function saveActualOutcomes() {
+      const selected = getSelectedScenario();
+      if (!selected) {
+        alert("Select a scenario first.");
+        return;
+      }
+
+      const units = [];
+      for (const u of selected.projectedUnits) {
+        const prefix = "actual_" + selected.id + "_" + u.index + "_";
+        const actualStaff = parseFloat(byId(prefix + "staff").value);
+        const actualWorkload = parseFloat(byId(prefix + "workload").value);
+        const actualProductivity = parseFloat(byId(prefix + "productivity").value);
+        const actualLaborCost = parseFloat(byId(prefix + "laborCost").value);
+
+        if (
+          isNaN(actualStaff) || isNaN(actualWorkload) || isNaN(actualProductivity) || isNaN(actualLaborCost) ||
+          actualStaff <= 0 || actualWorkload <= 0 || actualProductivity <= 0 || actualLaborCost <= 0
+        ) {
+          alert("Please enter valid positive actual values for all units.");
+          return;
+        }
+
+        units.push(classifyActualFromInputs(u, actualStaff, actualWorkload, actualProductivity, actualLaborCost));
+      }
+
+      const system = {
+        totalAvailableStaff: units.reduce((sum, u) => sum + u.actualStaff, 0),
+        totalRequiredStaff: units.reduce((sum, u) => sum + u.actualRequiredStaff, 0),
+        totalLaborCost: units.reduce((sum, u) => sum + u.actualLaborCost, 0)
+      };
+      system.systemUtilization = (system.totalRequiredStaff / system.totalAvailableStaff) * 100;
+      system.systemGap = system.totalAvailableStaff - system.totalRequiredStaff;
+      system.systemStatus = classifySystemStatus(system.systemUtilization, system.systemGap);
+
+      const actualOutcome = {
+        scenarioId: selected.id,
+        savedAt: new Date().toISOString(),
+        note: byId("actualOutcomeNote").value.trim(),
+        units,
+        system
+      };
+
+      const store = getActualOutcomeStore();
+      store[selected.id] = actualOutcome;
+      saveActualOutcomeStore(store);
+
+      byId("outcomeCaptureResult").innerHTML =
+        "<strong>Actual outcome saved.</strong><br>" +
+        "System Utilization: " + fmtPercent(system.systemUtilization) + "<br>" +
+        "System Labor Cost: " + fmtMoney(system.totalLaborCost) + "<br>" +
+        "System Status: " + system.systemStatus;
+
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
+      renderDecisionBrief();
+    }
+
+    function clearActualOutcomeForSelected() {
+      const selected = getSelectedScenario();
+      if (!selected) return;
+
+      const store = getActualOutcomeStore();
+      delete store[selected.id];
+      saveActualOutcomeStore(store);
+
+      renderOutcomeCaptureCenter();
+      renderVisualLayer();
+      renderBenchmarkCenter();
+      renderConfidenceAndInsights();
+      renderDecisionBrief();
+    }
+
+    function getSelectedActualOutcome() {
+      const selected = getSelectedScenario();
+      if (!selected) return null;
+      const store = getActualOutcomeStore();
+      return store[selected.id] || null;
+    }
+
+    function buildSystemVariance(selected, actual) {
+      const predicted = selected.projectedSystem;
+      const actualSystem = actual.system;
+
+      return {
+        costDelta: actualSystem.totalLaborCost - predicted.totalLaborCost,
+        costDeltaPct: ((actualSystem.totalLaborCost - predicted.totalLaborCost) / predicted.totalLaborCost) * 100,
+        utilizationDelta: actualSystem.systemUtilization - predicted.systemUtilization,
+        requiredStaffDelta: actualSystem.totalRequiredStaff - predicted.totalRequiredStaff,
+        availableStaffDelta: actualSystem.totalAvailableStaff - predicted.totalAvailableStaff
+      };
+    }
+
+    function buildUnitVariance(selected, actual) {
+      return selected.projectedUnits.map(function (predictedUnit) {
+        const actualUnit = actual.units.find(u => u.index === predictedUnit.index);
+        if (!actualUnit) return null;
+
+        return {
+          index: predictedUnit.index,
+          name: predictedUnit.name,
+          laborCostDelta: actualUnit.actualLaborCost - predictedUnit.laborCost,
+          utilizationDelta: actualUnit.actualUtilization - predictedUnit.utilization,
+          requiredStaffDelta: actualUnit.actualRequiredStaff - predictedUnit.requiredStaff,
+          availableStaffDelta: actualUnit.actualStaff - predictedUnit.staff
+        };
+      }).filter(Boolean);
+    }
+
+    function renderBarCompare(label, predicted, actual, formatter) {
+      const max = Math.max(predicted, actual, 1);
+      const predictedWidth = (predicted / max) * 100;
+      const actualWidth = (actual / max) * 100;
+
+      return (
+        "<div>" +
+          "<div class='chart-row-label'>" + label + "</div>" +
+          "<div class='bar-track'><div class='bar-fill bar-predicted' style='width:" + predictedWidth + "%;'></div></div>" +
+          "<div class='bar-caption'>Predicted: " + formatter(predicted) + "</div>" +
+          "<div class='bar-track' style='margin-top:6px;'><div class='bar-fill bar-actual' style='width:" + actualWidth + "%;'></div></div>" +
+          "<div class='bar-caption'>Actual: " + formatter(actual) + "</div>" +
+        "</div>"
+      );
+    }
+
+    function renderSingleBar(label, value, max, formatter, cls) {
+      const width = (Math.abs(value) / Math.max(Math.abs(max), 1)) * 100;
+      return (
+        "<div>" +
+          "<div class='chart-row-label'>" + label + "</div>" +
+          "<div class='bar-track'><div class='bar-fill " + cls + "' style='width:" + width + "%;'></div></div>" +
+          "<div class='bar-caption'>" + formatter(value) + "</div>" +
+        "</div>"
+      );
+    }
+
+    function renderVisualLayer() {
       const scenarios = getScenarioStore();
-      const bestOverall = getBestOverall(scenarios);
-      const selected = scenarios.find(s => s.id === getSelectedScenarioId());
+      const selected = getSelectedScenario();
+      const actual = getSelectedActualOutcome();
+
+      if (!scenarios.length) {
+        byId("scenarioScoreChart").innerHTML = "No scenarios saved yet.";
+      } else {
+        const maxScore = Math.max(...scenarios.map(s => s.finalScore), 1);
+        byId("scenarioScoreChart").innerHTML = scenarios
+          .slice()
+          .sort((a, b) => b.finalScore - a.finalScore)
+          .map(s => renderSingleBar(
+            s.scenarioName + " (" + s.finalScore + "/100)",
+            s.finalScore,
+            maxScore,
+            v => v.toFixed(1) + "/100",
+            "bar-benchmark"
+          ))
+          .join("");
+      }
+
+      if (!selected || !actual) {
+        byId("costComparisonChart").innerHTML = "Save a selected scenario and actual outcome to generate this chart.";
+        byId("utilizationComparisonChart").innerHTML = "Save a selected scenario and actual outcome to generate this chart.";
+        byId("unitVarianceChart").innerHTML = "Save a selected scenario and actual outcome to generate this chart.";
+        return;
+      }
+
+      byId("costComparisonChart").innerHTML =
+        renderBarCompare("System Labor Cost", selected.projectedSystem.totalLaborCost, actual.system.totalLaborCost, fmtMoney);
+
+      byId("utilizationComparisonChart").innerHTML =
+        renderBarCompare("System Utilization", selected.projectedSystem.systemUtilization, actual.system.systemUtilization, fmtPercent);
+
+      const unitVariance = buildUnitVariance(selected, actual);
+      const maxVariance = Math.max(...unitVariance.map(v => Math.abs(v.laborCostDelta)), 1);
+
+      byId("unitVarianceChart").innerHTML =
+        unitVariance.map(v => renderSingleBar(
+          v.name + " Cost Variance",
+          v.laborCostDelta,
+          maxVariance,
+          val => (val >= 0 ? "+" : "-") + fmtMoney(Math.abs(val)),
+          "bar-variance"
+        )).join("");
+    }
+
+    function evaluateBenchmarks(selected, actual, constraints) {
+      if (!selected || !actual || !constraints) return null;
+
+      const utilization = actual.system.systemUtilization;
+      let utilizationAssessment = "Healthy";
+      if (utilization > constraints.maximumUtilization) utilizationAssessment = "Critical";
+      else if (utilization > constraints.preferredUtilizationMax || utilization < constraints.preferredUtilizationMin) utilizationAssessment = "Warning";
+
+      const staffingFit = actual.system.totalAvailableStaff >= actual.system.totalRequiredStaff ? "Healthy" : "Critical";
+      const costPressure = actual.system.totalLaborCost <= constraints.maxLaborBudget
+        ? ((actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost) / selected.projectedSystem.totalLaborCost > constraints.maxCostIncreasePercent / 100 ? "Warning" : "Healthy")
+        : "Critical";
+
+      let resilience = "Healthy";
+      if (actual.system.systemStatus === "Non-Viable" || actual.system.systemStatus === "High Pressure") resilience = "Critical";
+      else if (actual.system.systemStatus === "Caution") resilience = "Warning";
+
+      const unitHealth = actual.units.map(function (u) {
+        return { name: u.name, status: u.actualStatus };
+      });
+
+      const alignmentScoreParts = [
+        utilizationAssessment === "Healthy" ? 100 : (utilizationAssessment === "Warning" ? 60 : 20),
+        staffingFit === "Healthy" ? 100 : 20,
+        costPressure === "Healthy" ? 100 : (costPressure === "Warning" ? 60 : 20),
+        resilience === "Healthy" ? 100 : (resilience === "Warning" ? 60 : 20)
+      ];
+
+      const alignmentScore = alignmentScoreParts.reduce((a, b) => a + b, 0) / alignmentScoreParts.length;
+
+      return {
+        utilizationAssessment,
+        staffingFit,
+        costPressure,
+        resilience,
+        unitHealth,
+        alignmentScore
+      };
+    }
+
+    function benchmarkChipClass(status) {
+      if (status === "Healthy") return "benchmark-chip benchmark-healthy";
+      if (status === "Warning") return "benchmark-chip benchmark-warning";
+      return "benchmark-chip benchmark-critical";
+    }
+
+    function renderBenchmarkCenter() {
+      const selected = getSelectedScenario();
+      const actual = getSelectedActualOutcome();
       const constraints = getActiveConstraints();
-      const caseMeta = getCaseMeta();
+      const grid = byId("benchmarkGrid");
+
+      if (!selected || !actual || !constraints) {
+        grid.innerHTML = "<div class='benchmark-card'>Benchmarks will appear here after saving actual outcomes.</div>";
+        return;
+      }
+
+      const b = evaluateBenchmarks(selected, actual, constraints);
+
+      grid.innerHTML =
+        "<div class='benchmark-card'><h3>Utilization Health</h3><div class='benchmark-label'>Actual: " + fmtPercent(actual.system.systemUtilization) + " | Target: " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%</div><span class='" + benchmarkChipClass(b.utilizationAssessment) + "'>" + b.utilizationAssessment + "</span></div>" +
+        "<div class='benchmark-card'><h3>Staffing Fit</h3><div class='benchmark-label'>Actual Staff: " + actual.system.totalAvailableStaff + " | Actual Required: " + actual.system.totalRequiredStaff + "</div><span class='" + benchmarkChipClass(b.staffingFit) + "'>" + b.staffingFit + "</span></div>" +
+        "<div class='benchmark-card'><h3>Labor Cost Pressure</h3><div class='benchmark-label'>Actual Cost: " + fmtMoney(actual.system.totalLaborCost) + " | Budget: " + fmtMoney(constraints.maxLaborBudget) + "</div><span class='" + benchmarkChipClass(b.costPressure) + "'>" + b.costPressure + "</span></div>" +
+        "<div class='benchmark-card'><h3>System Resilience</h3><div class='benchmark-label'>Actual System Status: " + actual.system.systemStatus + "</div><span class='" + benchmarkChipClass(b.resilience) + "'>" + b.resilience + "</span></div>" +
+        "<div class='benchmark-card'><h3>Unit Health</h3><div class='benchmark-label'>" +
+          b.unitHealth.map(u => u.name + ": " + u.status).join("<br>") +
+        "</div></div>";
+    }
+
+    function calculateConfidence(selected, scenarios, actual, constraints) {
+      if (!selected || !constraints) return null;
+
+      const activeUnits = twinState && twinState.units ? twinState.units.length : selected.projectedUnits.length;
+      const inputQuality =
+        clamp(
+          60 +
+          activeUnits * 8 +
+          (selected.caseMeta && selected.caseMeta.decisionObjective ? 10 : 0) +
+          (selected.caseMeta && selected.caseMeta.caseName ? 5 : 0),
+          0, 100
+        );
+
+      const maxUtilMargin = constraints.maximumUtilization - selected.projectedSystem.systemUtilization;
+      const budgetMarginPct = ((constraints.maxLaborBudget - selected.projectedSystem.totalLaborCost) / constraints.maxLaborBudget) * 100;
+      const constraintStability =
+        clamp(
+          100 -
+          selected.hardBreaches.length * 45 -
+          selected.softWarnings.length * 10 -
+          (maxUtilMargin < 5 ? 15 : 0) -
+          (budgetMarginPct < 5 ? 10 : 0),
+          0, 100
+        );
+
+      const sorted = getCandidateScenarios(scenarios).slice().sort((a, b) => b.finalScore - a.finalScore);
+      let separationBase = 70;
+      if (sorted.length >= 2) {
+        if (sorted[0].id === selected.id) {
+          separationBase = clamp(50 + (sorted[0].finalScore - sorted[1].finalScore) * 4, 20, 100);
+        } else {
+          separationBase = clamp(50 - (sorted[0].finalScore - selected.finalScore) * 4, 0, 70);
+        }
+      }
+
+      let benchmarkAlignment = 50;
+      let predictionAccuracy = 50;
+
+      if (actual) {
+        const benchmarks = evaluateBenchmarks(selected, actual, constraints);
+        benchmarkAlignment = benchmarks.alignmentScore;
+
+        const variance = buildSystemVariance(selected, actual);
+        const costAccuracy = clamp(100 - Math.abs(variance.costDeltaPct) * 5, 0, 100);
+        const utilAccuracy = clamp(100 - Math.abs(variance.utilizationDelta) * 8, 0, 100);
+        const reqAccuracy = clamp(100 - Math.abs(variance.requiredStaffDelta) * 8, 0, 100);
+        predictionAccuracy = (costAccuracy + utilAccuracy + reqAccuracy) / 3;
+      }
+
+      const overall = (inputQuality + constraintStability + separationBase + benchmarkAlignment + predictionAccuracy) / 5;
+      const label = overall >= 80 ? "High Confidence" : (overall >= 60 ? "Moderate Confidence" : "Low Confidence");
+
+      return {
+        inputQuality: Number(inputQuality.toFixed(1)),
+        constraintStability: Number(constraintStability.toFixed(1)),
+        scenarioSeparation: Number(separationBase.toFixed(1)),
+        benchmarkAlignment: Number(benchmarkAlignment.toFixed(1)),
+        predictionAccuracy: Number(predictionAccuracy.toFixed(1)),
+        overall: Number(overall.toFixed(1)),
+        label
+      };
+    }
+
+    function confidenceChipClass(label) {
+      if (label === "High Confidence") return "confidence-chip confidence-high";
+      if (label === "Moderate Confidence") return "confidence-chip confidence-moderate";
+      return "confidence-chip confidence-low";
+    }
+
+    function buildNarratives(selected, scenarios, actual, constraints, confidence) {
+      if (!selected) return null;
+
+      const bestOverall = getBestOverall(scenarios);
+      const recommendationNarrative =
+        selected.scenarioName + " is currently treated as the preferred operational path because it " +
+        selected.whyThisWon + ". The core tradeoff is that " + selected.tradeoff.toLowerCase();
+
+      let outcomeNarrative = "No actual outcome has been recorded yet. Capture actual results to compare execution against the forecast.";
+      let learningNarrative = "The system can only provide provisional learning insight until actual execution results are entered.";
+
+      if (actual) {
+        const variance = buildSystemVariance(selected, actual);
+        const worstUnit = buildUnitVariance(selected, actual)
+          .slice()
+          .sort((a, b) => Math.abs(b.laborCostDelta) - Math.abs(a.laborCostDelta))[0];
+
+        outcomeNarrative =
+          "Actual execution finished with system utilization at " + fmtPercent(actual.system.systemUtilization) +
+          " versus a projected " + fmtPercent(selected.projectedSystem.systemUtilization) +
+          ", and labor cost at " + fmtMoney(actual.system.totalLaborCost) +
+          " versus a projected " + fmtMoney(selected.projectedSystem.totalLaborCost) + ".";
+
+        learningNarrative =
+          "Confidence is " + confidence.label.toLowerCase() +
+          " because forecast quality, benchmark alignment, and scenario separation combine to a score of " +
+          confidence.overall + "/100. " +
+          "The biggest learning signal came from " + worstUnit.name +
+          ", which showed a cost variance of " + (worstUnit.laborCostDelta >= 0 ? "+" : "-") + fmtMoney(Math.abs(worstUnit.laborCostDelta)) +
+          ".";
+      }
+
+      return {
+        recommendationNarrative,
+        outcomeNarrative,
+        learningNarrative,
+        bestOverallNote: bestOverall ? bestOverall.scenarioName : "No best overall scenario available."
+      };
+    }
+
+    function renderConfidenceAndInsights() {
+      const scenarios = getScenarioStore();
+      const selected = getSelectedScenario();
+      const actual = getSelectedActualOutcome();
+      const constraints = getActiveConstraints();
+
+      if (!selected || !constraints) {
+        byId("confidenceCard").innerHTML = "<h3>Confidence Score</h3><p>Select a scenario and save actual outcomes to generate confidence scoring.</p>";
+        byId("recommendationNarrativeCard").innerHTML = "<h3>Recommendation Narrative</h3><p>Recommendation narrative will appear here.</p>";
+        byId("outcomeNarrativeCard").innerHTML = "<h3>Outcome Narrative</h3><p>Outcome narrative will appear here after saving actual outcomes.</p>";
+        byId("learningNarrativeCard").innerHTML = "<h3>Learning Narrative</h3><p>Learning narrative will appear here after variance and confidence are calculated.</p>";
+        return;
+      }
+
+      const confidence = calculateConfidence(selected, scenarios, actual, constraints);
+      const narratives = buildNarratives(selected, scenarios, actual, constraints, confidence);
+
+      byId("confidenceCard").innerHTML =
+        "<h3>Confidence Score</h3>" +
+        "<span class='" + confidenceChipClass(confidence.label) + "'>" + confidence.label + "</span>" +
+        "<p><strong>Overall Confidence:</strong> " + confidence.overall + "/100</p>" +
+        "<div class='metric-line'>Input Quality: " + confidence.inputQuality + "</div>" +
+        "<div class='metric-line'>Constraint Stability: " + confidence.constraintStability + "</div>" +
+        "<div class='metric-line'>Scenario Separation: " + confidence.scenarioSeparation + "</div>" +
+        "<div class='metric-line'>Benchmark Alignment: " + confidence.benchmarkAlignment + "</div>" +
+        "<div class='metric-line'>Prediction Accuracy: " + confidence.predictionAccuracy + "</div>";
+
+      byId("recommendationNarrativeCard").innerHTML =
+        "<h3>Recommendation Narrative</h3><p>" + narratives.recommendationNarrative + "</p>";
+
+      byId("outcomeNarrativeCard").innerHTML =
+        "<h3>Outcome Narrative</h3><p>" + narratives.outcomeNarrative + "</p>";
+
+      byId("learningNarrativeCard").innerHTML =
+        "<h3>Learning Narrative</h3><p>" + narratives.learningNarrative + "</p>";
+    }
+
+    function renderDecisionBrief() {
+      const content = byId("decisionBriefContent");
+      const scenarios = getScenarioStore();
+      const selected = getSelectedScenario();
+      const actual = getSelectedActualOutcome();
+      const constraints = getActiveConstraints();
+      const bestOverall = getBestOverall(scenarios);
+      const chosen = selected || bestOverall;
 
       if (!twinState) {
         content.innerHTML = "Build the operational twin first to generate a decision brief.";
         return;
       }
 
-      const chosen = selected || bestOverall;
+      const confidence = chosen && constraints ? calculateConfidence(chosen, scenarios, actual, constraints) : null;
+      const benchmarks = chosen && actual && constraints ? evaluateBenchmarks(chosen, actual, constraints) : null;
+      const narratives = chosen && constraints ? buildNarratives(chosen, scenarios, actual, constraints, confidence || { label: "Moderate Confidence", overall: 50 }) : null;
 
-      let scenarioList = scenarios.length
+      const scenarioList = scenarios.length
         ? "<ul>" + scenarios.map(function (s) {
             return "<li><strong>" + s.scenarioName + "</strong> — " + s.recommendationClass + ", " + s.riskLevel + ", Score " + s.finalScore + "/100</li>";
           }).join("") + "</ul>"
         : "<p>No saved scenarios yet.</p>";
 
-      let chosenBlock = chosen
+      const actualSection = actual
         ? (
-          "<p><strong>Chosen Scenario for Brief:</strong> " + chosen.scenarioName + "</p>" +
-          "<p><strong>Constraint Fit:</strong> " + chosen.constraintSummary + "</p>" +
-          "<p><strong>Why it wins:</strong> " + chosen.whyThisWon + ".</p>" +
-          "<p><strong>Tradeoff:</strong> " + chosen.tradeoff + "</p>" +
-          "<p><strong>Next Action:</strong> " + chosen.nextAction + "</p>"
+          "<div class='brief-box'><strong>Actual Outcome Summary</strong><br>" +
+          "Actual Total Staff: " + actual.system.totalAvailableStaff + "<br>" +
+          "Actual Required Staff: " + actual.system.totalRequiredStaff + "<br>" +
+          "Actual Utilization: " + fmtPercent(actual.system.systemUtilization) + "<br>" +
+          "Actual Labor Cost: " + fmtMoney(actual.system.totalLaborCost) + "<br>" +
+          "Actual System Status: " + actual.system.systemStatus +
+          (actual.note ? "<br>Outcome Note: " + actual.note : "") +
+          "</div>"
         )
-        : "<p>No chosen scenario yet. Save scenarios first.</p>";
+        : "<div class='brief-box'><strong>Actual Outcome Summary</strong><br>No actual outcomes captured yet.</div>";
+
+      const learningSection = confidence
+        ? (
+          "<div class='brief-box'><strong>Confidence & Learning</strong><br>" +
+          "Confidence: " + confidence.label + " (" + confidence.overall + "/100)<br>" +
+          (benchmarks ? (
+            "Benchmark Alignment: " + benchmarks.alignmentScore.toFixed(1) + "/100<br>" +
+            "Utilization Benchmark: " + benchmarks.utilizationAssessment + "<br>" +
+            "Staffing Fit Benchmark: " + benchmarks.staffingFit + "<br>" +
+            "Cost Pressure Benchmark: " + benchmarks.costPressure + "<br>" +
+            "Resilience Benchmark: " + benchmarks.resilience + "<br><br>"
+          ) : "Benchmark alignment pending actual outcomes.<br><br>") +
+          (narratives ? "Learning Narrative: " + narratives.learningNarrative : "") +
+          "</div>"
+        )
+        : "";
 
       content.innerHTML =
         "<h3>Executive Decision Brief</h3>" +
-        "<p><strong>Case Name:</strong> " + caseMeta.caseName + "</p>" +
-        "<p><strong>Operation Type:</strong> " + caseMeta.operationType + "</p>" +
-        "<p><strong>Decision Objective:</strong> " + caseMeta.decisionObjective + "</p>" +
+        "<p><strong>Case Name:</strong> " + twinState.caseMeta.caseName + "</p>" +
+        "<p><strong>Operation Type:</strong> " + twinState.caseMeta.operationType + "</p>" +
+        "<p><strong>Decision Objective:</strong> " + twinState.caseMeta.decisionObjective + "</p>" +
 
-        "<div class='brief-box'>" +
-          "<strong>Baseline System Snapshot</strong><br>" +
-          "Total Available Staff: " + twinState.system.totalAvailableStaff + "<br>" +
-          "Total Required Staff: " + twinState.system.totalRequiredStaff + "<br>" +
-          "System Utilization: " + percent(twinState.system.systemUtilization) + "<br>" +
-          "Total Labor Cost: " + money(twinState.system.totalLaborCost) + "<br>" +
-          "System Status: " + twinState.system.systemStatus +
+        "<div class='brief-box'><strong>Baseline System Snapshot</strong><br>" +
+        "Total Available Staff: " + twinState.system.totalAvailableStaff + "<br>" +
+        "Total Required Staff: " + twinState.system.totalRequiredStaff + "<br>" +
+        "System Utilization: " + fmtPercent(twinState.system.systemUtilization) + "<br>" +
+        "Total Labor Cost: " + fmtMoney(twinState.system.totalLaborCost) + "<br>" +
+        "System Status: " + twinState.system.systemStatus + "</div>" +
+
+        "<div class='brief-box'><strong>Active Constraints</strong><br>" +
+        "Max Labor Budget: " + fmtMoney(constraints.maxLaborBudget) + "<br>" +
+        "Minimum Staffing Floor: " + constraints.minimumStaffingFloor + "<br>" +
+        "Preferred Utilization Band: " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%<br>" +
+        "Hard Utilization Ceiling: " + constraints.maximumUtilization + "%<br>" +
+        "Shortage Tolerance: " + constraints.shortageTolerancePercent + "%<br>" +
+        "Preferred Max Cost Increase: " + constraints.maxCostIncreasePercent + "%<br>" +
+        "Preferred Savings Target: " + constraints.minimumSavingsTargetPercent + "%</div>" +
+
+        "<div class='brief-box'><strong>Scenarios Compared</strong>" + scenarioList + "</div>" +
+
+        "<div class='brief-box'><strong>Recommendation Summary</strong><br>" +
+        (chosen
+          ? (
+            "Chosen Scenario: " + chosen.scenarioName + "<br>" +
+            "Verdict: " + chosen.recommendationClass + "<br>" +
+            "Why it wins: " + chosen.whyThisWon + ".<br>" +
+            "Tradeoff: " + chosen.tradeoff + "<br>" +
+            "Next Action: " + chosen.nextAction
+          )
+          : "No chosen scenario yet.") +
         "</div>" +
 
-        "<div class='brief-box'>" +
-          "<strong>Active Constraints</strong><br>" +
-          "Max Labor Budget: " + money(constraints.maxLaborBudget) + "<br>" +
-          "Minimum Staffing Floor: " + constraints.minimumStaffingFloor + "<br>" +
-          "Preferred Utilization Band: " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%<br>" +
-          "Hard Utilization Ceiling: " + constraints.maximumUtilization + "%<br>" +
-          "Shortage Tolerance: " + constraints.shortageTolerancePercent + "%<br>" +
-          "Preferred Max Cost Increase: " + constraints.maxCostIncreasePercent + "%<br>" +
-          "Preferred Savings Target: " + constraints.minimumSavingsTargetPercent + "%"
-        "</div>" +
-
-        "<div class='brief-box'>" +
-          "<strong>Scenarios Compared</strong>" +
-          scenarioList +
-        "</div>" +
-
-        "<div class='brief-box'>" +
-          "<strong>Recommendation Summary</strong>" +
-          chosenBlock +
-        "</div>";
+        actualSection +
+        learningSection;
     }
 
     function sendReviewRequest() {
-      const name = document.getElementById("leadName").value.trim();
-      const email = document.getElementById("leadEmail").value.trim();
-      const company = document.getElementById("leadCompany").value.trim();
-      const useCase = document.getElementById("leadUseCase").value.trim();
-      const challenge = document.getElementById("leadChallenge").value.trim();
-      const resultBox = document.getElementById("contactResult");
+      const name = byId("leadName").value.trim();
+      const email = byId("leadEmail").value.trim();
+      const company = byId("leadCompany").value.trim();
+      const useCase = byId("leadUseCase").value.trim();
+      const challenge = byId("leadChallenge").value.trim();
+      const resultBox = byId("contactResult");
 
       if (!name || !email || !challenge) {
         resultBox.innerHTML = "Please fill in at least Full Name, Email Address, and Operational Challenge.";
@@ -2258,9 +2973,15 @@
     }
 
     loadConstraints();
+    loadTwinState();
     renderCaseSummary();
     renderDecisionUniverse();
+    renderOutcomeCaptureCenter();
+    renderVisualLayer();
+    renderBenchmarkCenter();
+    renderConfidenceAndInsights();
     renderDecisionBrief();
+    updateScenarioTargetOptions();
     toggleScenarioTargetUnit();
   </script>
 </body>
