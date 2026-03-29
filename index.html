@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepNexivra — Decision Universe v1</title>
+  <title>DeepNexivra — Constraint Intelligence v1</title>
 
   <style>
     * {
@@ -97,7 +97,7 @@
 
     .hero p,
     .section p {
-      max-width: 780px;
+      max-width: 790px;
       line-height: 1.7;
       color: #cbd5e1;
       font-size: 16px;
@@ -242,7 +242,7 @@
       border-radius: 18px;
       padding: 28px;
       margin-top: 26px;
-      max-width: 980px;
+      max-width: 1040px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
 
@@ -324,7 +324,8 @@
 
     .status-chip,
     .risk-chip,
-    .rec-chip {
+    .rec-chip,
+    .constraint-chip {
       display: inline-block;
       padding: 8px 14px;
       border-radius: 999px;
@@ -338,7 +339,8 @@
 
     .status-green,
     .risk-low,
-    .rec-strong {
+    .rec-strong,
+    .constraint-good {
       background: rgba(34, 197, 94, 0.15);
       color: #86efac;
       border-color: rgba(34, 197, 94, 0.35);
@@ -346,7 +348,8 @@
 
     .status-yellow,
     .risk-moderate,
-    .rec-caution {
+    .rec-caution,
+    .constraint-warning {
       background: rgba(234, 179, 8, 0.15);
       color: #fde68a;
       border-color: rgba(234, 179, 8, 0.35);
@@ -354,7 +357,8 @@
 
     .status-red,
     .risk-high,
-    .rec-reject {
+    .rec-reject,
+    .constraint-breach {
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
       border-color: rgba(239, 68, 68, 0.35);
@@ -387,7 +391,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 980px;
+      min-width: 1180px;
     }
 
     th,
@@ -471,22 +475,6 @@
       font-size: 14px;
     }
 
-    .empty-state {
-      padding: 18px;
-      border-radius: 12px;
-      border: 1px dashed #334155;
-      color: #94a3b8;
-      margin-top: 20px;
-    }
-
-    .footer {
-      border-top: 1px solid #1e293b;
-      margin-top: 40px;
-      padding: 28px 20px 50px;
-      color: #94a3b8;
-      text-align: center;
-    }
-
     @media (max-width: 900px) {
       .hero-grid,
       .form-grid {
@@ -527,8 +515,9 @@
       <div class="brand">DeepNexivra</div>
       <div class="nav-links">
         <a href="#capabilities">Capabilities</a>
-        <a href="#workforce-tool">Workforce Tool</a>
-        <a href="#cost-tool">Cost Tool</a>
+        <a href="#workforce-tool">Workforce</a>
+        <a href="#cost-tool">Cost</a>
+        <a href="#constraints">Constraints</a>
         <a href="#scenario-lab">Scenario Lab</a>
         <a href="#decision-universe">Decision Universe</a>
         <a href="#contact">Contact</a>
@@ -540,39 +529,39 @@
     <div class="container">
       <div class="hero-grid">
         <div>
-          <p class="subheading">Operational Intelligence for Counterfactual Decisions</p>
-          <h1>Build a decision universe before you make a costly move.</h1>
+          <p class="subheading">Constraint-Aware Operational Intelligence</p>
+          <h1>Model reality, simulate futures, and reject weak decisions early.</h1>
           <p>
-            DeepNexivra models your current operation, simulates alternate futures,
-            compares viable scenarios, and recommends the highest-ROI path under
-            labor, cost, and utilization pressure.
+            DeepNexivra now evaluates alternate futures against labor budget,
+            staffing floors, utilization ceilings, and tolerance rules so the
+            system recommends paths that are not only attractive, but realistic.
           </p>
 
           <div class="buttons">
-            <a href="#scenario-lab" class="btn primary">Open Scenario Lab</a>
-            <a href="#decision-universe" class="btn secondary">View Decision Universe</a>
-            <a href="#contact" class="btn ghost">Request Review</a>
+            <a href="#constraints" class="btn primary">Set Constraints</a>
+            <a href="#scenario-lab" class="btn secondary">Run Scenario</a>
+            <a href="#decision-universe" class="btn ghost">View Decision Universe</a>
           </div>
         </div>
 
         <div class="hero-panel">
-          <h3>Decision Universe v1</h3>
+          <h3>Constraint Intelligence v1</h3>
           <div class="mini-metrics">
             <div class="mini-card">
-              <div class="label">Baseline</div>
-              <div class="value">Model</div>
+              <div class="label">Budget</div>
+              <div class="value">Guardrail</div>
             </div>
             <div class="mini-card">
-              <div class="label">Future</div>
-              <div class="value">Simulate</div>
+              <div class="label">Staffing</div>
+              <div class="value">Floor</div>
             </div>
             <div class="mini-card">
-              <div class="label">Options</div>
-              <div class="value">Compare</div>
+              <div class="label">Utilization</div>
+              <div class="value">Ceiling</div>
             </div>
             <div class="mini-card">
-              <div class="label">Output</div>
-              <div class="value">Recommend</div>
+              <div class="label">Outcome</div>
+              <div class="value">Viability</div>
             </div>
           </div>
         </div>
@@ -583,26 +572,26 @@
   <div class="section" id="capabilities">
     <h2>Core Capabilities</h2>
     <p>
-      DeepNexivra is designed for labor-driven operations under demand uncertainty,
-      where the right staffing and cost decision depends on realistic tradeoffs.
+      DeepNexivra now combines baseline modeling, scenario simulation, constraint
+      checking, and decision memory into one operational case workflow.
     </p>
 
     <div class="cards">
       <div class="card">
-        <div class="card-title">Operational Baseline</div>
-        <div class="card-text">Convert current staff, workload, shift hours, wage, and productivity into an operating model.</div>
+        <div class="card-title">Baseline Modeling</div>
+        <div class="card-text">Turn current staff, demand, wage, and productivity inputs into a usable operating model.</div>
       </div>
       <div class="card">
         <div class="card-title">Scenario Simulation</div>
-        <div class="card-text">Test alternate futures such as demand shifts, wage changes, productivity moves, and staffing changes.</div>
+        <div class="card-text">Test demand, staffing, productivity, and wage shifts before making operational moves.</div>
       </div>
       <div class="card">
-        <div class="card-title">Decision Memory</div>
-        <div class="card-text">Save multiple scenario runs and compare them as one structured decision universe.</div>
+        <div class="card-title">Constraint Intelligence</div>
+        <div class="card-text">Reject or downgrade scenarios that break budget, staffing, or utilization limits.</div>
       </div>
       <div class="card">
-        <div class="card-title">Recommendation Logic</div>
-        <div class="card-text">Rank scenarios by score, risk, cost, and viability to identify the strongest path.</div>
+        <div class="card-title">Decision Universe</div>
+        <div class="card-text">Save multiple futures, rank them, and see which path is strongest overall.</div>
       </div>
     </div>
   </div>
@@ -679,11 +668,78 @@
     </div>
   </div>
 
+  <div class="section" id="constraints">
+    <h2>Constraint Intelligence v1</h2>
+    <p>
+      Define the operating limits that separate an attractive scenario from a viable one.
+      These values shape scenario scoring, recommendation classes, and Decision Universe winners.
+    </p>
+
+    <div class="tool-box">
+      <div class="form-grid">
+        <div>
+          <label for="maxLaborBudget">Maximum Labor Budget ($)</label>
+          <input type="number" id="maxLaborBudget" placeholder="e.g. 25000" />
+        </div>
+
+        <div>
+          <label for="minimumStaffingFloor">Minimum Staffing Floor</label>
+          <input type="number" id="minimumStaffingFloor" placeholder="e.g. 100" />
+        </div>
+
+        <div>
+          <label for="preferredUtilizationMin">Preferred Utilization Min (%)</label>
+          <input type="number" id="preferredUtilizationMin" placeholder="e.g. 75" />
+        </div>
+
+        <div>
+          <label for="preferredUtilizationMax">Preferred Utilization Max (%)</label>
+          <input type="number" id="preferredUtilizationMax" placeholder="e.g. 85" />
+        </div>
+
+        <div>
+          <label for="maximumUtilization">Maximum Utilization Ceiling (%)</label>
+          <input type="number" id="maximumUtilization" placeholder="e.g. 95" />
+        </div>
+
+        <div>
+          <label for="shortageTolerancePercent">Shortage Tolerance (%)</label>
+          <input type="number" id="shortageTolerancePercent" placeholder="e.g. 0" />
+        </div>
+
+        <div>
+          <label for="maxCostIncreasePercent">Preferred Max Cost Increase (%)</label>
+          <input type="number" id="maxCostIncreasePercent" placeholder="e.g. 10" />
+        </div>
+
+        <div>
+          <label for="minimumSavingsTargetPercent">Preferred Minimum Savings Target (%)</label>
+          <input type="number" id="minimumSavingsTargetPercent" placeholder="e.g. 5" />
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="primary" onclick="saveConstraints()">Apply / Save Constraints</button>
+        <button class="ghost" onclick="resetConstraintsToDefault()">Reset Defaults</button>
+      </div>
+
+      <div class="result" id="constraintResult">
+        Active constraint profile will appear here.
+      </div>
+
+      <div class="dashboard-grid" id="constraintProfileCards"></div>
+
+      <div class="footer-note">
+        Hard constraints drive viability. Soft constraints create warnings and score pressure.
+      </div>
+    </div>
+  </div>
+
   <div class="section" id="scenario-lab">
     <h2>Scenario Lab</h2>
     <p>
-      Simulate future operating conditions and compare projected staffing, utilization,
-      labor cost, and decision impact before action is taken.
+      Simulate future operating conditions against the active constraint profile to see
+      which futures remain compliant, which move into warning zones, and which become non-viable.
     </p>
 
     <div class="tool-box">
@@ -730,11 +786,11 @@
       </div>
 
       <div class="result" id="scenarioResult">
-        Scenario results and strategic recommendation will appear here.
+        Scenario results, constraint outcomes, and recommendation logic will appear here.
       </div>
 
       <div class="footer-note">
-        Decision Universe v1 uses your current workforce and cost inputs as the baseline operating model.
+        Scenario output now evaluates hard breaches, soft warnings, and constraint-aware recommendation class.
       </div>
     </div>
   </div>
@@ -742,27 +798,27 @@
   <div class="section" id="decision-universe">
     <h2>Decision Universe</h2>
     <p>
-      Save multiple tested futures, compare them side by side, and identify the best
-      overall, cheapest viable, and safest viable path.
+      Save multiple futures, compare them under the same constraint profile, and identify
+      the best overall, cheapest viable, and safest viable option.
     </p>
 
     <div class="summary-grid">
       <div class="summary-card" id="bestOverallCard">
         <h3>Best Overall</h3>
         <div class="winner-name">No saved scenarios yet</div>
-        <div class="winner-metric">Run and save scenarios to see the strongest overall option.</div>
+        <div class="winner-metric">Run and save scenarios to identify the strongest constraint-aware option.</div>
       </div>
 
       <div class="summary-card" id="cheapestViableCard">
         <h3>Cheapest Viable</h3>
         <div class="winner-name">No saved scenarios yet</div>
-        <div class="winner-metric">The lowest-cost viable scenario will appear here.</div>
+        <div class="winner-metric">The lowest-cost scenario that remains viable will appear here.</div>
       </div>
 
       <div class="summary-card" id="safestViableCard">
         <h3>Safest Viable</h3>
         <div class="winner-name">No saved scenarios yet</div>
-        <div class="winner-metric">The safest viable scenario will appear here.</div>
+        <div class="winner-metric">The most resilient viable option will appear here.</div>
       </div>
     </div>
 
@@ -776,6 +832,7 @@
           <tr>
             <th>Scenario</th>
             <th>Change %</th>
+            <th>Constraint Fit</th>
             <th>Required Staff</th>
             <th>Projected Staff</th>
             <th>Utilization</th>
@@ -788,7 +845,7 @@
         </thead>
         <tbody id="decisionUniverseTableBody">
           <tr>
-            <td colspan="10" class="muted">No scenarios saved yet.</td>
+            <td colspan="11" class="muted">No scenarios saved yet.</td>
           </tr>
         </tbody>
       </table>
@@ -797,7 +854,7 @@
     <div class="decision-center" id="recommendationCenter">
       <h3>Final Recommendation Center</h3>
       <p>
-        Save at least one scenario to generate a structured recommendation summary.
+        Save at least one scenario to generate a constraint-aware recommendation summary.
       </p>
     </div>
   </div>
@@ -883,12 +940,29 @@
   </div>
 
   <div class="footer">
-    © 2026 DeepNexivra. Decision Universe v1 for labor-driven operational intelligence.
+    © 2026 DeepNexivra. Constraint Intelligence v1 for operational decision systems.
   </div>
 
   <script>
-    const STORAGE_KEY = "deepnexivra_decision_universe_v1";
+    const STORAGE_SCENARIOS = "deepnexivra_decision_universe_v1_constraints";
+    const STORAGE_CONSTRAINTS = "deepnexivra_constraint_profile_v1";
+
+    const DEFAULT_CONSTRAINTS = {
+      maxLaborBudget: 25000,
+      minimumStaffingFloor: 100,
+      preferredUtilizationMin: 75,
+      preferredUtilizationMax: 85,
+      maximumUtilization: 95,
+      shortageTolerancePercent: 0,
+      maxCostIncreasePercent: 10,
+      minimumSavingsTargetPercent: 5
+    };
+
     let currentScenarioSnapshot = null;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
 
     function setStatusChip(statusText, type) {
       const statusElement = document.getElementById("dashboardStatus");
@@ -915,6 +989,147 @@
       document.getElementById("costShiftHours").value = 7.5;
       document.getElementById("costWorkload").value = 5000;
       document.getElementById("costProductivity").value = 120;
+    }
+
+    function setConstraintInputs(constraints) {
+      document.getElementById("maxLaborBudget").value = constraints.maxLaborBudget;
+      document.getElementById("minimumStaffingFloor").value = constraints.minimumStaffingFloor;
+      document.getElementById("preferredUtilizationMin").value = constraints.preferredUtilizationMin;
+      document.getElementById("preferredUtilizationMax").value = constraints.preferredUtilizationMax;
+      document.getElementById("maximumUtilization").value = constraints.maximumUtilization;
+      document.getElementById("shortageTolerancePercent").value = constraints.shortageTolerancePercent;
+      document.getElementById("maxCostIncreasePercent").value = constraints.maxCostIncreasePercent;
+      document.getElementById("minimumSavingsTargetPercent").value = constraints.minimumSavingsTargetPercent;
+    }
+
+    function getConstraintInputs() {
+      return {
+        maxLaborBudget: parseFloat(document.getElementById("maxLaborBudget").value),
+        minimumStaffingFloor: parseFloat(document.getElementById("minimumStaffingFloor").value),
+        preferredUtilizationMin: parseFloat(document.getElementById("preferredUtilizationMin").value),
+        preferredUtilizationMax: parseFloat(document.getElementById("preferredUtilizationMax").value),
+        maximumUtilization: parseFloat(document.getElementById("maximumUtilization").value),
+        shortageTolerancePercent: parseFloat(document.getElementById("shortageTolerancePercent").value),
+        maxCostIncreasePercent: parseFloat(document.getElementById("maxCostIncreasePercent").value),
+        minimumSavingsTargetPercent: parseFloat(document.getElementById("minimumSavingsTargetPercent").value)
+      };
+    }
+
+    function validateConstraints(constraints) {
+      if (
+        isNaN(constraints.maxLaborBudget) ||
+        isNaN(constraints.minimumStaffingFloor) ||
+        isNaN(constraints.preferredUtilizationMin) ||
+        isNaN(constraints.preferredUtilizationMax) ||
+        isNaN(constraints.maximumUtilization) ||
+        isNaN(constraints.shortageTolerancePercent) ||
+        isNaN(constraints.maxCostIncreasePercent) ||
+        isNaN(constraints.minimumSavingsTargetPercent)
+      ) {
+        return { valid: false, message: "Please complete all constraint fields with valid numbers." };
+      }
+
+      if (
+        constraints.maxLaborBudget <= 0 ||
+        constraints.minimumStaffingFloor < 0 ||
+        constraints.preferredUtilizationMin < 0 ||
+        constraints.preferredUtilizationMax <= 0 ||
+        constraints.maximumUtilization <= 0 ||
+        constraints.shortageTolerancePercent < 0 ||
+        constraints.maxCostIncreasePercent < 0 ||
+        constraints.minimumSavingsTargetPercent < 0
+      ) {
+        return { valid: false, message: "Constraint values must be non-negative, and budget / utilization ceilings must be positive." };
+      }
+
+      if (constraints.preferredUtilizationMin >= constraints.preferredUtilizationMax) {
+        return { valid: false, message: "Preferred utilization minimum must be lower than the preferred utilization maximum." };
+      }
+
+      if (constraints.preferredUtilizationMax > constraints.maximumUtilization) {
+        return { valid: false, message: "Preferred utilization maximum should not exceed the hard utilization ceiling." };
+      }
+
+      return { valid: true, message: "Constraint profile looks valid." };
+    }
+
+    function renderConstraintProfileCards(constraints) {
+      document.getElementById("constraintProfileCards").innerHTML =
+        "<div class='dashboard-card'>" +
+          "<div class='dashboard-label'>Max Labor Budget</div>" +
+          "<div class='dashboard-value'>$" + constraints.maxLaborBudget.toFixed(0) + "</div>" +
+        "</div>" +
+        "<div class='dashboard-card'>" +
+          "<div class='dashboard-label'>Minimum Staffing Floor</div>" +
+          "<div class='dashboard-value'>" + constraints.minimumStaffingFloor.toFixed(0) + "</div>" +
+        "</div>" +
+        "<div class='dashboard-card'>" +
+          "<div class='dashboard-label'>Preferred Utilization Band</div>" +
+          "<div class='dashboard-value'>" + constraints.preferredUtilizationMin.toFixed(0) + "%–" + constraints.preferredUtilizationMax.toFixed(0) + "%</div>" +
+        "</div>" +
+        "<div class='dashboard-card'>" +
+          "<div class='dashboard-label'>Hard Utilization Ceiling</div>" +
+          "<div class='dashboard-value'>" + constraints.maximumUtilization.toFixed(0) + "%</div>" +
+        "</div>";
+    }
+
+    function renderConstraintResultBox(constraints, messagePrefix) {
+      document.getElementById("constraintResult").innerHTML =
+        "<strong>" + messagePrefix + "</strong><br>" +
+        "Hard guardrails: labor budget ≤ $" + constraints.maxLaborBudget.toFixed(0) +
+        ", staffing floor ≥ " + constraints.minimumStaffingFloor.toFixed(0) +
+        ", utilization ceiling ≤ " + constraints.maximumUtilization.toFixed(0) + "%.<br>" +
+        "Preferred operating band: " + constraints.preferredUtilizationMin.toFixed(0) + "%–" +
+        constraints.preferredUtilizationMax.toFixed(0) + "% utilization, max preferred cost increase " +
+        constraints.maxCostIncreasePercent.toFixed(0) + "%, target savings " +
+        constraints.minimumSavingsTargetPercent.toFixed(0) + "% where reduction is expected.";
+    }
+
+    function loadConstraints() {
+      let constraints = DEFAULT_CONSTRAINTS;
+
+      try {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_CONSTRAINTS));
+        if (stored) {
+          constraints = stored;
+        }
+      } catch (error) {}
+
+      setConstraintInputs(constraints);
+      renderConstraintProfileCards(constraints);
+      renderConstraintResultBox(constraints, "Active constraint profile loaded.");
+    }
+
+    function saveConstraints() {
+      const constraints = getConstraintInputs();
+      const validation = validateConstraints(constraints);
+
+      if (!validation.valid) {
+        document.getElementById("constraintResult").innerHTML = validation.message;
+        return;
+      }
+
+      localStorage.setItem(STORAGE_CONSTRAINTS, JSON.stringify(constraints));
+      renderConstraintProfileCards(constraints);
+      renderConstraintResultBox(constraints, "Constraint profile saved and applied.");
+    }
+
+    function resetConstraintsToDefault() {
+      localStorage.setItem(STORAGE_CONSTRAINTS, JSON.stringify(DEFAULT_CONSTRAINTS));
+      setConstraintInputs(DEFAULT_CONSTRAINTS);
+      renderConstraintProfileCards(DEFAULT_CONSTRAINTS);
+      renderConstraintResultBox(DEFAULT_CONSTRAINTS, "Constraint profile reset to defaults.");
+    }
+
+    function getActiveConstraints() {
+      const constraints = getConstraintInputs();
+      const validation = validateConstraints(constraints);
+
+      if (!validation.valid) {
+        return null;
+      }
+
+      return constraints;
     }
 
     function calculateWorkforce() {
@@ -1045,10 +1260,6 @@
       return labels[type] || "Scenario";
     }
 
-    function clamp(value, min, max) {
-      return Math.max(min, Math.min(max, value));
-    }
-
     function getBaselineInputsForScenario() {
       const availableStaff = parseFloat(document.getElementById("availableStaff").value);
       const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
@@ -1074,7 +1285,9 @@
       };
     }
 
-    function validateScenarioInputs(data, scenarioPercent) {
+    function validateScenarioInputs(data, scenarioPercent, constraints) {
+      if (!constraints) return false;
+
       return !(
         isNaN(data.availableStaff) ||
         isNaN(data.requiredWorkload) ||
@@ -1099,70 +1312,162 @@
       );
     }
 
+    function evaluateConstraints(projectedLaborCost, baselineLaborCost, projectedStaff, projectedRequiredStaff, projectedUtilization, scenarioType, constraints) {
+      const hardBreaches = [];
+      const softWarnings = [];
+      const allowedShortage = projectedRequiredStaff * (constraints.shortageTolerancePercent / 100);
+      const costIncreasePct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
+      const savingsPct = ((baselineLaborCost - projectedLaborCost) / baselineLaborCost) * 100;
+
+      if (projectedLaborCost > constraints.maxLaborBudget) {
+        hardBreaches.push("Labor budget cap exceeded");
+      }
+
+      if (projectedStaff < constraints.minimumStaffingFloor) {
+        hardBreaches.push("Minimum staffing floor breached");
+      }
+
+      if (projectedStaff < projectedRequiredStaff - allowedShortage) {
+        hardBreaches.push("Staff shortage exceeds allowed tolerance");
+      }
+
+      if (projectedUtilization > constraints.maximumUtilization) {
+        hardBreaches.push("Maximum utilization ceiling exceeded");
+      }
+
+      if (
+        projectedUtilization < constraints.preferredUtilizationMin ||
+        projectedUtilization > constraints.preferredUtilizationMax
+      ) {
+        softWarnings.push("Outside preferred utilization band");
+      }
+
+      if (costIncreasePct > constraints.maxCostIncreasePercent) {
+        softWarnings.push("Cost increase exceeds preferred limit");
+      }
+
+      const savingsRelevant = ["productivity_up", "staff_down", "wage_down", "demand_down"].includes(scenarioType);
+      if (savingsRelevant && savingsPct < constraints.minimumSavingsTargetPercent) {
+        softWarnings.push("Savings target not achieved");
+      }
+
+      const bufferPct = ((projectedStaff - projectedRequiredStaff) / projectedRequiredStaff) * 100;
+      if (projectedStaff >= projectedRequiredStaff && bufferPct < 3) {
+        softWarnings.push("Limited staffing buffer");
+      }
+
+      const viable = hardBreaches.length === 0;
+
+      let summary = "Compliant";
+      if (!viable) {
+        summary = "Hard Constraint Breach";
+      } else if (softWarnings.length > 0) {
+        summary = softWarnings.length + " Warning" + (softWarnings.length > 1 ? "s" : "");
+      }
+
+      return {
+        hardBreaches: hardBreaches,
+        softWarnings: softWarnings,
+        viable: viable,
+        summary: summary,
+        costIncreasePct: costIncreasePct,
+        savingsPct: savingsPct
+      };
+    }
+
     function scoreCostEfficiency(projectedLaborCost, baselineLaborCost) {
       const deltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
 
       if (deltaPct <= -10) return 100;
-      if (deltaPct <= 0) return clamp(95 + (deltaPct / 10) * 10, 85, 95);
+      if (deltaPct <= 0) return 90;
       if (deltaPct <= 5) return 75;
       if (deltaPct <= 10) return 55;
       if (deltaPct <= 20) return 35;
       return 15;
     }
 
-    function scoreCapacityFit(projectedStaff, projectedRequiredStaff) {
+    function scoreCapacityFit(projectedStaff, projectedRequiredStaff, shortageTolerancePercent) {
       const gap = projectedStaff - projectedRequiredStaff;
       const gapPct = (gap / projectedRequiredStaff) * 100;
 
       if (gapPct >= 0 && gapPct <= 5) return 100;
       if (gapPct > 5 && gapPct <= 15) return 85;
-      if (gapPct > 15 && gapPct <= 30) return 65;
-      if (gapPct > 30) return 45;
-      if (gapPct >= -5) return 40;
-      if (gapPct >= -15) return 20;
+      if (gapPct > 15 && gapPct <= 30) return 60;
+      if (gapPct > 30) return 40;
+
+      if (gapPct >= -1 * shortageTolerancePercent) return 60;
+      if (gapPct >= -5) return 30;
       return 0;
     }
 
-    function scoreUtilizationHealth(utilization) {
-      if (utilization >= 75 && utilization <= 85) return 100;
-      if ((utilization > 85 && utilization <= 90) || (utilization >= 65 && utilization < 75)) return 85;
-      if ((utilization > 90 && utilization <= 95) || (utilization >= 55 && utilization < 65)) return 60;
-      if ((utilization > 95 && utilization <= 100) || (utilization >= 45 && utilization < 55)) return 30;
-      return 10;
+    function scoreUtilizationHealth(projectedUtilization, constraints) {
+      if (
+        projectedUtilization >= constraints.preferredUtilizationMin &&
+        projectedUtilization <= constraints.preferredUtilizationMax
+      ) {
+        return 100;
+      }
+
+      if (
+        projectedUtilization > constraints.preferredUtilizationMax &&
+        projectedUtilization <= constraints.maximumUtilization
+      ) {
+        const distance = projectedUtilization - constraints.preferredUtilizationMax;
+        return clamp(85 - distance * 6, 20, 85);
+      }
+
+      if (projectedUtilization < constraints.preferredUtilizationMin) {
+        const distance = constraints.preferredUtilizationMin - projectedUtilization;
+        return clamp(85 - distance * 3, 30, 85);
+      }
+
+      return 0;
     }
 
-    function scoreConstraintCompliance(projectedLaborCost, baselineLaborCost, projectedStaff, projectedRequiredStaff, utilization) {
-      let score = 100;
+    function scoreConstraintCompliance(constraintEval) {
+      if (!constraintEval.viable) {
+        return clamp(20 - (constraintEval.hardBreaches.length - 1) * 5, 0, 20);
+      }
 
-      if (projectedStaff < projectedRequiredStaff) score -= 60;
-      if (utilization > 95) score -= 60;
-
-      const budgetDeltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
-      if (budgetDeltaPct > 10) score -= 20;
-      if (budgetDeltaPct > 25) score -= 20;
-
-      return clamp(score, 0, 100);
+      return clamp(100 - constraintEval.softWarnings.length * 15, 55, 100);
     }
 
-    function scoreStrategicQuality(projectedStaff, projectedRequiredStaff, utilization) {
-      const gap = projectedStaff - projectedRequiredStaff;
-      const gapPct = (gap / projectedRequiredStaff) * 100;
+    function scoreStrategicQuality(projectedStaff, projectedRequiredStaff, projectedUtilization, constraintEval, constraints) {
+      if (!constraintEval.viable) return 10;
 
-      if (gapPct >= 5 && utilization >= 70 && utilization <= 85) return 95;
-      if (gapPct >= 0 && utilization > 85 && utilization <= 90) return 75;
-      if (gapPct >= 0 && utilization >= 65 && utilization < 70) return 75;
-      if (gapPct < 0 || utilization > 95) return 20;
-      return 55;
+      let score = 70;
+      const bufferPct = ((projectedStaff - projectedRequiredStaff) / projectedRequiredStaff) * 100;
+
+      if (
+        projectedUtilization >= constraints.preferredUtilizationMin &&
+        projectedUtilization <= constraints.preferredUtilizationMax
+      ) {
+        score += 15;
+      }
+
+      if (bufferPct >= 0 && bufferPct <= 10) {
+        score += 10;
+      } else if (bufferPct > 20) {
+        score -= 10;
+      } else if (bufferPct < 0) {
+        score -= 30;
+      }
+
+      score -= constraintEval.softWarnings.length * 8;
+
+      return clamp(score, 10, 95);
     }
 
-    function getRiskLevel(projectedStaff, projectedRequiredStaff, utilization, projectedLaborCost, baselineLaborCost) {
-      const budgetDeltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
-
-      if (projectedStaff < projectedRequiredStaff || utilization > 95) {
+    function getRiskLevel(projectedUtilization, constraintEval) {
+      if (!constraintEval.viable) {
         return "High Risk";
       }
 
-      if (utilization >= 85 || budgetDeltaPct > 10) {
+      if (constraintEval.softWarnings.length >= 2 || projectedUtilization >= 90) {
+        return "Moderate Risk";
+      }
+
+      if (constraintEval.softWarnings.length >= 1) {
         return "Moderate Risk";
       }
 
@@ -1181,11 +1486,17 @@
       return 3;
     }
 
+    function getConstraintClass(summary) {
+      if (summary === "Compliant") return "constraint-chip constraint-good";
+      if (summary === "Hard Constraint Breach") return "constraint-chip constraint-breach";
+      return "constraint-chip constraint-warning";
+    }
+
     function getRecommendationClass(finalScore, viable, riskLevel) {
-      if (!viable) return "Do Not Recommend";
+      if (!viable) return "Non-Viable";
       if (finalScore >= 85 && riskLevel === "Low Risk") return "Strongly Recommend";
-      if (finalScore >= 75) return "Recommend";
-      if (finalScore >= 60) return "Consider with Caution";
+      if (finalScore >= 72) return "Recommend";
+      if (finalScore >= 55) return "Consider with Caution";
       return "Do Not Recommend";
     }
 
@@ -1196,65 +1507,65 @@
       return "rec-chip rec-reject";
     }
 
-    function buildScenarioNarrative(scenarioType, riskLevel, viable, scores, projectedUtilization, projectedStaff, projectedRequiredStaff, projectedLaborCost, baselineLaborCost) {
+    function buildScenarioNarrative(scenarioType, constraintEval, scores, riskLevel) {
       const whyParts = [];
 
-      if (scores.constraintComplianceScore >= 85) whyParts.push("remains within the default operating limits");
-      if (scores.utilizationHealthScore >= 85) whyParts.push("keeps utilization in a healthier range");
-      if (scores.capacityFitScore >= 85) whyParts.push("maintains strong staffing fit");
-      if (scores.costEfficiencyScore >= 85) whyParts.push("improves cost efficiency");
-      if (scores.strategicQualityScore >= 85) whyParts.push("preserves stronger operating resilience");
+      if (constraintEval.viable) whyParts.push("stays within the hard operating constraints");
+      if (scores.utilizationHealthScore >= 85) whyParts.push("keeps utilization closer to the preferred operating band");
+      if (scores.capacityFitScore >= 85) whyParts.push("maintains stronger staffing fit");
+      if (scores.costEfficiencyScore >= 85) whyParts.push("improves labor cost efficiency");
+      if (scores.constraintComplianceScore >= 85) whyParts.push("avoids major compliance pressure");
 
       const whyThisWon = whyParts.length
         ? whyParts.slice(0, 3).join(", ")
-        : "balances the major decision dimensions better than weaker alternatives";
+        : "balances the key decision dimensions better than weaker alternatives";
 
-      let tradeoff = "This scenario still needs operational monitoring after implementation.";
+      let tradeoff = "This scenario should still be monitored after implementation.";
 
-      if (scenarioType === "productivity_up") {
-        tradeoff = "Value depends on actually delivering the projected productivity improvement in practice.";
-      } else if (scenarioType === "productivity_down") {
-        tradeoff = "This scenario assumes performance deterioration, so resilience becomes more important than cost elegance.";
-      } else if (scenarioType === "demand_up") {
-        tradeoff = "Rising demand adds load pressure and can tighten staffing buffer if demand remains elevated.";
-      } else if (scenarioType === "demand_down") {
-        tradeoff = "Lower demand assumptions should be validated before reducing labor commitment too aggressively.";
-      } else if (scenarioType === "staff_up") {
-        tradeoff = "Capacity improves, but labor cost increases and excess staffing risk can emerge if demand stays flat.";
+      if (!constraintEval.viable) {
+        tradeoff = "This scenario breaks at least one hard constraint and cannot be treated as operationally valid.";
+      } else if (constraintEval.softWarnings.length > 0) {
+        tradeoff = "This scenario remains viable, but it carries pressure around " + constraintEval.softWarnings.join(", ").toLowerCase() + ".";
+      } else if (scenarioType === "productivity_up") {
+        tradeoff = "The projected benefit depends on delivering the assumed productivity gain in practice.";
       } else if (scenarioType === "staff_down") {
-        tradeoff = "Lower staffing can reduce cost, but resilience weakens if demand or absenteeism rises.";
-      } else if (scenarioType === "wage_up") {
-        tradeoff = "Financial pressure rises unless offset by productivity or operating redesign.";
-      } else if (scenarioType === "wage_down") {
-        tradeoff = "Savings rely on wage conditions remaining favorable and sustainable.";
+        tradeoff = "Lower staffing can improve cost performance but reduces resilience if demand spikes.";
+      } else if (scenarioType === "demand_up") {
+        tradeoff = "Higher demand can push the operation tighter over time if workload remains elevated.";
       }
 
-      let nextAction = "Review this scenario with current demand assumptions and operational tolerance before execution.";
+      let nextAction = "Review this scenario against current workload assumptions before adopting it.";
 
-      if (!viable) {
-        nextAction = "Do not execute this scenario unless baseline conditions or key assumptions change materially.";
+      if (!constraintEval.viable) {
+        nextAction = "Do not execute this scenario unless budget, staffing, or utilization conditions change materially.";
       } else if (riskLevel === "Low Risk") {
-        nextAction = "Use this as a primary candidate and validate it through a short pilot or operating review.";
-      } else if (riskLevel === "Moderate Risk") {
-        nextAction = "Use caution and monitor utilization and buffer capacity closely if this option is pursued.";
+        nextAction = "Use this as a primary candidate and validate it through a short operational pilot or management review.";
       } else {
-        nextAction = "Escalate this scenario for review before acting because operational fragility is high.";
+        nextAction = "Proceed with caution and monitor utilization, staffing buffer, and cost pressure closely.";
       }
 
       return {
-        whyThisWon,
-        tradeoff,
-        nextAction
+        whyThisWon: whyThisWon,
+        tradeoff: tradeoff,
+        nextAction: nextAction
       };
     }
 
     function calculateScenarioLab() {
+      const constraints = getActiveConstraints();
       const data = getBaselineInputsForScenario();
       const scenarioType = document.getElementById("scenarioType").value;
       const scenarioPercent = parseFloat(document.getElementById("scenarioPercent").value);
       const resultBox = document.getElementById("scenarioResult");
 
-      if (!validateScenarioInputs(data, scenarioPercent)) {
+      if (!constraints) {
+        resultBox.innerHTML = "Your constraint profile is invalid. Fix the Constraint Intelligence section first.";
+        currentScenarioSnapshot = null;
+        document.getElementById("saveScenarioBtn").disabled = true;
+        return;
+      }
+
+      if (!validateScenarioInputs(data, scenarioPercent, constraints)) {
         resultBox.innerHTML = "Please complete the workforce and cost inputs above, then enter a valid positive scenario percentage.";
         currentScenarioSnapshot = null;
         document.getElementById("saveScenarioBtn").disabled = true;
@@ -1301,12 +1612,22 @@
       const projectedUtilization = (projectedRequiredStaff / projectedStaff) * 100;
       const staffingGap = projectedStaff - projectedRequiredStaff;
 
+      const constraintEval = evaluateConstraints(
+        projectedLaborCost,
+        baselineLaborCost,
+        projectedStaff,
+        projectedRequiredStaff,
+        projectedUtilization,
+        scenarioType,
+        constraints
+      );
+
       const scores = {
         costEfficiencyScore: scoreCostEfficiency(projectedLaborCost, baselineLaborCost),
-        capacityFitScore: scoreCapacityFit(projectedStaff, projectedRequiredStaff),
-        utilizationHealthScore: scoreUtilizationHealth(projectedUtilization),
-        constraintComplianceScore: scoreConstraintCompliance(projectedLaborCost, baselineLaborCost, projectedStaff, projectedRequiredStaff, projectedUtilization),
-        strategicQualityScore: scoreStrategicQuality(projectedStaff, projectedRequiredStaff, projectedUtilization)
+        capacityFitScore: scoreCapacityFit(projectedStaff, projectedRequiredStaff, constraints.shortageTolerancePercent),
+        utilizationHealthScore: scoreUtilizationHealth(projectedUtilization, constraints),
+        constraintComplianceScore: scoreConstraintCompliance(constraintEval),
+        strategicQualityScore: scoreStrategicQuality(projectedStaff, projectedRequiredStaff, projectedUtilization, constraintEval, constraints)
       };
 
       const finalDecisionScore =
@@ -1316,23 +1637,10 @@
         scores.constraintComplianceScore * 0.20 +
         scores.strategicQualityScore * 0.10;
 
-      const viable = projectedStaff >= projectedRequiredStaff && projectedUtilization <= 95;
-      const riskLevel = getRiskLevel(projectedStaff, projectedRequiredStaff, projectedUtilization, projectedLaborCost, baselineLaborCost);
-      const recommendationClass = getRecommendationClass(finalDecisionScore, viable, riskLevel);
-
-      const narrative = buildScenarioNarrative(
-        scenarioType,
-        riskLevel,
-        viable,
-        scores,
-        projectedUtilization,
-        projectedStaff,
-        projectedRequiredStaff,
-        projectedLaborCost,
-        baselineLaborCost
-      );
-
-      const scenarioLabel = getScenarioLabel(scenarioType) + " " + (scenarioPercent > 0 ? "+" : "") + scenarioPercent + "%";
+      const riskLevel = getRiskLevel(projectedUtilization, constraintEval);
+      const recommendationClass = getRecommendationClass(finalDecisionScore, constraintEval.viable, riskLevel);
+      const narrative = buildScenarioNarrative(scenarioType, constraintEval, scores, riskLevel);
+      const scenarioLabel = getScenarioLabel(scenarioType) + " +" + scenarioPercent + "%";
 
       currentScenarioSnapshot = {
         id: "scenario_" + Date.now(),
@@ -1348,14 +1656,18 @@
         staffingGap: staffingGap,
         baselineRequiredStaff: baselineRequiredStaff,
         baselineLaborCost: baselineLaborCost,
-        viable: viable,
+        viable: constraintEval.viable,
+        constraintSummary: constraintEval.summary,
+        hardBreaches: constraintEval.hardBreaches,
+        softWarnings: constraintEval.softWarnings,
         riskLevel: riskLevel,
         recommendationClass: recommendationClass,
         finalScore: Number(finalDecisionScore.toFixed(1)),
         scores: scores,
         whyThisWon: narrative.whyThisWon,
         tradeoff: narrative.tradeoff,
-        nextAction: narrative.nextAction
+        nextAction: narrative.nextAction,
+        constraintsUsed: constraints
       };
 
       document.getElementById("scenarioRequiredStaff").innerText = projectedRequiredStaff;
@@ -1364,6 +1676,9 @@
       document.getElementById("scenarioCostDelta").innerText =
         (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2);
 
+      let hardText = constraintEval.hardBreaches.length ? constraintEval.hardBreaches.join(", ") : "None";
+      let warningText = constraintEval.softWarnings.length ? constraintEval.softWarnings.join(", ") : "None";
+
       resultBox.innerHTML =
         "<strong>Scenario:</strong> " + scenarioLabel + "<br>" +
         "<strong>Projected Staff Capacity:</strong> " + projectedStaff + "<br>" +
@@ -1371,6 +1686,9 @@
         "<strong>Projected Utilization:</strong> " + projectedUtilization.toFixed(2) + "%<br>" +
         "<strong>Projected Labor Cost:</strong> $" + projectedLaborCost.toFixed(2) + "<br>" +
         "<strong>Cost Change vs Baseline:</strong> " + (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2) + "<br>" +
+        "<strong>Constraint Fit:</strong> " + constraintEval.summary + "<br>" +
+        "<strong>Hard Breaches:</strong> " + hardText + "<br>" +
+        "<strong>Soft Warnings:</strong> " + warningText + "<br>" +
         "<strong>Risk Level:</strong> " + riskLevel + "<br>" +
         "<strong>Recommendation:</strong> " + recommendationClass + "<br>" +
         "<strong>Decision Score:</strong> " + finalDecisionScore.toFixed(1) + "/100<br><br>" +
@@ -1381,21 +1699,21 @@
       document.getElementById("saveScenarioBtn").disabled = false;
 
       let statusType = "yellow";
-      if (riskLevel === "Low Risk") statusType = "green";
-      if (riskLevel === "High Risk") statusType = "red";
+      if (recommendationClass === "Strongly Recommend" || recommendationClass === "Recommend") statusType = "green";
+      if (recommendationClass === "Non-Viable" || recommendationClass === "Do Not Recommend") statusType = "red";
       setStatusChip(recommendationClass, statusType);
     }
 
     function getSavedScenarios() {
       try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        return JSON.parse(localStorage.getItem(STORAGE_SCENARIOS)) || [];
       } catch (error) {
         return [];
       }
     }
 
     function persistScenarios(scenarios) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(scenarios));
+      localStorage.setItem(STORAGE_SCENARIOS, JSON.stringify(scenarios));
     }
 
     function saveCurrentScenario() {
@@ -1420,45 +1738,57 @@
     }
 
     function clearDecisionUniverse() {
-      localStorage.removeItem(STORAGE_KEY);
+      const okay = confirm("Clear all saved scenarios from the Decision Universe?");
+      if (!okay) return;
+
+      localStorage.removeItem(STORAGE_SCENARIOS);
       renderDecisionUniverse();
     }
 
-    function getViableScenarios(scenarios) {
-      return scenarios.filter(function (scenario) {
+    function getCandidateScenarios(scenarios) {
+      const preferred = scenarios.filter(function (scenario) {
         return scenario.viable && scenario.recommendationClass !== "Do Not Recommend";
+      });
+
+      if (preferred.length) return preferred;
+
+      return scenarios.filter(function (scenario) {
+        return scenario.viable;
       });
     }
 
     function getBestOverall(scenarios) {
-      const viable = getViableScenarios(scenarios);
-      if (!viable.length) return null;
-      return viable.slice().sort(function (a, b) {
+      const candidates = getCandidateScenarios(scenarios);
+      if (!candidates.length) return null;
+
+      return candidates.slice().sort(function (a, b) {
         return b.finalScore - a.finalScore;
       })[0];
     }
 
     function getCheapestViable(scenarios) {
-      const viable = getViableScenarios(scenarios);
-      if (!viable.length) return null;
-      return viable.slice().sort(function (a, b) {
+      const candidates = getCandidateScenarios(scenarios);
+      if (!candidates.length) return null;
+
+      return candidates.slice().sort(function (a, b) {
         return a.projectedLaborCost - b.projectedLaborCost;
       })[0];
     }
 
     function getSafestViable(scenarios) {
-      const viable = getViableScenarios(scenarios);
-      if (!viable.length) return null;
-      return viable.slice().sort(function (a, b) {
+      const candidates = getCandidateScenarios(scenarios);
+      if (!candidates.length) return null;
+
+      return candidates.slice().sort(function (a, b) {
         const aRank = getRiskRank(a.riskLevel);
         const bRank = getRiskRank(b.riskLevel);
 
         if (aRank !== bRank) return aRank - bRank;
 
-        const aDistance = Math.abs(a.projectedUtilization - 80);
-        const bDistance = Math.abs(b.projectedUtilization - 80);
+        const aWarningCount = a.softWarnings.length;
+        const bWarningCount = b.softWarnings.length;
 
-        if (aDistance !== bDistance) return aDistance - bDistance;
+        if (aWarningCount !== bWarningCount) return aWarningCount - bWarningCount;
 
         return b.finalScore - a.finalScore;
       })[0];
@@ -1479,10 +1809,11 @@
         "<h3>" + title + "</h3>" +
         "<div class='winner-name'>" + scenario.scenarioName + "</div>" +
         "<div class='winner-metric'>" +
-        "<strong>Score:</strong> " + scenario.finalScore + "/100<br>" +
-        "<strong>Utilization:</strong> " + scenario.projectedUtilization.toFixed(2) + "%<br>" +
-        "<strong>Labor Cost:</strong> $" + scenario.projectedLaborCost.toFixed(2) + "<br>" +
-        "<strong>Recommendation:</strong> " + scenario.recommendationClass +
+          "<strong>Score:</strong> " + scenario.finalScore + "/100<br>" +
+          "<strong>Utilization:</strong> " + scenario.projectedUtilization.toFixed(2) + "%<br>" +
+          "<strong>Labor Cost:</strong> $" + scenario.projectedLaborCost.toFixed(2) + "<br>" +
+          "<strong>Constraint Fit:</strong> " + scenario.constraintSummary + "<br>" +
+          "<strong>Recommendation:</strong> " + scenario.recommendationClass +
         "</div>";
     }
 
@@ -1490,11 +1821,12 @@
       const tbody = document.getElementById("decisionUniverseTableBody");
 
       if (!scenarios.length) {
-        tbody.innerHTML = "<tr><td colspan='10' class='muted'>No scenarios saved yet.</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='11' class='muted'>No scenarios saved yet.</td></tr>";
         return;
       }
 
       const sorted = scenarios.slice().sort(function (a, b) {
+        if (a.viable !== b.viable) return a.viable ? -1 : 1;
         return b.finalScore - a.finalScore;
       });
 
@@ -1503,6 +1835,7 @@
           "<tr>" +
             "<td><strong>" + scenario.scenarioName + "</strong><br><span class='muted'>" + new Date(scenario.createdAt).toLocaleString() + "</span></td>" +
             "<td>" + scenario.scenarioPercent + "%</td>" +
+            "<td><span class='" + getConstraintClass(scenario.constraintSummary) + "'>" + scenario.constraintSummary + "</span></td>" +
             "<td>" + scenario.projectedRequiredStaff + "</td>" +
             "<td>" + scenario.projectedStaff + "</td>" +
             "<td>" + scenario.projectedUtilization.toFixed(2) + "%</td>" +
@@ -1527,16 +1860,19 @@
       }
 
       const rejected = scenarios.filter(function (scenario) {
-        return !scenario.viable || scenario.recommendationClass === "Do Not Recommend";
+        return !scenario.viable || scenario.recommendationClass === "Do Not Recommend" || scenario.recommendationClass === "Non-Viable";
       });
 
       const cheapestNote = cheapestViable && cheapestViable.id !== bestOverall.id
-        ? "The cheapest viable option is <strong>" + cheapestViable.scenarioName + "</strong>, but it is not the strongest overall choice."
+        ? "The cheapest viable option is <strong>" + cheapestViable.scenarioName + "</strong>, but it is not the strongest overall path."
         : "The best overall scenario is also the cheapest viable option.";
 
       const safestNote = safestViable && safestViable.id !== bestOverall.id
-        ? "The safest viable option is <strong>" + safestViable.scenarioName + "</strong>, which prioritizes resilience over pure cost positioning."
+        ? "The safest viable option is <strong>" + safestViable.scenarioName + "</strong>, which prioritizes resilience and lower operating stress."
         : "The best overall scenario is also the safest viable option.";
+
+      const hardText = bestOverall.hardBreaches.length ? bestOverall.hardBreaches.join(", ") : "None";
+      const warningText = bestOverall.softWarnings.length ? bestOverall.softWarnings.join(", ") : "None";
 
       center.innerHTML =
         "<h3>Final Recommendation Center</h3>" +
@@ -1544,6 +1880,9 @@
         "<p><strong>Verdict:</strong> " + bestOverall.recommendationClass + "</p>" +
         "<ul>" +
           "<li><strong>Why it won:</strong> " + bestOverall.whyThisWon + ".</li>" +
+          "<li><strong>Constraint fit:</strong> " + bestOverall.constraintSummary + ".</li>" +
+          "<li><strong>Hard breaches:</strong> " + hardText + ".</li>" +
+          "<li><strong>Soft warnings:</strong> " + warningText + ".</li>" +
           "<li><strong>Main tradeoff:</strong> " + bestOverall.tradeoff + "</li>" +
           "<li><strong>Next action:</strong> " + bestOverall.nextAction + "</li>" +
         "</ul>" +
@@ -1556,7 +1895,6 @@
 
     function renderDecisionUniverse() {
       const scenarios = getSavedScenarios();
-
       const bestOverall = getBestOverall(scenarios);
       const cheapestViable = getCheapestViable(scenarios);
       const safestViable = getSafestViable(scenarios);
@@ -1565,7 +1903,7 @@
         "bestOverallCard",
         "Best Overall",
         bestOverall,
-        "Run and save scenarios to see the strongest overall option."
+        "Run and save scenarios to identify the strongest constraint-aware option."
       );
 
       renderWinnerCard(
@@ -1620,6 +1958,7 @@
       window.location.href = "mailto:deepsandip2003@gmail.com?subject=" + subject + "&body=" + body;
     }
 
+    loadConstraints();
     renderDecisionUniverse();
   </script>
 </body>
