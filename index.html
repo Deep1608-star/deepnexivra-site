@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepNexivra</title>
+  <title>DeepNexivra — Decision Universe v1</title>
 
   <style>
     * {
@@ -35,7 +35,7 @@
     }
 
     .nav-inner {
-      max-width: 1150px;
+      max-width: 1180px;
       margin: auto;
       padding: 16px 20px;
       display: flex;
@@ -71,7 +71,7 @@
     }
 
     .container {
-      max-width: 1150px;
+      max-width: 1180px;
       margin: auto;
       padding: 70px 20px;
     }
@@ -97,7 +97,7 @@
 
     .hero p,
     .section p {
-      max-width: 760px;
+      max-width: 780px;
       line-height: 1.7;
       color: #cbd5e1;
       font-size: 16px;
@@ -138,7 +138,7 @@
     }
 
     .mini-card .value {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       margin-top: 8px;
     }
@@ -166,6 +166,13 @@
       transform: translateY(-1px);
     }
 
+    .btn:disabled,
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .primary {
       background: #3b82f6;
       color: #ffffff;
@@ -183,9 +190,15 @@
       border: 1px solid #334155;
     }
 
+    .danger {
+      background: #7f1d1d;
+      color: #fecaca;
+      border: 1px solid #b91c1c;
+    }
+
     .section {
       padding: 70px 20px;
-      max-width: 1150px;
+      max-width: 1180px;
       margin: auto;
     }
 
@@ -229,7 +242,7 @@
       border-radius: 18px;
       padding: 28px;
       margin-top: 26px;
-      max-width: 900px;
+      max-width: 980px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
 
@@ -309,11 +322,13 @@
       color: #f8fafc;
     }
 
-    .status-chip {
+    .status-chip,
+    .risk-chip,
+    .rec-chip {
       display: inline-block;
       padding: 8px 14px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       margin-top: 8px;
       background: #1e293b;
@@ -321,22 +336,34 @@
       border: 1px solid #334155;
     }
 
-    .status-green {
+    .status-green,
+    .risk-low,
+    .rec-strong {
       background: rgba(34, 197, 94, 0.15);
       color: #86efac;
       border-color: rgba(34, 197, 94, 0.35);
     }
 
-    .status-yellow {
+    .status-yellow,
+    .risk-moderate,
+    .rec-caution {
       background: rgba(234, 179, 8, 0.15);
       color: #fde68a;
       border-color: rgba(234, 179, 8, 0.35);
     }
 
-    .status-red {
+    .status-red,
+    .risk-high,
+    .rec-reject {
       background: rgba(239, 68, 68, 0.15);
       color: #fca5a5;
       border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .rec-good {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border-color: rgba(59, 130, 246, 0.35);
     }
 
     .form-grid {
@@ -347,6 +374,109 @@
 
     .full-width {
       grid-column: 1 / -1;
+    }
+
+    .table-wrap {
+      margin-top: 26px;
+      overflow-x: auto;
+      border: 1px solid #23324b;
+      border-radius: 16px;
+      background: #111c34;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th,
+    td {
+      padding: 16px 14px;
+      text-align: left;
+      border-bottom: 1px solid #23324b;
+      font-size: 14px;
+      vertical-align: top;
+    }
+
+    th {
+      color: #93c5fd;
+      background: #0f172a;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 28px;
+    }
+
+    .summary-card {
+      background: #111c34;
+      border: 1px solid #23324b;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .summary-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #f8fafc;
+    }
+
+    .summary-card .winner-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #93c5fd;
+      margin-bottom: 8px;
+    }
+
+    .summary-card .winner-metric {
+      color: #e2e8f0;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .decision-center {
+      margin-top: 28px;
+      background: linear-gradient(180deg, #111c34, #0f172a);
+      border: 1px solid #23324b;
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .decision-center h3 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .decision-center p,
+    .decision-center li {
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+
+    .decision-center ul {
+      padding-left: 20px;
+    }
+
+    .muted {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px dashed #334155;
+      color: #94a3b8;
+      margin-top: 20px;
     }
 
     .footer {
@@ -400,7 +530,7 @@
         <a href="#workforce-tool">Workforce Tool</a>
         <a href="#cost-tool">Cost Tool</a>
         <a href="#scenario-lab">Scenario Lab</a>
-        <a href="#dashboard">Dashboard</a>
+        <a href="#decision-universe">Decision Universe</a>
         <a href="#contact">Contact</a>
       </div>
     </div>
@@ -410,39 +540,39 @@
     <div class="container">
       <div class="hero-grid">
         <div>
-          <p class="subheading">Engineering Intelligence for a Smarter World</p>
-          <h1>Optimize operations with structured decision intelligence.</h1>
+          <p class="subheading">Operational Intelligence for Counterfactual Decisions</p>
+          <h1>Build a decision universe before you make a costly move.</h1>
           <p>
-            DeepNexivra transforms complex operational challenges into optimized,
-            data-driven decisions. Built for workforce planning, cost optimization,
-            scenario simulation, utilization improvement, and operational clarity.
+            DeepNexivra models your current operation, simulates alternate futures,
+            compares viable scenarios, and recommends the highest-ROI path under
+            labor, cost, and utilization pressure.
           </p>
 
           <div class="buttons">
-            <a href="#workforce-tool" class="btn primary">Start Optimizing</a>
-            <a href="#scenario-lab" class="btn secondary">Open Scenario Lab</a>
+            <a href="#scenario-lab" class="btn primary">Open Scenario Lab</a>
+            <a href="#decision-universe" class="btn secondary">View Decision Universe</a>
             <a href="#contact" class="btn ghost">Request Review</a>
           </div>
         </div>
 
         <div class="hero-panel">
-          <h3>Strategic Value Snapshot</h3>
+          <h3>Decision Universe v1</h3>
           <div class="mini-metrics">
             <div class="mini-card">
-              <div class="label">Focus</div>
-              <div class="value">Ops</div>
+              <div class="label">Baseline</div>
+              <div class="value">Model</div>
             </div>
             <div class="mini-card">
-              <div class="label">Core Engine</div>
-              <div class="value">IE + Data</div>
+              <div class="label">Future</div>
+              <div class="value">Simulate</div>
             </div>
             <div class="mini-card">
-              <div class="label">Primary Use</div>
-              <div class="value">Planning</div>
+              <div class="label">Options</div>
+              <div class="value">Compare</div>
             </div>
             <div class="mini-card">
-              <div class="label">Decision Style</div>
-              <div class="value">Actionable</div>
+              <div class="label">Output</div>
+              <div class="value">Recommend</div>
             </div>
           </div>
         </div>
@@ -453,26 +583,26 @@
   <div class="section" id="capabilities">
     <h2>Core Capabilities</h2>
     <p>
-      A practical foundation for workforce optimization, labor cost analysis,
-      scenario modeling, operational control, and decision-support workflows.
+      DeepNexivra is designed for labor-driven operations under demand uncertainty,
+      where the right staffing and cost decision depends on realistic tradeoffs.
     </p>
 
     <div class="cards">
       <div class="card">
-        <div class="card-title">Operations Optimization</div>
-        <div class="card-text">Convert workload and resource inputs into structured operational decisions.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Workforce Intelligence</div>
-        <div class="card-text">Estimate staffing demand, utilization, and workforce alignment with real workload.</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Cost Optimization</div>
-        <div class="card-text">Quantify labor cost, optimized staffing cost, and potential savings opportunities.</div>
+        <div class="card-title">Operational Baseline</div>
+        <div class="card-text">Convert current staff, workload, shift hours, wage, and productivity into an operating model.</div>
       </div>
       <div class="card">
         <div class="card-title">Scenario Simulation</div>
-        <div class="card-text">Model future operational conditions and compare their impact on staffing and cost.</div>
+        <div class="card-text">Test alternate futures such as demand shifts, wage changes, productivity moves, and staffing changes.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Decision Memory</div>
+        <div class="card-text">Save multiple scenario runs and compare them as one structured decision universe.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recommendation Logic</div>
+        <div class="card-text">Rank scenarios by score, risk, cost, and viability to identify the strongest path.</div>
       </div>
     </div>
   </div>
@@ -574,6 +704,7 @@
 
       <div class="buttons">
         <button class="primary" onclick="calculateScenarioLab()">Run Scenario</button>
+        <button class="secondary" id="saveScenarioBtn" onclick="saveCurrentScenario()" disabled>Save Scenario to Decision Universe</button>
       </div>
 
       <div class="dashboard-grid" style="margin-top:24px;">
@@ -603,8 +734,71 @@
       </div>
 
       <div class="footer-note">
-        Scenario Lab uses your current workforce and cost inputs as the baseline operating model.
+        Decision Universe v1 uses your current workforce and cost inputs as the baseline operating model.
       </div>
+    </div>
+  </div>
+
+  <div class="section" id="decision-universe">
+    <h2>Decision Universe</h2>
+    <p>
+      Save multiple tested futures, compare them side by side, and identify the best
+      overall, cheapest viable, and safest viable path.
+    </p>
+
+    <div class="summary-grid">
+      <div class="summary-card" id="bestOverallCard">
+        <h3>Best Overall</h3>
+        <div class="winner-name">No saved scenarios yet</div>
+        <div class="winner-metric">Run and save scenarios to see the strongest overall option.</div>
+      </div>
+
+      <div class="summary-card" id="cheapestViableCard">
+        <h3>Cheapest Viable</h3>
+        <div class="winner-name">No saved scenarios yet</div>
+        <div class="winner-metric">The lowest-cost viable scenario will appear here.</div>
+      </div>
+
+      <div class="summary-card" id="safestViableCard">
+        <h3>Safest Viable</h3>
+        <div class="winner-name">No saved scenarios yet</div>
+        <div class="winner-metric">The safest viable scenario will appear here.</div>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="danger" onclick="clearDecisionUniverse()">Clear Decision Universe</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Change %</th>
+            <th>Required Staff</th>
+            <th>Projected Staff</th>
+            <th>Utilization</th>
+            <th>Labor Cost</th>
+            <th>Cost Delta</th>
+            <th>Risk</th>
+            <th>Recommendation</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="decisionUniverseTableBody">
+          <tr>
+            <td colspan="10" class="muted">No scenarios saved yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="decision-center" id="recommendationCenter">
+      <h3>Final Recommendation Center</h3>
+      <p>
+        Save at least one scenario to generate a structured recommendation summary.
+      </p>
     </div>
   </div>
 
@@ -689,10 +883,13 @@
   </div>
 
   <div class="footer">
-    © 2026 DeepNexivra. Engineering intelligence for operational optimization.
+    © 2026 DeepNexivra. Decision Universe v1 for labor-driven operational intelligence.
   </div>
 
   <script>
+    const STORAGE_KEY = "deepnexivra_decision_universe_v1";
+    let currentScenarioSnapshot = null;
+
     function setStatusChip(statusText, type) {
       const statusElement = document.getElementById("dashboardStatus");
       statusElement.className = "status-chip";
@@ -834,7 +1031,25 @@
       setStatusChip(status, statusType);
     }
 
-    function calculateScenarioLab() {
+    function getScenarioLabel(type) {
+      const labels = {
+        demand_up: "Demand Increase",
+        demand_down: "Demand Decrease",
+        productivity_up: "Productivity Improvement",
+        productivity_down: "Productivity Decline",
+        wage_up: "Wage Increase",
+        wage_down: "Wage Decrease",
+        staff_up: "Increase Staff",
+        staff_down: "Reduce Staff"
+      };
+      return labels[type] || "Scenario";
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getBaselineInputsForScenario() {
       const availableStaff = parseFloat(document.getElementById("availableStaff").value);
       const requiredWorkload = parseFloat(document.getElementById("requiredWorkload").value);
       const shiftHours = parseFloat(document.getElementById("shiftHours").value);
@@ -846,106 +1061,302 @@
       const costWorkload = parseFloat(document.getElementById("costWorkload").value);
       const costProductivity = parseFloat(document.getElementById("costProductivity").value);
 
+      return {
+        availableStaff,
+        requiredWorkload,
+        shiftHours,
+        productivity,
+        currentStaff,
+        hourlyWage,
+        costShiftHours,
+        costWorkload,
+        costProductivity
+      };
+    }
+
+    function validateScenarioInputs(data, scenarioPercent) {
+      return !(
+        isNaN(data.availableStaff) ||
+        isNaN(data.requiredWorkload) ||
+        isNaN(data.shiftHours) ||
+        isNaN(data.productivity) ||
+        isNaN(data.currentStaff) ||
+        isNaN(data.hourlyWage) ||
+        isNaN(data.costShiftHours) ||
+        isNaN(data.costWorkload) ||
+        isNaN(data.costProductivity) ||
+        isNaN(scenarioPercent) ||
+        data.availableStaff <= 0 ||
+        data.requiredWorkload <= 0 ||
+        data.shiftHours <= 0 ||
+        data.productivity <= 0 ||
+        data.currentStaff <= 0 ||
+        data.hourlyWage <= 0 ||
+        data.costShiftHours <= 0 ||
+        data.costWorkload <= 0 ||
+        data.costProductivity <= 0 ||
+        scenarioPercent <= 0
+      );
+    }
+
+    function scoreCostEfficiency(projectedLaborCost, baselineLaborCost) {
+      const deltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
+
+      if (deltaPct <= -10) return 100;
+      if (deltaPct <= 0) return clamp(95 + (deltaPct / 10) * 10, 85, 95);
+      if (deltaPct <= 5) return 75;
+      if (deltaPct <= 10) return 55;
+      if (deltaPct <= 20) return 35;
+      return 15;
+    }
+
+    function scoreCapacityFit(projectedStaff, projectedRequiredStaff) {
+      const gap = projectedStaff - projectedRequiredStaff;
+      const gapPct = (gap / projectedRequiredStaff) * 100;
+
+      if (gapPct >= 0 && gapPct <= 5) return 100;
+      if (gapPct > 5 && gapPct <= 15) return 85;
+      if (gapPct > 15 && gapPct <= 30) return 65;
+      if (gapPct > 30) return 45;
+      if (gapPct >= -5) return 40;
+      if (gapPct >= -15) return 20;
+      return 0;
+    }
+
+    function scoreUtilizationHealth(utilization) {
+      if (utilization >= 75 && utilization <= 85) return 100;
+      if ((utilization > 85 && utilization <= 90) || (utilization >= 65 && utilization < 75)) return 85;
+      if ((utilization > 90 && utilization <= 95) || (utilization >= 55 && utilization < 65)) return 60;
+      if ((utilization > 95 && utilization <= 100) || (utilization >= 45 && utilization < 55)) return 30;
+      return 10;
+    }
+
+    function scoreConstraintCompliance(projectedLaborCost, baselineLaborCost, projectedStaff, projectedRequiredStaff, utilization) {
+      let score = 100;
+
+      if (projectedStaff < projectedRequiredStaff) score -= 60;
+      if (utilization > 95) score -= 60;
+
+      const budgetDeltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
+      if (budgetDeltaPct > 10) score -= 20;
+      if (budgetDeltaPct > 25) score -= 20;
+
+      return clamp(score, 0, 100);
+    }
+
+    function scoreStrategicQuality(projectedStaff, projectedRequiredStaff, utilization) {
+      const gap = projectedStaff - projectedRequiredStaff;
+      const gapPct = (gap / projectedRequiredStaff) * 100;
+
+      if (gapPct >= 5 && utilization >= 70 && utilization <= 85) return 95;
+      if (gapPct >= 0 && utilization > 85 && utilization <= 90) return 75;
+      if (gapPct >= 0 && utilization >= 65 && utilization < 70) return 75;
+      if (gapPct < 0 || utilization > 95) return 20;
+      return 55;
+    }
+
+    function getRiskLevel(projectedStaff, projectedRequiredStaff, utilization, projectedLaborCost, baselineLaborCost) {
+      const budgetDeltaPct = ((projectedLaborCost - baselineLaborCost) / baselineLaborCost) * 100;
+
+      if (projectedStaff < projectedRequiredStaff || utilization > 95) {
+        return "High Risk";
+      }
+
+      if (utilization >= 85 || budgetDeltaPct > 10) {
+        return "Moderate Risk";
+      }
+
+      return "Low Risk";
+    }
+
+    function getRiskClass(riskLevel) {
+      if (riskLevel === "Low Risk") return "risk-chip risk-low";
+      if (riskLevel === "Moderate Risk") return "risk-chip risk-moderate";
+      return "risk-chip risk-high";
+    }
+
+    function getRiskRank(riskLevel) {
+      if (riskLevel === "Low Risk") return 1;
+      if (riskLevel === "Moderate Risk") return 2;
+      return 3;
+    }
+
+    function getRecommendationClass(finalScore, viable, riskLevel) {
+      if (!viable) return "Do Not Recommend";
+      if (finalScore >= 85 && riskLevel === "Low Risk") return "Strongly Recommend";
+      if (finalScore >= 75) return "Recommend";
+      if (finalScore >= 60) return "Consider with Caution";
+      return "Do Not Recommend";
+    }
+
+    function getRecommendationClassCss(label) {
+      if (label === "Strongly Recommend") return "rec-chip rec-strong";
+      if (label === "Recommend") return "rec-chip rec-good";
+      if (label === "Consider with Caution") return "rec-chip rec-caution";
+      return "rec-chip rec-reject";
+    }
+
+    function buildScenarioNarrative(scenarioType, riskLevel, viable, scores, projectedUtilization, projectedStaff, projectedRequiredStaff, projectedLaborCost, baselineLaborCost) {
+      const whyParts = [];
+
+      if (scores.constraintComplianceScore >= 85) whyParts.push("remains within the default operating limits");
+      if (scores.utilizationHealthScore >= 85) whyParts.push("keeps utilization in a healthier range");
+      if (scores.capacityFitScore >= 85) whyParts.push("maintains strong staffing fit");
+      if (scores.costEfficiencyScore >= 85) whyParts.push("improves cost efficiency");
+      if (scores.strategicQualityScore >= 85) whyParts.push("preserves stronger operating resilience");
+
+      const whyThisWon = whyParts.length
+        ? whyParts.slice(0, 3).join(", ")
+        : "balances the major decision dimensions better than weaker alternatives";
+
+      let tradeoff = "This scenario still needs operational monitoring after implementation.";
+
+      if (scenarioType === "productivity_up") {
+        tradeoff = "Value depends on actually delivering the projected productivity improvement in practice.";
+      } else if (scenarioType === "productivity_down") {
+        tradeoff = "This scenario assumes performance deterioration, so resilience becomes more important than cost elegance.";
+      } else if (scenarioType === "demand_up") {
+        tradeoff = "Rising demand adds load pressure and can tighten staffing buffer if demand remains elevated.";
+      } else if (scenarioType === "demand_down") {
+        tradeoff = "Lower demand assumptions should be validated before reducing labor commitment too aggressively.";
+      } else if (scenarioType === "staff_up") {
+        tradeoff = "Capacity improves, but labor cost increases and excess staffing risk can emerge if demand stays flat.";
+      } else if (scenarioType === "staff_down") {
+        tradeoff = "Lower staffing can reduce cost, but resilience weakens if demand or absenteeism rises.";
+      } else if (scenarioType === "wage_up") {
+        tradeoff = "Financial pressure rises unless offset by productivity or operating redesign.";
+      } else if (scenarioType === "wage_down") {
+        tradeoff = "Savings rely on wage conditions remaining favorable and sustainable.";
+      }
+
+      let nextAction = "Review this scenario with current demand assumptions and operational tolerance before execution.";
+
+      if (!viable) {
+        nextAction = "Do not execute this scenario unless baseline conditions or key assumptions change materially.";
+      } else if (riskLevel === "Low Risk") {
+        nextAction = "Use this as a primary candidate and validate it through a short pilot or operating review.";
+      } else if (riskLevel === "Moderate Risk") {
+        nextAction = "Use caution and monitor utilization and buffer capacity closely if this option is pursued.";
+      } else {
+        nextAction = "Escalate this scenario for review before acting because operational fragility is high.";
+      }
+
+      return {
+        whyThisWon,
+        tradeoff,
+        nextAction
+      };
+    }
+
+    function calculateScenarioLab() {
+      const data = getBaselineInputsForScenario();
       const scenarioType = document.getElementById("scenarioType").value;
       const scenarioPercent = parseFloat(document.getElementById("scenarioPercent").value);
       const resultBox = document.getElementById("scenarioResult");
 
-      if (
-        isNaN(availableStaff) ||
-        isNaN(requiredWorkload) ||
-        isNaN(shiftHours) ||
-        isNaN(productivity) ||
-        isNaN(currentStaff) ||
-        isNaN(hourlyWage) ||
-        isNaN(costShiftHours) ||
-        isNaN(costWorkload) ||
-        isNaN(costProductivity) ||
-        isNaN(scenarioPercent) ||
-        availableStaff <= 0 ||
-        requiredWorkload <= 0 ||
-        shiftHours <= 0 ||
-        productivity <= 0 ||
-        currentStaff <= 0 ||
-        hourlyWage <= 0 ||
-        costShiftHours <= 0 ||
-        costWorkload <= 0 ||
-        costProductivity <= 0 ||
-        scenarioPercent <= 0
-      ) {
+      if (!validateScenarioInputs(data, scenarioPercent)) {
         resultBox.innerHTML = "Please complete the workforce and cost inputs above, then enter a valid positive scenario percentage.";
+        currentScenarioSnapshot = null;
+        document.getElementById("saveScenarioBtn").disabled = true;
         return;
       }
 
       const pct = scenarioPercent / 100;
 
-      let projectedWorkload = costWorkload;
-      let projectedProductivity = costProductivity;
-      let projectedWage = hourlyWage;
-      let projectedStaff = currentStaff;
+      let projectedWorkload = data.costWorkload;
+      let projectedProductivity = data.costProductivity;
+      let projectedWage = data.hourlyWage;
+      let projectedStaff = data.currentStaff;
 
       if (scenarioType === "demand_up") {
-        projectedWorkload = costWorkload * (1 + pct);
+        projectedWorkload = data.costWorkload * (1 + pct);
       } else if (scenarioType === "demand_down") {
-        projectedWorkload = costWorkload * (1 - pct);
+        projectedWorkload = data.costWorkload * (1 - pct);
       } else if (scenarioType === "productivity_up") {
-        projectedProductivity = costProductivity * (1 + pct);
+        projectedProductivity = data.costProductivity * (1 + pct);
       } else if (scenarioType === "productivity_down") {
-        projectedProductivity = costProductivity * (1 - pct);
+        projectedProductivity = data.costProductivity * (1 - pct);
       } else if (scenarioType === "wage_up") {
-        projectedWage = hourlyWage * (1 + pct);
+        projectedWage = data.hourlyWage * (1 + pct);
       } else if (scenarioType === "wage_down") {
-        projectedWage = hourlyWage * (1 - pct);
+        projectedWage = data.hourlyWage * (1 - pct);
       } else if (scenarioType === "staff_up") {
-        projectedStaff = Math.ceil(currentStaff * (1 + pct));
+        projectedStaff = Math.ceil(data.currentStaff * (1 + pct));
       } else if (scenarioType === "staff_down") {
-        projectedStaff = Math.max(1, Math.floor(currentStaff * (1 - pct)));
+        projectedStaff = Math.max(1, Math.floor(data.currentStaff * (1 - pct)));
       }
 
       if (projectedProductivity <= 0 || projectedWorkload <= 0 || projectedWage <= 0 || projectedStaff <= 0) {
         resultBox.innerHTML = "The selected scenario creates invalid operating conditions. Reduce the scenario percentage and try again.";
+        currentScenarioSnapshot = null;
+        document.getElementById("saveScenarioBtn").disabled = true;
         return;
       }
 
-      const baselineRequiredStaff = Math.ceil(costWorkload / (costShiftHours * costProductivity));
-      const projectedRequiredStaff = Math.ceil(projectedWorkload / (costShiftHours * projectedProductivity));
-      const baselineLaborCost = currentStaff * hourlyWage * costShiftHours;
-      const projectedLaborCost = projectedStaff * projectedWage * costShiftHours;
+      const baselineRequiredStaff = Math.ceil(data.costWorkload / (data.costShiftHours * data.costProductivity));
+      const baselineLaborCost = data.currentStaff * data.hourlyWage * data.costShiftHours;
+      const projectedRequiredStaff = Math.ceil(projectedWorkload / (data.costShiftHours * projectedProductivity));
+      const projectedLaborCost = projectedStaff * projectedWage * data.costShiftHours;
       const costDelta = projectedLaborCost - baselineLaborCost;
       const projectedUtilization = (projectedRequiredStaff / projectedStaff) * 100;
       const staffingGap = projectedStaff - projectedRequiredStaff;
 
-      let recommendation = "";
-      let scenarioStatus = "";
-      let statusType = "yellow";
+      const scores = {
+        costEfficiencyScore: scoreCostEfficiency(projectedLaborCost, baselineLaborCost),
+        capacityFitScore: scoreCapacityFit(projectedStaff, projectedRequiredStaff),
+        utilizationHealthScore: scoreUtilizationHealth(projectedUtilization),
+        constraintComplianceScore: scoreConstraintCompliance(projectedLaborCost, baselineLaborCost, projectedStaff, projectedRequiredStaff, projectedUtilization),
+        strategicQualityScore: scoreStrategicQuality(projectedStaff, projectedRequiredStaff, projectedUtilization)
+      };
 
-      if (projectedUtilization > 95) {
-        scenarioStatus = "High Risk Scenario";
-        recommendation = "Projected utilization is extremely high. Consider adding staff, increasing productivity, or redesigning workflow before execution.";
-        statusType = "red";
-      } else if (projectedUtilization >= 80 && projectedUtilization <= 95) {
-        scenarioStatus = "Tight but Manageable";
-        recommendation = "Projected utilization is strong but close to operational limits. Monitor service levels and keep contingency options ready.";
-        statusType = "yellow";
-      } else if (projectedUtilization < 80 && staffingGap >= 0) {
-        scenarioStatus = "Capacity Available";
-        recommendation = "This scenario leaves spare capacity. Review whether cost, service level, and labor allocation are balanced appropriately.";
-        statusType = "green";
-      } else {
-        scenarioStatus = "Needs Review";
-        recommendation = "Review labor allocation and workload assumptions before acting on this scenario.";
-        statusType = "yellow";
-      }
+      const finalDecisionScore =
+        scores.costEfficiencyScore * 0.25 +
+        scores.capacityFitScore * 0.25 +
+        scores.utilizationHealthScore * 0.20 +
+        scores.constraintComplianceScore * 0.20 +
+        scores.strategicQualityScore * 0.10;
 
-      const readableScenario = {
-        demand_up: "Demand Increase",
-        demand_down: "Demand Decrease",
-        productivity_up: "Productivity Improvement",
-        productivity_down: "Productivity Decline",
-        wage_up: "Wage Increase",
-        wage_down: "Wage Decrease",
-        staff_up: "Increase Staff",
-        staff_down: "Reduce Staff"
-      }[scenarioType];
+      const viable = projectedStaff >= projectedRequiredStaff && projectedUtilization <= 95;
+      const riskLevel = getRiskLevel(projectedStaff, projectedRequiredStaff, projectedUtilization, projectedLaborCost, baselineLaborCost);
+      const recommendationClass = getRecommendationClass(finalDecisionScore, viable, riskLevel);
+
+      const narrative = buildScenarioNarrative(
+        scenarioType,
+        riskLevel,
+        viable,
+        scores,
+        projectedUtilization,
+        projectedStaff,
+        projectedRequiredStaff,
+        projectedLaborCost,
+        baselineLaborCost
+      );
+
+      const scenarioLabel = getScenarioLabel(scenarioType) + " " + (scenarioPercent > 0 ? "+" : "") + scenarioPercent + "%";
+
+      currentScenarioSnapshot = {
+        id: "scenario_" + Date.now(),
+        createdAt: new Date().toISOString(),
+        scenarioType: scenarioType,
+        scenarioName: scenarioLabel,
+        scenarioPercent: scenarioPercent,
+        projectedRequiredStaff: projectedRequiredStaff,
+        projectedStaff: projectedStaff,
+        projectedUtilization: projectedUtilization,
+        projectedLaborCost: projectedLaborCost,
+        costDelta: costDelta,
+        staffingGap: staffingGap,
+        baselineRequiredStaff: baselineRequiredStaff,
+        baselineLaborCost: baselineLaborCost,
+        viable: viable,
+        riskLevel: riskLevel,
+        recommendationClass: recommendationClass,
+        finalScore: Number(finalDecisionScore.toFixed(1)),
+        scores: scores,
+        whyThisWon: narrative.whyThisWon,
+        tradeoff: narrative.tradeoff,
+        nextAction: narrative.nextAction
+      };
 
       document.getElementById("scenarioRequiredStaff").innerText = projectedRequiredStaff;
       document.getElementById("scenarioUtilization").innerText = projectedUtilization.toFixed(2) + "%";
@@ -954,18 +1365,225 @@
         (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2);
 
       resultBox.innerHTML =
-        "<strong>Scenario:</strong> " + readableScenario + " (" + scenarioPercent + "%)<br>" +
-        "<strong>Baseline Required Staff:</strong> " + baselineRequiredStaff + "<br>" +
-        "<strong>Projected Required Staff:</strong> " + projectedRequiredStaff + "<br>" +
+        "<strong>Scenario:</strong> " + scenarioLabel + "<br>" +
         "<strong>Projected Staff Capacity:</strong> " + projectedStaff + "<br>" +
+        "<strong>Projected Required Staff:</strong> " + projectedRequiredStaff + "<br>" +
         "<strong>Projected Utilization:</strong> " + projectedUtilization.toFixed(2) + "%<br>" +
         "<strong>Projected Labor Cost:</strong> $" + projectedLaborCost.toFixed(2) + "<br>" +
         "<strong>Cost Change vs Baseline:</strong> " + (costDelta >= 0 ? "+" : "-") + "$" + Math.abs(costDelta).toFixed(2) + "<br>" +
-        "<strong>Staffing Gap / Surplus:</strong> " + staffingGap + "<br><br>" +
-        "<strong>Status:</strong> " + scenarioStatus + "<br>" +
-        "<strong>Recommendation:</strong> " + recommendation;
+        "<strong>Risk Level:</strong> " + riskLevel + "<br>" +
+        "<strong>Recommendation:</strong> " + recommendationClass + "<br>" +
+        "<strong>Decision Score:</strong> " + finalDecisionScore.toFixed(1) + "/100<br><br>" +
+        "<strong>Why it scores this way:</strong> " + narrative.whyThisWon + "<br>" +
+        "<strong>Tradeoff:</strong> " + narrative.tradeoff + "<br>" +
+        "<strong>Next Action:</strong> " + narrative.nextAction;
 
-      setStatusChip(scenarioStatus, statusType);
+      document.getElementById("saveScenarioBtn").disabled = false;
+
+      let statusType = "yellow";
+      if (riskLevel === "Low Risk") statusType = "green";
+      if (riskLevel === "High Risk") statusType = "red";
+      setStatusChip(recommendationClass, statusType);
+    }
+
+    function getSavedScenarios() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function persistScenarios(scenarios) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(scenarios));
+    }
+
+    function saveCurrentScenario() {
+      if (!currentScenarioSnapshot) {
+        alert("Run a scenario first, then save it to the Decision Universe.");
+        return;
+      }
+
+      const scenarios = getSavedScenarios();
+      scenarios.push(currentScenarioSnapshot);
+      persistScenarios(scenarios);
+      renderDecisionUniverse();
+
+      const saveButton = document.getElementById("saveScenarioBtn");
+      saveButton.innerText = "Scenario Saved";
+      saveButton.disabled = true;
+
+      setTimeout(function () {
+        saveButton.innerText = "Save Scenario to Decision Universe";
+        saveButton.disabled = currentScenarioSnapshot ? false : true;
+      }, 1200);
+    }
+
+    function clearDecisionUniverse() {
+      localStorage.removeItem(STORAGE_KEY);
+      renderDecisionUniverse();
+    }
+
+    function getViableScenarios(scenarios) {
+      return scenarios.filter(function (scenario) {
+        return scenario.viable && scenario.recommendationClass !== "Do Not Recommend";
+      });
+    }
+
+    function getBestOverall(scenarios) {
+      const viable = getViableScenarios(scenarios);
+      if (!viable.length) return null;
+      return viable.slice().sort(function (a, b) {
+        return b.finalScore - a.finalScore;
+      })[0];
+    }
+
+    function getCheapestViable(scenarios) {
+      const viable = getViableScenarios(scenarios);
+      if (!viable.length) return null;
+      return viable.slice().sort(function (a, b) {
+        return a.projectedLaborCost - b.projectedLaborCost;
+      })[0];
+    }
+
+    function getSafestViable(scenarios) {
+      const viable = getViableScenarios(scenarios);
+      if (!viable.length) return null;
+      return viable.slice().sort(function (a, b) {
+        const aRank = getRiskRank(a.riskLevel);
+        const bRank = getRiskRank(b.riskLevel);
+
+        if (aRank !== bRank) return aRank - bRank;
+
+        const aDistance = Math.abs(a.projectedUtilization - 80);
+        const bDistance = Math.abs(b.projectedUtilization - 80);
+
+        if (aDistance !== bDistance) return aDistance - bDistance;
+
+        return b.finalScore - a.finalScore;
+      })[0];
+    }
+
+    function renderWinnerCard(elementId, title, scenario, fallbackText) {
+      const card = document.getElementById(elementId);
+
+      if (!scenario) {
+        card.innerHTML =
+          "<h3>" + title + "</h3>" +
+          "<div class='winner-name'>No saved scenarios yet</div>" +
+          "<div class='winner-metric'>" + fallbackText + "</div>";
+        return;
+      }
+
+      card.innerHTML =
+        "<h3>" + title + "</h3>" +
+        "<div class='winner-name'>" + scenario.scenarioName + "</div>" +
+        "<div class='winner-metric'>" +
+        "<strong>Score:</strong> " + scenario.finalScore + "/100<br>" +
+        "<strong>Utilization:</strong> " + scenario.projectedUtilization.toFixed(2) + "%<br>" +
+        "<strong>Labor Cost:</strong> $" + scenario.projectedLaborCost.toFixed(2) + "<br>" +
+        "<strong>Recommendation:</strong> " + scenario.recommendationClass +
+        "</div>";
+    }
+
+    function renderDecisionUniverseTable(scenarios) {
+      const tbody = document.getElementById("decisionUniverseTableBody");
+
+      if (!scenarios.length) {
+        tbody.innerHTML = "<tr><td colspan='10' class='muted'>No scenarios saved yet.</td></tr>";
+        return;
+      }
+
+      const sorted = scenarios.slice().sort(function (a, b) {
+        return b.finalScore - a.finalScore;
+      });
+
+      tbody.innerHTML = sorted.map(function (scenario) {
+        return (
+          "<tr>" +
+            "<td><strong>" + scenario.scenarioName + "</strong><br><span class='muted'>" + new Date(scenario.createdAt).toLocaleString() + "</span></td>" +
+            "<td>" + scenario.scenarioPercent + "%</td>" +
+            "<td>" + scenario.projectedRequiredStaff + "</td>" +
+            "<td>" + scenario.projectedStaff + "</td>" +
+            "<td>" + scenario.projectedUtilization.toFixed(2) + "%</td>" +
+            "<td>$" + scenario.projectedLaborCost.toFixed(2) + "</td>" +
+            "<td>" + (scenario.costDelta >= 0 ? "+" : "-") + "$" + Math.abs(scenario.costDelta).toFixed(2) + "</td>" +
+            "<td><span class='" + getRiskClass(scenario.riskLevel) + "'>" + scenario.riskLevel + "</span></td>" +
+            "<td><span class='" + getRecommendationClassCss(scenario.recommendationClass) + "'>" + scenario.recommendationClass + "</span></td>" +
+            "<td>" + scenario.finalScore + "</td>" +
+          "</tr>"
+        );
+      }).join("");
+    }
+
+    function renderRecommendationCenter(bestOverall, cheapestViable, safestViable, scenarios) {
+      const center = document.getElementById("recommendationCenter");
+
+      if (!bestOverall) {
+        center.innerHTML =
+          "<h3>Final Recommendation Center</h3>" +
+          "<p>No viable saved scenarios exist yet. Run scenarios, save them, and compare the resulting futures here.</p>";
+        return;
+      }
+
+      const rejected = scenarios.filter(function (scenario) {
+        return !scenario.viable || scenario.recommendationClass === "Do Not Recommend";
+      });
+
+      const cheapestNote = cheapestViable && cheapestViable.id !== bestOverall.id
+        ? "The cheapest viable option is <strong>" + cheapestViable.scenarioName + "</strong>, but it is not the strongest overall choice."
+        : "The best overall scenario is also the cheapest viable option.";
+
+      const safestNote = safestViable && safestViable.id !== bestOverall.id
+        ? "The safest viable option is <strong>" + safestViable.scenarioName + "</strong>, which prioritizes resilience over pure cost positioning."
+        : "The best overall scenario is also the safest viable option.";
+
+      center.innerHTML =
+        "<h3>Final Recommendation Center</h3>" +
+        "<p><strong>Best Overall Scenario:</strong> " + bestOverall.scenarioName + "</p>" +
+        "<p><strong>Verdict:</strong> " + bestOverall.recommendationClass + "</p>" +
+        "<ul>" +
+          "<li><strong>Why it won:</strong> " + bestOverall.whyThisWon + ".</li>" +
+          "<li><strong>Main tradeoff:</strong> " + bestOverall.tradeoff + "</li>" +
+          "<li><strong>Next action:</strong> " + bestOverall.nextAction + "</li>" +
+        "</ul>" +
+        "<p>" + cheapestNote + "</p>" +
+        "<p>" + safestNote + "</p>" +
+        "<p><strong>Rejected / weak scenarios:</strong> " +
+          (rejected.length ? rejected.map(function (s) { return s.scenarioName; }).join(", ") : "None currently rejected.") +
+        "</p>";
+    }
+
+    function renderDecisionUniverse() {
+      const scenarios = getSavedScenarios();
+
+      const bestOverall = getBestOverall(scenarios);
+      const cheapestViable = getCheapestViable(scenarios);
+      const safestViable = getSafestViable(scenarios);
+
+      renderWinnerCard(
+        "bestOverallCard",
+        "Best Overall",
+        bestOverall,
+        "Run and save scenarios to see the strongest overall option."
+      );
+
+      renderWinnerCard(
+        "cheapestViableCard",
+        "Cheapest Viable",
+        cheapestViable,
+        "The lowest-cost viable scenario will appear here."
+      );
+
+      renderWinnerCard(
+        "safestViableCard",
+        "Safest Viable",
+        safestViable,
+        "The safest viable scenario will appear here."
+      );
+
+      renderDecisionUniverseTable(scenarios);
+      renderRecommendationCenter(bestOverall, cheapestViable, safestViable, scenarios);
     }
 
     function sendReviewRequest() {
@@ -1001,6 +1619,8 @@
 
       window.location.href = "mailto:deepsandip2003@gmail.com?subject=" + subject + "&body=" + body;
     }
+
+    renderDecisionUniverse();
   </script>
 </body>
 </html>
