@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepNexivra — Command OS v1 Shell</title>
+  <title>DeepNexivra — Workflow Engine Lite v1</title>
   <style>
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -94,9 +94,7 @@
       color: #93c5fd;
     }
 
-    .main {
-      min-width: 0;
-    }
+    .main { min-width: 0; }
 
     .topbar {
       position: sticky;
@@ -151,17 +149,10 @@
       padding: 24px 22px 40px;
     }
 
-    .view {
-      display: none;
-    }
+    .view { display: none; }
+    .view.active { display: block; }
 
-    .view.active {
-      display: block;
-    }
-
-    .page-head {
-      margin-bottom: 18px;
-    }
+    .page-head { margin-bottom: 18px; }
 
     .page-title {
       font-size: 34px;
@@ -292,9 +283,7 @@
       gap: 14px;
     }
 
-    .full-width {
-      grid-column: 1 / -1;
-    }
+    .full-width { grid-column: 1 / -1; }
 
     .mini-lines {
       display: grid;
@@ -308,18 +297,14 @@
       line-height: 1.65;
     }
 
-    .priority-high { color: #fca5a5; }
-    .priority-medium { color: #fde68a; }
-    .priority-low { color: #93c5fd; }
-
-    .signal-card, .workflow-card, .agent-card {
+    .signal-card, .workflow-card, .agent-card, .step-card {
       background: #0f172a;
       border: 1px solid #23324b;
       border-radius: 16px;
       padding: 16px;
     }
 
-    .signal-title, .workflow-title, .agent-title {
+    .signal-title, .workflow-title, .agent-title, .step-title {
       font-size: 16px;
       font-weight: 700;
       margin-bottom: 8px;
@@ -361,10 +346,7 @@
       top: 0;
     }
 
-    .queue-list {
-      display: grid;
-      gap: 12px;
-    }
+    .queue-list { display: grid; gap: 12px; }
 
     .queue-item {
       background: #0f172a;
@@ -379,10 +361,7 @@
       gap: 16px;
     }
 
-    .object-tree {
-      display: grid;
-      gap: 8px;
-    }
+    .object-tree { display: grid; gap: 8px; }
 
     .object-node {
       padding: 11px 12px;
@@ -402,7 +381,7 @@
 
     .kanban {
       display: grid;
-      grid-template-columns: repeat(6, minmax(220px,1fr));
+      grid-template-columns: repeat(9, minmax(220px,1fr));
       gap: 14px;
       overflow-x: auto;
       padding-bottom: 6px;
@@ -428,36 +407,8 @@
       border-radius: 14px;
       padding: 12px;
       margin-bottom: 10px;
+      cursor: pointer;
     }
-
-    .chart-row {
-      margin-top: 12px;
-    }
-
-    .chart-label {
-      font-size: 13px;
-      color: #cbd5e1;
-      margin-bottom: 5px;
-    }
-
-    .bar-track {
-      width: 100%;
-      height: 12px;
-      border-radius: 999px;
-      border: 1px solid #334155;
-      background: #0b1120;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: 999px;
-    }
-
-    .bar-blue { background: var(--blue); }
-    .bar-green { background: var(--green); }
-    .bar-yellow { background: #f59e0b; }
-    .bar-purple { background: var(--purple); }
 
     .brief-box {
       background: #0b1120;
@@ -467,6 +418,24 @@
       line-height: 1.8;
       color: #e2e8f0;
       margin-top: 12px;
+    }
+
+    .step-stack {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .step-card.current-step {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.08);
+    }
+
+    .inline-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
     }
 
     @media (max-width: 1180px) {
@@ -495,7 +464,7 @@
         background: white;
         color: black;
       }
-      .panel, .brief-box, .signal-card, .workflow-card, .agent-card, .queue-item, .kanban-col, .kanban-card {
+      .panel, .brief-box, .signal-card, .workflow-card, .agent-card, .queue-item, .kanban-col, .kanban-card, .step-card {
         background: white !important;
         color: black !important;
         box-shadow: none !important;
@@ -508,7 +477,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand">DeepNexivra</div>
-      <div class="brand-sub">Command OS v1 Shell<br>Operational decision and workflow system</div>
+      <div class="brand-sub">Workflow Engine Lite v1<br>Command OS action layer</div>
 
       <div class="nav-group-title">Command</div>
       <button class="nav-btn active" data-view="command-center">Command Center</button>
@@ -526,7 +495,7 @@
     <main class="main">
       <div class="topbar">
         <div class="topbar-left">
-          <input class="command-input" id="commandBar" placeholder="Command bar — visual shell placeholder" />
+          <input class="command-input" id="commandBar" placeholder="Command bar — shell placeholder" />
           <span class="chip blue" id="activeCaseChip">Case: Unnamed</span>
           <span class="chip" id="systemStatusChip">System: Awaiting Model</span>
         </div>
@@ -539,7 +508,6 @@
       </div>
 
       <div class="workspace">
-        <!-- COMMAND CENTER -->
         <section class="view active" id="command-center">
           <div class="page-head">
             <h1 class="page-title">Command Center</h1>
@@ -566,7 +534,6 @@
           </div>
         </section>
 
-        <!-- TWIN EXPLORER -->
         <section class="view" id="twin-explorer">
           <div class="page-head">
             <h1 class="page-title">Twin Explorer</h1>
@@ -713,7 +680,6 @@
           <div class="result-box" id="systemSummaryBox">System summary will appear here after twin calculation.</div>
         </section>
 
-        <!-- SIGNALS -->
         <section class="view" id="signals">
           <div class="page-head">
             <h1 class="page-title">Signals</h1>
@@ -732,7 +698,6 @@
           </div>
         </section>
 
-        <!-- SCENARIO STUDIO -->
         <section class="view" id="scenario-studio">
           <div class="page-head">
             <h1 class="page-title">Scenario Studio</h1>
@@ -836,11 +801,10 @@
           </div>
         </section>
 
-        <!-- WORKFLOW BOARD -->
         <section class="view" id="workflow-board">
           <div class="page-head">
             <h1 class="page-title">Workflow Board</h1>
-            <p class="page-sub">Generated intervention workflows move here for review, approval, execution, and monitoring.</p>
+            <p class="page-sub">Generated intervention workflows move through analysis, approval, execution, monitoring, escalation, blocking, and closure.</p>
           </div>
 
           <div class="toolbar">
@@ -852,17 +816,16 @@
 
           <div class="split" style="margin-top:16px;">
             <div class="panel">
-              <h3>Workflow Detail</h3>
-              <div id="workflowDetailBox" class="result-box">Select a workflow card to inspect its steps and current state.</div>
+              <h3>Workflow Detail Drawer</h3>
+              <div id="workflowDetailBox" class="result-box">Select a workflow card to inspect its steps, owners, approvals, due state, and linkage.</div>
             </div>
             <div class="panel">
-              <h3>Workflow Action</h3>
+              <h3>Workflow Action Console</h3>
               <div id="workflowActionBox" class="result-box">Workflow actions will appear here after selecting a workflow.</div>
             </div>
           </div>
         </section>
 
-        <!-- AGENT CONSOLE -->
         <section class="view" id="agent-console">
           <div class="page-head">
             <h1 class="page-title">Agent Console</h1>
@@ -872,7 +835,6 @@
           <div class="agent-grid" id="agentGrid"></div>
         </section>
 
-        <!-- OUTCOME LEDGER -->
         <section class="view" id="outcome-ledger">
           <div class="page-head">
             <h1 class="page-title">Outcome Ledger</h1>
@@ -903,7 +865,6 @@
           </div>
         </section>
 
-        <!-- BRIEFING -->
         <section class="view" id="briefing">
           <div class="page-head">
             <h1 class="page-title">Executive Briefing</h1>
@@ -928,8 +889,8 @@
       constraints: "dnx_cmd_constraints_v1",
       scenarios: "dnx_cmd_scenarios_v1",
       selectedScenarioId: "dnx_cmd_selected_scenario_v1",
-      workflows: "dnx_cmd_workflows_v1",
-      selectedWorkflowId: "dnx_cmd_selected_workflow_v1",
+      workflows: "dnx_cmd_workflows_v1_lite",
+      selectedWorkflowId: "dnx_cmd_selected_workflow_v1_lite",
       actuals: "dnx_cmd_actuals_v1"
     };
 
@@ -973,6 +934,10 @@
       return document.getElementById(id);
     }
 
+    function slugify(text) {
+      return String(text || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+    }
+
     function getCaseMeta() {
       return {
         caseName: byId("caseName").value.trim() || "Unnamed Operational Case",
@@ -988,7 +953,7 @@
     }
 
     function getConstraints() {
-      const constraints = {
+      return {
         maxLaborBudget: parseFloat(byId("maxLaborBudget").value),
         minimumStaffingFloor: parseFloat(byId("minimumStaffingFloor").value),
         preferredUtilizationMin: parseFloat(byId("preferredUtilizationMin").value),
@@ -998,7 +963,6 @@
         maxCostIncreasePercent: parseFloat(byId("maxCostIncreasePercent").value),
         minimumSavingsTargetPercent: parseFloat(byId("minimumSavingsTargetPercent").value)
       };
-      return constraints;
     }
 
     function setConstraints(c) {
@@ -1060,9 +1024,12 @@
     }
 
     function chipClassFromStatus(status) {
-      if (["Healthy", "Stable", "Compliant", "Low Risk", "High Confidence"].includes(status)) return "green";
-      if (["Watch", "Caution", "Moderate Risk", "Moderate Confidence"].includes(status)) return "yellow";
-      if (["Stressed", "Critical", "Non-Viable", "High Pressure", "Hard Constraint Breach", "High Risk", "Low Confidence"].includes(status)) return "red";
+      const green = ["Healthy", "Stable", "Compliant", "Low Risk", "High Confidence", "Recommend", "Strongly Recommend", "Resolved", "On Track", "Completed", "Approved"];
+      const yellow = ["Watch", "Caution", "Moderate Risk", "Moderate Confidence", "Consider with Caution", "Due Soon", "Pending Approval", "In Analysis", "Monitoring"];
+      const red = ["Stressed", "Critical", "Non-Viable", "High Pressure", "Hard Constraint Breach", "High Risk", "Low Confidence", "Do Not Recommend", "Overdue", "Blocked", "Escalated"];
+      if (green.includes(status)) return "green";
+      if (yellow.includes(status)) return "yellow";
+      if (red.includes(status)) return "red";
       return "blue";
     }
 
@@ -1072,7 +1039,6 @@
       const laborCost = u.staff * u.wage * u.shift;
       const staffGap = u.staff - requiredStaff;
       const unitStatus = classifyUnitStatus(utilization, staffGap);
-
       return { ...u, requiredStaff, utilization, laborCost, staffGap, unitStatus };
     }
 
@@ -1083,7 +1049,6 @@
       const systemUtilization = totalAvailableStaff > 0 ? (totalRequiredStaff / totalAvailableStaff) * 100 : 0;
       const systemGap = totalAvailableStaff - totalRequiredStaff;
       const systemStatus = classifySystemStatus(systemUtilization, systemGap);
-
       return { totalAvailableStaff, totalRequiredStaff, totalLaborCost, systemUtilization, systemGap, systemStatus };
     }
 
@@ -1218,9 +1183,7 @@
       });
       tree.innerHTML = html;
 
-      if (!currentObjectKey) {
-        currentObjectKey = "system";
-      }
+      if (!currentObjectKey) currentObjectKey = "system";
       renderObjectDetail();
       updateScenarioTargetOptions();
     }
@@ -1321,14 +1284,7 @@
       if (savingsPct < constraints.minimumSavingsTargetPercent) softWarnings.push("Preferred savings target not achieved");
 
       const summary = hardBreaches.length ? "Hard Constraint Breach" : (softWarnings.length ? softWarnings.length + " Warning" + (softWarnings.length > 1 ? "s" : "") : "Compliant");
-      return {
-        hardBreaches,
-        softWarnings,
-        viable: hardBreaches.length === 0,
-        summary,
-        costIncreasePct,
-        savingsPct
-      };
+      return { hardBreaches, softWarnings, viable: hardBreaches.length === 0, summary, costIncreasePct, savingsPct };
     }
 
     function scoreScenario(projectedUnits, projectedSystem, baselineSystem, constraints, evalObj) {
@@ -1356,7 +1312,7 @@
       else if (u > constraints.preferredUtilizationMax && u <= constraints.maximumUtilization) utilScore = Math.max(15, 85 - (u - constraints.preferredUtilizationMax) * 6);
       else if (u < constraints.preferredUtilizationMin) utilScore = Math.max(20, 85 - (constraints.preferredUtilizationMin - u) * 3);
 
-      let complianceScore = evalObj.viable ? Math.max(55, 100 - evalObj.softWarnings.length * 10) : Math.max(0, 15 - (evalObj.hardBreaches.length - 1) * 5);
+      const complianceScore = evalObj.viable ? Math.max(55, 100 - evalObj.softWarnings.length * 10) : Math.max(0, 15 - (evalObj.hardBreaches.length - 1) * 5);
 
       const stressedUnits = projectedUnits.filter(x => x.unitStatus === "Stressed" || x.unitStatus === "Critical").length;
       const watchUnits = projectedUnits.filter(x => x.unitStatus === "Watch").length;
@@ -1541,9 +1497,7 @@
       renderExecutiveBrief();
       byId("saveScenarioBtn").disabled = true;
       byId("saveScenarioBtn").innerText = "Scenario Saved";
-      setTimeout(() => {
-        byId("saveScenarioBtn").innerText = "Save Scenario";
-      }, 1000);
+      setTimeout(() => { byId("saveScenarioBtn").innerText = "Save Scenario"; }, 1000);
     }
 
     function getScenarios() {
@@ -1573,6 +1527,9 @@
       delete actuals[id];
       saveJSON(STORAGE.actuals, actuals);
 
+      const workflows = loadJSON(STORAGE.workflows, []).filter(w => w.linkedScenarioId !== id);
+      saveJSON(STORAGE.workflows, workflows);
+
       if (localStorage.getItem(STORAGE.selectedScenarioId) === id) {
         localStorage.removeItem(STORAGE.selectedScenarioId);
       }
@@ -1584,6 +1541,7 @@
       renderOutcomeLedger();
       renderAgentConsole();
       renderExecutiveBrief();
+      updateTopbar();
     }
 
     function getCandidateScenarios() {
@@ -1684,18 +1642,50 @@
       }).join("");
     }
 
+    function getWorkflowStore() {
+      return loadJSON(STORAGE.workflows, []);
+    }
+
+    function saveWorkflowStore(store) {
+      saveJSON(STORAGE.workflows, store);
+    }
+
+    function getWorkflowStatuses() {
+      return ["Detected", "In Analysis", "Pending Approval", "Approved", "In Execution", "Monitoring", "Blocked", "Escalated", "Closed"];
+    }
+
+    function getSignalWorkflowStatus(signalId) {
+      const workflows = getWorkflowStore();
+      const linked = workflows.filter(w => w.linkedSignalId === signalId || (w.sourceType === "Signal" && w.sourceRef === signalId));
+      if (!linked.length) return "New";
+      const open = linked.find(w => w.status !== "Closed");
+      if (open) return "In Workflow";
+      return "Resolved";
+    }
+
+    function getLinkedWorkflowForScenario(scenarioId) {
+      return getWorkflowStore().filter(w => w.linkedScenarioId === scenarioId);
+    }
+
     function generateSignals() {
       const twin = loadJSON(STORAGE.twin, null);
       const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const workflows = loadJSON(STORAGE.workflows, []);
       const signals = [];
 
       if (!twin) return [];
 
-      function pushSignal(title, severity, affected, cause, impact, response, status = "New", linkedScenarioId = null) {
+      function pushSignal(title, severity, affected, cause, impact, response, linkedScenarioId = null) {
+        const id = "signal_" + slugify(title);
         signals.push({
-          id: "signal_" + signals.length + "_" + title.replace(/\s+/g, "_"),
-          title, severity, affected, cause, impact, response, status, linkedScenarioId
+          id,
+          title,
+          severity,
+          affected,
+          cause,
+          impact,
+          response,
+          status: getSignalWorkflowStatus(id),
+          linkedScenarioId
         });
       }
 
@@ -1768,11 +1758,12 @@
             "Actual results have drifted materially from the selected scenario forecast.",
             "May reduce confidence in the original recommendation.",
             "Open Outcome Ledger",
-            "In Review"
+            selected.id
           );
         }
       }
 
+      const workflows = getWorkflowStore();
       const pendingApprovals = workflows.filter(w => w.status === "Pending Approval").length;
       if (pendingApprovals > 0) {
         pushSignal(
@@ -1781,8 +1772,7 @@
           "Workflow Board",
           pendingApprovals + " workflow(s) are waiting for approval.",
           "Execution may stall if approvals are not cleared.",
-          "Open Workflow Board",
-          "In Workflow"
+          "Open Workflow Board"
         );
       }
 
@@ -1809,7 +1799,7 @@
           "<div class='signal-card'>" +
             "<div class='signal-title'>" + s.title + "</div>" +
             "<span class='chip " + chipClassFromStatus(s.severity) + "'>" + s.severity + "</span> " +
-            "<span class='chip blue'>" + s.status + "</span>" +
+            "<span class='chip " + chipClassFromStatus(s.status) + "'>" + s.status + "</span>" +
             "<div class='mini-lines'>" +
               "<div class='mini-line'><strong>Affected:</strong> " + s.affected + "</div>" +
               "<div class='mini-line'><strong>Trigger:</strong> " + s.cause + "</div>" +
@@ -1826,7 +1816,7 @@
       byId("signalDetailBox").innerHTML =
         "<strong>" + detail.title + "</strong><br>" +
         "<span class='chip " + chipClassFromStatus(detail.severity) + "'>" + detail.severity + "</span> " +
-        "<span class='chip blue'>" + detail.status + "</span><br><br>" +
+        "<span class='chip " + chipClassFromStatus(detail.status) + "'>" + detail.status + "</span><br><br>" +
         "<strong>Affected Object:</strong> " + detail.affected + "<br>" +
         "<strong>Trigger Summary:</strong> " + detail.cause + "<br>" +
         "<strong>Business Impact:</strong> " + detail.impact + "<br>" +
@@ -1844,135 +1834,140 @@
       navigateTo("signals");
     }
 
-    function renderCommandCenter() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const signals = generateSignals();
-      const best = getBestOverallScenario();
-      const workflows = loadJSON(STORAGE.workflows, []);
-      const actuals = loadJSON(STORAGE.actuals, {});
-      const selected = getSelectedScenario();
+    function getCurrentWorkflowStep(workflow) {
+      return workflow.steps[workflow.currentStepIndex] || null;
+    }
 
-      if (!twin) {
-        byId("ccSystemHealthCard").innerHTML = "<h3>System Health</h3><div class='muted'>Build the operational twin first.</div>";
-        byId("ccTopSignalCard").innerHTML = "<h3>Top Signal</h3><div class='muted'>No twin, so no signals yet.</div>";
-        byId("ccTopRecommendationCard").innerHTML = "<h3>Top Recommended Intervention</h3><div class='muted'>Save scenarios to see recommendations.</div>";
-        byId("ccWorkflowStatusCard").innerHTML = "<h3>Workflow Status</h3><div class='muted'>No workflows yet.</div>";
-        byId("ccUtilPressureCard").innerHTML = "<h3>Utilization Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccCostPressureCard").innerHTML = "<h3>Cost Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccStaffPressureCard").innerHTML = "<h3>Staffing Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccVarianceCard").innerHTML = "<h3>Variance / Learning</h3><div class='muted'>No actual outcomes yet.</div>";
-        byId("ccSignalQueue").innerHTML = "<div class='muted'>No signals yet.</div>";
+    function getDueState(workflow) {
+      if (!workflow || workflow.status === "Closed") return "Closed";
+      const step = getCurrentWorkflowStep(workflow);
+      if (!step) return "Closed";
+      const start = new Date(workflow.currentStepStartedAt || workflow.createdAt).getTime();
+      const dueAt = start + (step.dueHours * 3600 * 1000);
+      const now = Date.now();
+      if (now > dueAt) return "Overdue";
+      if (now > start + (step.dueHours * 0.8 * 3600 * 1000)) return "Due Soon";
+      return "On Track";
+    }
+
+    function getWorkflowStatusFromStep(step) {
+      if (!step) return "Closed";
+      if (step.approvalRequired && step.status === "Pending") return "Pending Approval";
+      if (/assign|execute/i.test(step.title)) return "In Execution";
+      if (/monitor|close/i.test(step.title)) return "Monitoring";
+      return "In Analysis";
+    }
+
+    function completeCurrentStepInternal(workflow, markAs) {
+      const step = getCurrentWorkflowStep(workflow);
+      if (!step) {
+        workflow.status = "Closed";
+        workflow.outcomeStatus = "Resolved";
         return;
       }
 
-      const topSignal = signals[0] || null;
-      const openWorkflow = workflows.find(w => w.status !== "Closed") || null;
+      step.status = markAs || "Completed";
+      step.completedAt = new Date().toISOString();
 
-      byId("ccSystemHealthCard").innerHTML =
-        "<h3>System Health</h3>" +
-        "<div class='metric-value'>" + twin.system.systemStatus + "</div>" +
-        "<div class='mini-lines'>" +
-          "<div class='mini-line'><strong>Utilization:</strong> " + fmtPct(twin.system.systemUtilization) + "</div>" +
-          "<div class='mini-line'><strong>Labor Cost:</strong> " + fmtMoney(twin.system.totalLaborCost) + "</div>" +
-          "<div class='mini-line'><strong>Staffing Fit:</strong> Gap / Surplus " + twin.system.systemGap + "</div>" +
-          "<div class='mini-line'><strong>Units Modeled:</strong> " + twin.units.length + "</div>" +
-        "</div>";
+      workflow.currentStepIndex += 1;
+      workflow.currentStepStartedAt = new Date().toISOString();
 
-      byId("ccTopSignalCard").innerHTML =
-        "<h3>Top Signal</h3>" +
-        (topSignal ? (
-          "<div class='metric-value' style='font-size:20px;'>" + topSignal.title + "</div>" +
-          "<span class='chip " + chipClassFromStatus(topSignal.severity) + "'>" + topSignal.severity + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Affected:</strong> " + topSignal.affected + "</div>" +
-            "<div class='mini-line'><strong>Why it matters:</strong> " + topSignal.impact + "</div>" +
-          "</div>" +
-          "<div class='toolbar'><button class='btn-ghost' onclick=\"selectSignal('" + topSignal.id + "')\">Open Signal</button></div>"
-        ) : "<div class='muted'>No active signals detected.</div>");
-
-      byId("ccTopRecommendationCard").innerHTML =
-        "<h3>Top Recommended Intervention</h3>" +
-        (best ? (
-          "<div class='metric-value' style='font-size:20px;'>" + best.scenarioName + "</div>" +
-          "<span class='chip " + chipClassFromStatus(best.recommendationClass) + "'>" + best.recommendationClass + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Why:</strong> " + best.whyThisWon + "</div>" +
-            "<div class='mini-line'><strong>Expected Impact:</strong> Utilization " + fmtPct(best.projectedSystem.systemUtilization) + ", Cost " + fmtMoney(best.projectedSystem.totalLaborCost) + "</div>" +
-            "<div class='mini-line'><strong>Tradeoff:</strong> " + best.tradeoff + "</div>" +
-          "</div>" +
-          "<div class='toolbar'>" +
-            "<button class='btn-ghost' onclick=\"setSelectedScenario('" + best.id + "'); navigateTo('scenario-studio')\">Open Scenario</button>" +
-            "<button class='btn-primary' onclick=\"generateWorkflowFromScenarioId('" + best.id + "')\">Generate Workflow</button>" +
-          "</div>"
-        ) : "<div class='muted'>Save scenarios to see recommendations.</div>");
-
-      byId("ccWorkflowStatusCard").innerHTML =
-        "<h3>Workflow Status</h3>" +
-        (openWorkflow ? (
-          "<div class='metric-value' style='font-size:20px;'>" + openWorkflow.title + "</div>" +
-          "<span class='chip blue'>" + openWorkflow.status + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Owner:</strong> " + openWorkflow.owner + "</div>" +
-            "<div class='mini-line'><strong>Priority:</strong> " + openWorkflow.priority + "</div>" +
-            "<div class='mini-line'><strong>Next Step:</strong> " + openWorkflow.steps[openWorkflow.currentStepIndex] + "</div>" +
-          "</div>" +
-          "<div class='toolbar'><button class='btn-ghost' onclick=\"setSelectedWorkflow('" + openWorkflow.id + "'); navigateTo('workflow-board')\">Open Workflow</button></div>"
-        ) : "<div class='muted'>No workflows currently in motion.</div>");
-
-      byId("ccUtilPressureCard").innerHTML =
-        "<h3>Utilization Pressure</h3>" +
-        "<div class='metric-value'>" + fmtPct(twin.system.systemUtilization) + "</div>" +
-        "<div class='mini-line'>Target band depends on constraints. High utilization reduces resilience.</div>";
-
-      byId("ccCostPressureCard").innerHTML =
-        "<h3>Cost Pressure</h3>" +
-        "<div class='metric-value'>" + fmtMoney(twin.system.totalLaborCost) + "</div>" +
-        "<div class='mini-line'>Current labor cost vs budget determines cost pressure severity.</div>";
-
-      byId("ccStaffPressureCard").innerHTML =
-        "<h3>Staffing Pressure</h3>" +
-        "<div class='metric-value'>" + twin.system.systemGap + "</div>" +
-        "<div class='mini-line'>Positive means surplus, negative means shortage.</div>";
-
-      if (selected && actuals[selected.id]) {
-        const actual = actuals[selected.id];
-        const costVar = actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost;
-        const utilVar = actual.system.systemUtilization - selected.projectedSystem.systemUtilization;
-
-        byId("ccVarianceCard").innerHTML =
-          "<h3>Variance / Learning</h3>" +
-          "<div class='metric-value'>" + (Math.abs(costVar) <= 1 ? "On Target" : "Drifted") + "</div>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Cost Variance:</strong> " + (costVar >= 0 ? "+" : "-") + fmtMoney(Math.abs(costVar)) + "</div>" +
-            "<div class='mini-line'><strong>Utilization Variance:</strong> " + (utilVar >= 0 ? "+" : "-") + fmtPct(Math.abs(utilVar)) + "</div>" +
-          "</div>";
-      } else {
-        byId("ccVarianceCard").innerHTML =
-          "<h3>Variance / Learning</h3>" +
-          "<div class='metric-value'>Pending</div>" +
-          "<div class='mini-line'>Record actual outcomes on the selected scenario to unlock learning.</div>";
+      const nextStep = getCurrentWorkflowStep(workflow);
+      if (!nextStep) {
+        workflow.status = "Closed";
+        workflow.outcomeStatus = workflow.outcomeStatus === "Escalated" ? "Escalated" : (workflow.outcomeStatus === "Blocked" ? "Blocked" : "Resolved");
+        return;
       }
 
-      byId("ccSignalQueue").innerHTML = signals.length
-        ? signals.slice(0, 5).map(function (s) {
-            return (
-              "<div class='queue-item'>" +
-                "<div class='signal-title'>" + s.title + "</div>" +
-                "<span class='chip " + chipClassFromStatus(s.severity) + "'>" + s.severity + "</span> " +
-                "<span class='chip blue'>" + s.status + "</span>" +
-                "<div class='mini-lines'>" +
-                  "<div class='mini-line'><strong>Affected:</strong> " + s.affected + "</div>" +
-                  "<div class='mini-line'><strong>Trigger:</strong> " + s.cause + "</div>" +
-                  "<div class='mini-line'><strong>Response:</strong> " + s.response + "</div>" +
-                "</div>" +
-                "<div class='toolbar'>" +
-                  "<button class='btn-ghost' onclick=\"selectSignal('" + s.id + "')\">Open</button>" +
-                  "<button class='btn-primary' onclick=\"generateWorkflowFromSignalId('" + s.id + "')\">Generate Workflow</button>" +
-                "</div>" +
-              "</div>"
-            );
-          }).join("")
-        : "<div class='muted'>No active signals detected.</div>";
+      nextStep.status = nextStep.status || "Pending";
+      workflow.status = getWorkflowStatusFromStep(nextStep);
+    }
+
+    function createWorkflowStepsForScenario(scenario) {
+      return [
+        { id: "step_review", title: "Review current state", owner: "Ops Analyst", approvalRequired: false, dueHours: 4, type: "review", status: "Pending" },
+        { id: "step_validate", title: "Validate scenario assumptions", owner: "Workforce Analyst", approvalRequired: false, dueHours: 6, type: "analysis", status: "Pending" },
+        { id: "step_approve", title: "Approve intervention", owner: "Ops Manager", approvalRequired: true, dueHours: 8, type: "approval", status: "Pending" },
+        { id: "step_assign", title: "Assign execution owner", owner: "Ops Manager", approvalRequired: false, dueHours: 12, type: "assignment", status: "Pending" },
+        { id: "step_execute", title: "Execute selected action", owner: "Unit Lead", approvalRequired: false, dueHours: 24, type: "execution", status: "Pending" },
+        { id: "step_monitor", title: "Monitor actual result", owner: "Ops Analyst", approvalRequired: false, dueHours: 48, type: "monitoring", status: "Pending" },
+        { id: "step_close", title: "Close workflow", owner: "Ops Manager", approvalRequired: false, dueHours: 72, type: "closure", status: "Pending" }
+      ];
+    }
+
+    function createWorkflowStepsForSignal(signal) {
+      return [
+        { id: "step_review_signal", title: "Review signal details", owner: "Ops Analyst", approvalRequired: false, dueHours: 4, type: "review", status: "Pending" },
+        { id: "step_validate_state", title: "Validate current operating state", owner: "Workforce Analyst", approvalRequired: false, dueHours: 6, type: "analysis", status: "Pending" },
+        { id: "step_simulate", title: "Simulate response options", owner: "Scenario Agent", approvalRequired: false, dueHours: 8, type: "analysis", status: "Pending" },
+        { id: "step_gate", title: "Approve intervention path", owner: "Ops Manager", approvalRequired: true, dueHours: 12, type: "approval", status: "Pending" },
+        { id: "step_execute", title: "Execute chosen action", owner: "Unit Lead", approvalRequired: false, dueHours: 24, type: "execution", status: "Pending" },
+        { id: "step_monitor", title: "Monitor outcome", owner: "Ops Analyst", approvalRequired: false, dueHours: 48, type: "monitoring", status: "Pending" },
+        { id: "step_close", title: "Close workflow", owner: "Ops Manager", approvalRequired: false, dueHours: 72, type: "closure", status: "Pending" }
+      ];
+    }
+
+    function buildWorkflowFromScenario(scenario) {
+      const signals = generateSignals();
+      const bestLinkedSignal = signals.find(s => scenario.targetUnitName === "All Units" || s.affected === scenario.targetUnitName || s.affected === "All Units");
+      const priority = scenario.riskLevel === "High Risk" ? "High" : (scenario.riskLevel === "Moderate Risk" ? "Medium" : "Low");
+
+      return {
+        id: "workflow_" + Date.now(),
+        title: "Intervention — " + scenario.scenarioName,
+        sourceType: "Scenario",
+        sourceRef: scenario.id,
+        linkedSignalId: bestLinkedSignal ? bestLinkedSignal.id : null,
+        linkedScenarioId: scenario.id,
+        priority,
+        owner: "Ops Manager",
+        affected: scenario.targetUnitName || "All Units",
+        status: "Detected",
+        createdAt: new Date().toISOString(),
+        currentStepIndex: 0,
+        currentStepStartedAt: new Date().toISOString(),
+        steps: createWorkflowStepsForScenario(scenario),
+        stageHistory: [{ at: new Date().toISOString(), status: "Detected", note: "Workflow created from scenario." }],
+        outcomeStatus: "Open",
+        notes: scenario.note || ""
+      };
+    }
+
+    function buildWorkflowFromSignal(signal) {
+      const bestScenario = getBestOverallScenario();
+      return {
+        id: "workflow_" + Date.now(),
+        title: "Response — " + signal.title,
+        sourceType: "Signal",
+        sourceRef: signal.id,
+        linkedSignalId: signal.id,
+        linkedScenarioId: bestScenario ? bestScenario.id : null,
+        priority: signal.severity === "Critical" ? "High" : signal.severity,
+        owner: "Ops Manager",
+        affected: signal.affected,
+        status: "Detected",
+        createdAt: new Date().toISOString(),
+        currentStepIndex: 0,
+        currentStepStartedAt: new Date().toISOString(),
+        steps: createWorkflowStepsForSignal(signal),
+        stageHistory: [{ at: new Date().toISOString(), status: "Detected", note: "Workflow created from signal." }],
+        outcomeStatus: "Open",
+        notes: signal.cause
+      };
+    }
+
+    function saveWorkflow(workflow) {
+      const workflows = getWorkflowStore();
+      workflows.push(workflow);
+      saveWorkflowStore(workflows);
+      localStorage.setItem(STORAGE.selectedWorkflowId, workflow.id);
+      renderWorkflowBoard();
+      renderCommandCenter();
+      renderSignals();
+      renderAgentConsole();
+      renderExecutiveBrief();
+      updateTopbar();
+      navigateTo("workflow-board");
     }
 
     function setSelectedWorkflow(id) {
@@ -1982,76 +1977,117 @@
 
     function getSelectedWorkflow() {
       const id = localStorage.getItem(STORAGE.selectedWorkflowId);
-      return loadJSON(STORAGE.workflows, []).find(w => w.id === id) || null;
+      return getWorkflowStore().find(w => w.id === id) || null;
     }
 
-    function workflowStatusSequence() {
-      return ["Detected", "In Analysis", "Pending Approval", "Approved", "In Execution", "Monitoring", "Closed"];
-    }
-
-    function buildWorkflowFromScenario(scenario) {
-      const priority = scenario.riskLevel === "High Risk" ? "High" : (scenario.riskLevel === "Moderate Risk" ? "Medium" : "Low");
-      const title = "Intervention — " + scenario.scenarioName;
-      return {
-        id: "workflow_" + Date.now(),
-        title,
-        sourceType: "Scenario",
-        sourceRef: scenario.id,
-        priority,
-        owner: "Ops Manager",
-        affected: scenario.targetUnitName || "All Units",
-        status: "Detected",
-        createdAt: new Date().toISOString(),
-        currentStepIndex: 0,
-        steps: [
-          "Review current state",
-          "Validate scenario assumptions",
-          "Approve intervention",
-          "Assign execution owner",
-          "Execute selected action",
-          "Monitor actual result",
-          "Close workflow"
-        ]
-      };
-    }
-
-    function buildWorkflowFromSignal(signal) {
-      const title = "Response — " + signal.title;
-      return {
-        id: "workflow_" + Date.now(),
-        title,
-        sourceType: "Signal",
-        sourceRef: signal.id,
-        priority: signal.severity === "Critical" ? "High" : signal.severity,
-        owner: "Ops Manager",
-        affected: signal.affected,
-        status: "Detected",
-        createdAt: new Date().toISOString(),
-        currentStepIndex: 0,
-        steps: [
-          "Review signal details",
-          "Validate current operating state",
-          "Simulate response options",
-          "Request approval if needed",
-          "Execute chosen action",
-          "Monitor outcome",
-          "Close workflow"
-        ]
-      };
-    }
-
-    function saveWorkflow(workflow) {
-      const workflows = loadJSON(STORAGE.workflows, []);
-      workflows.push(workflow);
-      saveJSON(STORAGE.workflows, workflows);
-      localStorage.setItem(STORAGE.selectedWorkflowId, workflow.id);
+    function updateWorkflow(workflowId, updater) {
+      const workflows = getWorkflowStore();
+      const workflow = workflows.find(w => w.id === workflowId);
+      if (!workflow) return;
+      updater(workflow);
+      saveWorkflowStore(workflows);
       renderWorkflowBoard();
       renderCommandCenter();
       renderSignals();
       renderAgentConsole();
       renderExecutiveBrief();
       updateTopbar();
-      navigateTo("workflow-board");
+    }
+
+    function addStageHistory(workflow, status, note) {
+      workflow.stageHistory.push({ at: new Date().toISOString(), status, note });
+    }
+
+    function startWorkflowAnalysis(id) {
+      updateWorkflow(id, function (w) {
+        if (w.status === "Detected") {
+          w.status = "In Analysis";
+          addStageHistory(w, "In Analysis", "Workflow analysis started.");
+        }
+      });
+    }
+
+    function completeWorkflowStep(id) {
+      updateWorkflow(id, function (w) {
+        if (["Blocked", "Escalated", "Closed", "Pending Approval"].includes(w.status)) return;
+        const step = getCurrentWorkflowStep(w);
+        if (!step || step.approvalRequired) return;
+        completeCurrentStepInternal(w, "Completed");
+        addStageHistory(w, w.status, "Completed step: " + step.title);
+      });
+    }
+
+    function approveWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        const step = getCurrentWorkflowStep(w);
+        if (!step || !step.approvalRequired) return;
+        step.status = "Approved";
+        step.completedAt = new Date().toISOString();
+        w.currentStepIndex += 1;
+        w.currentStepStartedAt = new Date().toISOString();
+        const next = getCurrentWorkflowStep(w);
+        if (!next) {
+          w.status = "Closed";
+          w.outcomeStatus = "Resolved";
+        } else {
+          next.status = next.status || "Pending";
+          w.status = "Approved";
+        }
+        addStageHistory(w, "Approved", "Approval gate cleared.");
+      });
+    }
+
+    function activateApprovedWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        if (w.status !== "Approved") return;
+        const step = getCurrentWorkflowStep(w);
+        if (!step) {
+          w.status = "Closed";
+          return;
+        }
+        w.status = getWorkflowStatusFromStep(step);
+        addStageHistory(w, w.status, "Workflow activated after approval.");
+      });
+    }
+
+    function blockWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        w.status = "Blocked";
+        w.outcomeStatus = "Blocked";
+        addStageHistory(w, "Blocked", "Workflow was blocked.");
+      });
+    }
+
+    function escalateWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        w.status = "Escalated";
+        w.outcomeStatus = "Escalated";
+        addStageHistory(w, "Escalated", "Workflow was escalated.");
+      });
+    }
+
+    function reopenWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        if (!["Blocked", "Escalated"].includes(w.status)) return;
+        const step = getCurrentWorkflowStep(w);
+        w.status = step ? getWorkflowStatusFromStep(step) : "In Analysis";
+        w.outcomeStatus = "Open";
+        addStageHistory(w, w.status, "Workflow reopened.");
+      });
+    }
+
+    function closeWorkflow(id) {
+      updateWorkflow(id, function (w) {
+        const step = getCurrentWorkflowStep(w);
+        if (step && step.title.toLowerCase().includes("close")) {
+          step.status = "Completed";
+          step.completedAt = new Date().toISOString();
+        }
+        w.currentStepIndex = w.steps.length;
+        w.status = "Closed";
+        w.outcomeStatus = w.outcomeStatus === "Blocked" ? "Blocked" : (w.outcomeStatus === "Escalated" ? "Escalated" : "Resolved");
+        addStageHistory(w, "Closed", "Workflow manually closed.");
+      });
     }
 
     function generateWorkflowFromSelectedScenario() {
@@ -2086,32 +2122,11 @@
       saveWorkflow(buildWorkflowFromSignal(signal));
     }
 
-    function advanceWorkflow(id) {
-      const workflows = loadJSON(STORAGE.workflows, []);
-      const seq = workflowStatusSequence();
-      const w = workflows.find(x => x.id === id);
-      if (!w) return;
-
-      const currentIndex = seq.indexOf(w.status);
-      if (currentIndex < seq.length - 1) {
-        w.status = seq[currentIndex + 1];
-        w.currentStepIndex = Math.min(w.currentStepIndex + 1, w.steps.length - 1);
-      }
-
-      saveJSON(STORAGE.workflows, workflows);
-      renderWorkflowBoard();
-      renderCommandCenter();
-      renderSignals();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
     function renderWorkflowBoard() {
-      const workflows = loadJSON(STORAGE.workflows, []);
+      const workflows = getWorkflowStore();
       const selected = getSelectedWorkflow();
       const board = byId("workflowKanban");
-      const statuses = ["Detected", "In Analysis", "Pending Approval", "Approved", "In Execution", "Monitoring", "Closed"];
+      const statuses = getWorkflowStatuses();
 
       board.innerHTML = statuses.map(function (status) {
         const items = workflows.filter(w => w.status === status);
@@ -2119,14 +2134,17 @@
           "<div class='kanban-col'>" +
             "<div class='kanban-title'>" + status + "</div>" +
             (items.length ? items.map(function (w) {
+              const currentStep = getCurrentWorkflowStep(w);
+              const dueState = getDueState(w);
               return (
                 "<div class='kanban-card' onclick=\"setSelectedWorkflow('" + w.id + "')\">" +
                   "<div class='workflow-title'>" + w.title + "</div>" +
-                  "<span class='chip " + (w.priority === "High" ? "red" : (w.priority === "Medium" ? "yellow" : "blue")) + "'>" + w.priority + "</span>" +
+                  "<span class='chip " + (w.priority === "High" ? "red" : (w.priority === "Medium" ? "yellow" : "blue")) + "'>" + w.priority + "</span> " +
+                  "<span class='chip " + chipClassFromStatus(dueState) + "'>" + dueState + "</span>" +
                   "<div class='mini-lines'>" +
                     "<div class='mini-line'><strong>Owner:</strong> " + w.owner + "</div>" +
                     "<div class='mini-line'><strong>Affected:</strong> " + w.affected + "</div>" +
-                    "<div class='mini-line'><strong>Next Step:</strong> " + w.steps[w.currentStepIndex] + "</div>" +
+                    "<div class='mini-line'><strong>Current Step:</strong> " + (currentStep ? currentStep.title : "Complete") + "</div>" +
                   "</div>" +
                 "</div>"
               );
@@ -2136,28 +2154,82 @@
       }).join("");
 
       if (!selected) {
-        byId("workflowDetailBox").innerHTML = "Select a workflow card to inspect its steps and current state.";
+        byId("workflowDetailBox").innerHTML = "Select a workflow card to inspect its steps, owners, approvals, due state, and linkage.";
         byId("workflowActionBox").innerHTML = "Workflow actions will appear here after selecting a workflow.";
         return;
       }
 
+      const linkedScenario = selected.linkedScenarioId ? getScenarios().find(s => s.id === selected.linkedScenarioId) : null;
+      const linkedSignal = selected.linkedSignalId ? generateSignals().find(s => s.id === selected.linkedSignalId) : null;
+      const dueState = getDueState(selected);
+      const actualExists = linkedScenario ? !!getActualStore()[linkedScenario.id] : false;
+
       byId("workflowDetailBox").innerHTML =
         "<strong>" + selected.title + "</strong><br>" +
-        "<span class='chip blue'>" + selected.status + "</span> " +
-        "<span class='chip " + (selected.priority === "High" ? "red" : (selected.priority === "Medium" ? "yellow" : "blue")) + "'>" + selected.priority + "</span><br><br>" +
-        "<strong>Source:</strong> " + selected.sourceType + "<br>" +
+        "<span class='chip " + chipClassFromStatus(selected.status) + "'>" + selected.status + "</span> " +
+        "<span class='chip " + (selected.priority === "High" ? "red" : (selected.priority === "Medium" ? "yellow" : "blue")) + "'>" + selected.priority + "</span> " +
+        "<span class='chip " + chipClassFromStatus(dueState) + "'>" + dueState + "</span><br><br>" +
         "<strong>Owner:</strong> " + selected.owner + "<br>" +
-        "<strong>Affected:</strong> " + selected.affected + "<br><br>" +
-        "<strong>Workflow Steps:</strong><br>" +
-        selected.steps.map(function (s, i) {
-          return (i === selected.currentStepIndex ? "→ " : "") + (i + 1) + ". " + s;
-        }).join("<br>");
+        "<strong>Affected:</strong> " + selected.affected + "<br>" +
+        "<strong>Source:</strong> " + selected.sourceType + "<br>" +
+        "<strong>Linked Signal:</strong> " + (linkedSignal ? linkedSignal.title : "None") + "<br>" +
+        "<strong>Linked Scenario:</strong> " + (linkedScenario ? linkedScenario.scenarioName : "None") + "<br>" +
+        "<strong>Outcome Status:</strong> " + selected.outcomeStatus + "<br><br>" +
+        "<strong>Workflow Steps</strong>" +
+        "<div class='step-stack'>" +
+          selected.steps.map(function (step, i) {
+            return (
+              "<div class='step-card " + (i === selected.currentStepIndex ? "current-step" : "") + "'>" +
+                "<div class='step-title'>" + (i + 1) + ". " + step.title + "</div>" +
+                "<div class='inline-meta'>" +
+                  "<span class='chip blue'>Owner: " + step.owner + "</span>" +
+                  "<span class='chip " + (step.approvalRequired ? "yellow" : "green") + "'>" + (step.approvalRequired ? "Approval Gate" : "Action Step") + "</span>" +
+                  "<span class='chip " + chipClassFromStatus(step.status) + "'>" + step.status + "</span>" +
+                  "<span class='chip purple'>Due: " + step.dueHours + "h</span>" +
+                "</div>" +
+              "</div>"
+            );
+          }).join("") +
+        "</div><br>" +
+        "<strong>Stage History</strong><br>" +
+        selected.stageHistory.map(h => new Date(h.at).toLocaleString() + " — " + h.status + " — " + h.note).join("<br>");
+
+      const currentStep = getCurrentWorkflowStep(selected);
+      let actions = "";
+
+      if (selected.status === "Detected") {
+        actions += "<button class='btn-primary' onclick=\"startWorkflowAnalysis('" + selected.id + "')\">Start Analysis</button>";
+      }
+      if (selected.status === "Approved") {
+        actions += "<button class='btn-primary' onclick=\"activateApprovedWorkflow('" + selected.id + "')\">Activate Next Stage</button>";
+      }
+      if (!["Blocked", "Escalated", "Closed", "Pending Approval", "Approved"].includes(selected.status) && currentStep && !currentStep.approvalRequired) {
+        actions += "<button class='btn-secondary' onclick=\"completeWorkflowStep('" + selected.id + "')\">Complete Current Step</button>";
+      }
+      if (selected.status === "Pending Approval" && currentStep && currentStep.approvalRequired) {
+        actions += "<button class='btn-primary' onclick=\"approveWorkflow('" + selected.id + "')\">Approve Gate</button>";
+      }
+      if (!["Closed"].includes(selected.status)) {
+        actions += "<button class='btn-ghost' onclick=\"blockWorkflow('" + selected.id + "')\">Block</button>";
+        actions += "<button class='btn-ghost' onclick=\"escalateWorkflow('" + selected.id + "')\">Escalate</button>";
+      }
+      if (["Blocked", "Escalated"].includes(selected.status)) {
+        actions += "<button class='btn-secondary' onclick=\"reopenWorkflow('" + selected.id + "')\">Reopen</button>";
+      }
+      if ((selected.status === "Monitoring" && actualExists) || selected.status === "Escalated" || selected.status === "Blocked") {
+        actions += "<button class='btn-danger' onclick=\"closeWorkflow('" + selected.id + "')\">Close Workflow</button>";
+      }
 
       byId("workflowActionBox").innerHTML =
-        "<strong>Current Step:</strong> " + selected.steps[selected.currentStepIndex] + "<br><br>" +
+        "<strong>Current Step:</strong> " + (currentStep ? currentStep.title : "Complete") + "<br>" +
+        "<strong>Due State:</strong> " + dueState + "<br>" +
+        "<strong>Approval Gate:</strong> " + (currentStep && currentStep.approvalRequired ? "Yes" : "No") + "<br>" +
+        "<strong>Linked Actual Outcome:</strong> " + (actualExists ? "Captured" : "Not captured") + "<br><br>" +
+        "<div class='toolbar'>" + actions + "</div>" +
         "<div class='toolbar'>" +
-          "<button class='btn-primary' onclick=\"advanceWorkflow('" + selected.id + "')\">Advance Stage</button>" +
-          "<button class='btn-ghost' onclick=\"navigateTo('briefing')\">Open Brief</button>" +
+          "<button class='btn-ghost' onclick=\"navigateTo('signals')\">Open Signals</button>" +
+          "<button class='btn-ghost' onclick=\"navigateTo('scenario-studio')\">Open Scenarios</button>" +
+          "<button class='btn-ghost' onclick=\"navigateTo('outcome-ledger')\">Open Outcome Ledger</button>" +
         "</div>";
     }
 
@@ -2185,10 +2257,13 @@
         return;
       }
 
+      const linkedWorkflows = getWorkflowStore().filter(w => w.linkedScenarioId === selected.id);
+
       byId("outcomeIntro").innerHTML =
         "<strong>Selected Scenario:</strong> " + selected.scenarioName + "<br>" +
         "<strong>Projected Utilization:</strong> " + fmtPct(selected.projectedSystem.systemUtilization) + "<br>" +
-        "<strong>Projected Labor Cost:</strong> " + fmtMoney(selected.projectedSystem.totalLaborCost);
+        "<strong>Projected Labor Cost:</strong> " + fmtMoney(selected.projectedSystem.totalLaborCost) + "<br>" +
+        "<strong>Linked Workflows:</strong> " + (linkedWorkflows.length ? linkedWorkflows.map(w => w.title + " (" + w.status + ")").join(", ") : "None");
 
       byId("outcomeFormArea").innerHTML =
         selected.projectedUnits.map(function (u) {
@@ -2289,12 +2364,30 @@
       store[selected.id] = actualRecord;
       saveJSON(STORAGE.actuals, store);
 
+      const linkedWorkflows = getWorkflowStore().filter(w => w.linkedScenarioId === selected.id);
+      if (linkedWorkflows.length) {
+        updateLinkedWorkflowsAfterOutcome(selected.id);
+      }
+
       renderOutcomeLedger();
       renderCommandCenter();
       renderSignals();
+      renderWorkflowBoard();
       renderAgentConsole();
       renderExecutiveBrief();
       updateTopbar();
+    }
+
+    function updateLinkedWorkflowsAfterOutcome(scenarioId) {
+      const workflows = getWorkflowStore();
+      let changed = false;
+      workflows.forEach(function (w) {
+        if (w.linkedScenarioId === scenarioId && w.status === "Monitoring") {
+          addStageHistory(w, "Monitoring", "Actual outcome captured for linked scenario.");
+          changed = true;
+        }
+      });
+      if (changed) saveWorkflowStore(workflows);
     }
 
     function clearActualOutcomeForSelected() {
@@ -2410,7 +2503,7 @@
     function updateTopbar() {
       const caseMeta = loadJSON(STORAGE.caseMeta, { caseName: "Unnamed Operational Case" });
       const twin = loadJSON(STORAGE.twin, null);
-      const workflows = loadJSON(STORAGE.workflows, []);
+      const workflows = getWorkflowStore();
       const confidence = calculateConfidence();
 
       byId("activeCaseChip").innerText = "Case: " + (caseMeta.caseName || "Unnamed");
@@ -2426,20 +2519,157 @@
       byId("workflowChip").innerText = "Open Workflows: " + openWorkflows;
     }
 
+    function renderCommandCenter() {
+      const twin = loadJSON(STORAGE.twin, null);
+      const signals = generateSignals();
+      const best = getBestOverallScenario();
+      const workflows = getWorkflowStore();
+      const actuals = loadJSON(STORAGE.actuals, {});
+      const selected = getSelectedScenario();
+
+      if (!twin) {
+        byId("ccSystemHealthCard").innerHTML = "<h3>System Health</h3><div class='muted'>Build the operational twin first.</div>";
+        byId("ccTopSignalCard").innerHTML = "<h3>Top Signal</h3><div class='muted'>No twin, so no signals yet.</div>";
+        byId("ccTopRecommendationCard").innerHTML = "<h3>Top Recommended Intervention</h3><div class='muted'>Save scenarios to see recommendations.</div>";
+        byId("ccWorkflowStatusCard").innerHTML = "<h3>Workflow Status</h3><div class='muted'>No workflows yet.</div>";
+        byId("ccUtilPressureCard").innerHTML = "<h3>Utilization Pressure</h3><div class='muted'>No twin data.</div>";
+        byId("ccCostPressureCard").innerHTML = "<h3>Cost Pressure</h3><div class='muted'>No twin data.</div>";
+        byId("ccStaffPressureCard").innerHTML = "<h3>Staffing Pressure</h3><div class='muted'>No twin data.</div>";
+        byId("ccVarianceCard").innerHTML = "<h3>Variance / Learning</h3><div class='muted'>No actual outcomes yet.</div>";
+        byId("ccSignalQueue").innerHTML = "<div class='muted'>No signals yet.</div>";
+        return;
+      }
+
+      const topSignal = signals[0] || null;
+      const openWorkflow = workflows.find(w => w.status !== "Closed") || null;
+      const confidence = calculateConfidence();
+
+      byId("ccSystemHealthCard").innerHTML =
+        "<h3>System Health</h3>" +
+        "<div class='metric-value'>" + twin.system.systemStatus + "</div>" +
+        "<div class='mini-lines'>" +
+          "<div class='mini-line'><strong>Utilization:</strong> " + fmtPct(twin.system.systemUtilization) + "</div>" +
+          "<div class='mini-line'><strong>Labor Cost:</strong> " + fmtMoney(twin.system.totalLaborCost) + "</div>" +
+          "<div class='mini-line'><strong>Staffing Fit:</strong> Gap / Surplus " + twin.system.systemGap + "</div>" +
+          "<div class='mini-line'><strong>Units Modeled:</strong> " + twin.units.length + "</div>" +
+        "</div>";
+
+      byId("ccTopSignalCard").innerHTML =
+        "<h3>Top Signal</h3>" +
+        (topSignal ? (
+          "<div class='metric-value' style='font-size:20px;'>" + topSignal.title + "</div>" +
+          "<span class='chip " + chipClassFromStatus(topSignal.severity) + "'>" + topSignal.severity + "</span> " +
+          "<span class='chip " + chipClassFromStatus(topSignal.status) + "'>" + topSignal.status + "</span>" +
+          "<div class='mini-lines'>" +
+            "<div class='mini-line'><strong>Affected:</strong> " + topSignal.affected + "</div>" +
+            "<div class='mini-line'><strong>Why it matters:</strong> " + topSignal.impact + "</div>" +
+          "</div>" +
+          "<div class='toolbar'><button class='btn-ghost' onclick=\"selectSignal('" + topSignal.id + "')\">Open Signal</button></div>"
+        ) : "<div class='muted'>No active signals detected.</div>");
+
+      byId("ccTopRecommendationCard").innerHTML =
+        "<h3>Top Recommended Intervention</h3>" +
+        (best ? (
+          "<div class='metric-value' style='font-size:20px;'>" + best.scenarioName + "</div>" +
+          "<span class='chip " + chipClassFromStatus(best.recommendationClass) + "'>" + best.recommendationClass + "</span> " +
+          "<span class='chip " + (confidence ? chipClassFromStatus(confidence.label) : "purple") + "'>" + (confidence ? confidence.label : "Confidence Pending") + "</span>" +
+          "<div class='mini-lines'>" +
+            "<div class='mini-line'><strong>Why:</strong> " + best.whyThisWon + "</div>" +
+            "<div class='mini-line'><strong>Expected Impact:</strong> Utilization " + fmtPct(best.projectedSystem.systemUtilization) + ", Cost " + fmtMoney(best.projectedSystem.totalLaborCost) + "</div>" +
+            "<div class='mini-line'><strong>Tradeoff:</strong> " + best.tradeoff + "</div>" +
+          "</div>" +
+          "<div class='toolbar'>" +
+            "<button class='btn-ghost' onclick=\"setSelectedScenario('" + best.id + "'); navigateTo('scenario-studio')\">Open Scenario</button>" +
+            "<button class='btn-primary' onclick=\"generateWorkflowFromScenarioId('" + best.id + "')\">Generate Workflow</button>" +
+          "</div>"
+        ) : "<div class='muted'>Save scenarios to see recommendations.</div>");
+
+      byId("ccWorkflowStatusCard").innerHTML =
+        "<h3>Workflow Status</h3>" +
+        (openWorkflow ? (
+          "<div class='metric-value' style='font-size:20px;'>" + openWorkflow.title + "</div>" +
+          "<span class='chip " + chipClassFromStatus(openWorkflow.status) + "'>" + openWorkflow.status + "</span> " +
+          "<span class='chip " + chipClassFromStatus(getDueState(openWorkflow)) + "'>" + getDueState(openWorkflow) + "</span>" +
+          "<div class='mini-lines'>" +
+            "<div class='mini-line'><strong>Owner:</strong> " + openWorkflow.owner + "</div>" +
+            "<div class='mini-line'><strong>Priority:</strong> " + openWorkflow.priority + "</div>" +
+            "<div class='mini-line'><strong>Next Step:</strong> " + (getCurrentWorkflowStep(openWorkflow) ? getCurrentWorkflowStep(openWorkflow).title : "Complete") + "</div>" +
+          "</div>" +
+          "<div class='toolbar'><button class='btn-ghost' onclick=\"setSelectedWorkflow('" + openWorkflow.id + "'); navigateTo('workflow-board')\">Open Workflow</button></div>"
+        ) : "<div class='muted'>No workflows currently in motion.</div>");
+
+      byId("ccUtilPressureCard").innerHTML =
+        "<h3>Utilization Pressure</h3>" +
+        "<div class='metric-value'>" + fmtPct(twin.system.systemUtilization) + "</div>" +
+        "<div class='mini-line'>Target band depends on constraints. High utilization reduces resilience.</div>";
+
+      byId("ccCostPressureCard").innerHTML =
+        "<h3>Cost Pressure</h3>" +
+        "<div class='metric-value'>" + fmtMoney(twin.system.totalLaborCost) + "</div>" +
+        "<div class='mini-line'>Current labor cost vs budget determines cost pressure severity.</div>";
+
+      byId("ccStaffPressureCard").innerHTML =
+        "<h3>Staffing Pressure</h3>" +
+        "<div class='metric-value'>" + twin.system.systemGap + "</div>" +
+        "<div class='mini-line'>Positive means surplus, negative means shortage.</div>";
+
+      if (selected && actuals[selected.id]) {
+        const actual = actuals[selected.id];
+        const costVar = actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost;
+        const utilVar = actual.system.systemUtilization - selected.projectedSystem.systemUtilization;
+
+        byId("ccVarianceCard").innerHTML =
+          "<h3>Variance / Learning</h3>" +
+          "<div class='metric-value'>" + (Math.abs(costVar) <= 1 ? "On Target" : "Drifted") + "</div>" +
+          "<div class='mini-lines'>" +
+            "<div class='mini-line'><strong>Cost Variance:</strong> " + (costVar >= 0 ? "+" : "-") + fmtMoney(Math.abs(costVar)) + "</div>" +
+            "<div class='mini-line'><strong>Utilization Variance:</strong> " + (utilVar >= 0 ? "+" : "-") + fmtPct(Math.abs(utilVar)) + "</div>" +
+          "</div>";
+      } else {
+        byId("ccVarianceCard").innerHTML =
+          "<h3>Variance / Learning</h3>" +
+          "<div class='metric-value'>Pending</div>" +
+          "<div class='mini-line'>Record actual outcomes on the selected scenario to unlock learning.</div>";
+      }
+
+      byId("ccSignalQueue").innerHTML = signals.length
+        ? signals.slice(0, 5).map(function (s) {
+            return (
+              "<div class='queue-item'>" +
+                "<div class='signal-title'>" + s.title + "</div>" +
+                "<span class='chip " + chipClassFromStatus(s.severity) + "'>" + s.severity + "</span> " +
+                "<span class='chip " + chipClassFromStatus(s.status) + "'>" + s.status + "</span>" +
+                "<div class='mini-lines'>" +
+                  "<div class='mini-line'><strong>Affected:</strong> " + s.affected + "</div>" +
+                  "<div class='mini-line'><strong>Trigger:</strong> " + s.cause + "</div>" +
+                  "<div class='mini-line'><strong>Response:</strong> " + s.response + "</div>" +
+                "</div>" +
+                "<div class='toolbar'>" +
+                  "<button class='btn-ghost' onclick=\"selectSignal('" + s.id + "')\">Open</button>" +
+                  "<button class='btn-primary' onclick=\"generateWorkflowFromSignalId('" + s.id + "')\">Generate Workflow</button>" +
+                "</div>" +
+              "</div>"
+            );
+          }).join("")
+        : "<div class='muted'>No active signals detected.</div>";
+    }
+
     function renderAgentConsole() {
       const signals = generateSignals();
       const bestScenario = getBestOverallScenario();
-      const workflows = loadJSON(STORAGE.workflows, []);
+      const workflows = getWorkflowStore();
       const selected = getSelectedScenario();
       const actual = getSelectedActualOutcome();
       const confidence = calculateConfidence();
 
       const latestWorkflow = workflows.length ? workflows[workflows.length - 1] : null;
+      const blockedCount = workflows.filter(w => w.status === "Blocked").length;
+      const escalatedCount = workflows.filter(w => w.status === "Escalated").length;
 
       const agents = [
         {
           name: "Signal Agent",
-          role: "Detects anomalies, pressure, and opportunities across the operational twin.",
+          role: "Detects anomalies, pressure, and operational risk across the twin.",
           output: signals.length
             ? ("Detected " + signals.length + " active signal(s). Top issue: " + signals[0].title + ".")
             : "No active signals detected right now."
@@ -2453,14 +2683,14 @@
         },
         {
           name: "Workflow Agent",
-          role: "Turns selected scenarios or signals into structured execution workflows.",
+          role: "Drafts and advances workflows with owners, gates, due states, and execution stages.",
           output: latestWorkflow
-            ? ("Latest workflow is " + latestWorkflow.title + " at stage " + latestWorkflow.status + ".")
+            ? ("Latest workflow is " + latestWorkflow.title + " at stage " + latestWorkflow.status + ". Blocked: " + blockedCount + ". Escalated: " + escalatedCount + ".")
             : "No workflow generated yet."
         },
         {
           name: "Briefing Agent",
-          role: "Writes executive-ready summaries, outcome notes, and learning memos.",
+          role: "Writes executive summaries, workflow memos, and learning notes.",
           output: selected
             ? ("Selected scenario is " + selected.scenarioName + (actual ? ". Actual outcome has been captured." : ". Actual outcome is still pending.") + (confidence ? " Confidence is " + confidence.label + "." : ""))
             : "No selected scenario yet for briefing."
@@ -2481,10 +2711,9 @@
     function renderExecutiveBrief() {
       const twin = loadJSON(STORAGE.twin, null);
       const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const scenarios = getScenarios();
       const selected = getSelectedScenario();
       const best = getBestOverallScenario();
-      const workflows = loadJSON(STORAGE.workflows, []);
+      const workflows = getWorkflowStore();
       const actual = getSelectedActualOutcome();
       const confidence = calculateConfidence();
       const chosen = selected || best;
@@ -2494,9 +2723,9 @@
         return;
       }
 
-      const openWorkflow = workflows.find(w => w.status !== "Closed") || null;
       const signals = generateSignals();
       const topSignal = signals[0] || null;
+      const linkedWorkflow = chosen ? workflows.find(w => w.linkedScenarioId === chosen.id && w.status !== "Closed") || workflows.find(w => w.linkedScenarioId === chosen.id) : null;
 
       let actualSection = "No actual outcome has been recorded yet.";
       let learningSection = "Learning signal will appear after actual outcome capture.";
@@ -2549,12 +2778,13 @@
         ) : "No scenario selected yet.") + "<br><br>" +
 
         "<strong>Workflow Summary</strong><br>" +
-        (openWorkflow ? (
-          "Workflow: " + openWorkflow.title + "<br>" +
-          "Stage: " + openWorkflow.status + "<br>" +
-          "Owner: " + openWorkflow.owner + "<br>" +
-          "Next Step: " + openWorkflow.steps[openWorkflow.currentStepIndex]
-        ) : "No workflow currently open.") + "<br><br>" +
+        (linkedWorkflow ? (
+          "Workflow: " + linkedWorkflow.title + "<br>" +
+          "Stage: " + linkedWorkflow.status + "<br>" +
+          "Owner: " + linkedWorkflow.owner + "<br>" +
+          "Due State: " + getDueState(linkedWorkflow) + "<br>" +
+          "Current Step: " + (getCurrentWorkflowStep(linkedWorkflow) ? getCurrentWorkflowStep(linkedWorkflow).title : "Complete")
+        ) : "No linked workflow currently open.") + "<br><br>" +
 
         "<strong>Constraint Profile</strong><br>" +
         "Budget Ceiling: " + fmtMoney(constraints.maxLaborBudget) + "<br>" +
@@ -2599,16 +2829,28 @@
       byId("scenarioScope").value = "single";
       toggleScenarioTargetUnit();
       updateScenarioTargetOptions();
+
       setTimeout(() => {
         const target = [...byId("scenarioTargetUnit").options].find(o => o.textContent === "Processing");
         if (target) byId("scenarioTargetUnit").value = target.value;
         byId("scenarioNote").value = "Testing productivity improvement in Processing as the primary intervention.";
         calculateScenarioPreview();
         saveCurrentScenario();
+
         const best = getBestOverallScenario();
         if (best) {
           setSelectedScenario(best.id);
-          generateWorkflowFromScenarioId(best.id);
+          const workflow = buildWorkflowFromScenario(best);
+          workflow.status = "Pending Approval";
+          workflow.currentStepIndex = 2;
+          workflow.currentStepStartedAt = new Date().toISOString();
+          workflow.steps[0].status = "Completed";
+          workflow.steps[0].completedAt = new Date().toISOString();
+          workflow.steps[1].status = "Completed";
+          workflow.steps[1].completedAt = new Date().toISOString();
+          workflow.stageHistory.push({ at: new Date().toISOString(), status: "In Analysis", note: "Demo analysis completed." });
+          workflow.stageHistory.push({ at: new Date().toISOString(), status: "Pending Approval", note: "Approval gate opened." });
+          saveWorkflow(workflow);
 
           const actualStore = getActualStore();
           actualStore[best.id] = {
