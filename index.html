@@ -3,2934 +3,666 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DeepNexivra — Workflow Engine Lite v1</title>
+  <title>LaborOS Replit Master Prompt</title>
+  <meta name="description" content="Standalone GitHub Pages-ready HTML page containing the peak-detailed Replit master prompt for building LaborOS." />
   <style>
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b1120;
-      color: #fff;
+    :root{
+      --bg:#0a0d14;--panel:#111827;--border:#243041;--text:#e5eefc;--muted:#95a7c6;--accent:#3b82f6;--accent-2:#60a5fa;
     }
-
-    :root {
-      --bg: #0b1120;
-      --panel: #111c34;
-      --panel-2: #0f172a;
-      --line: #23324b;
-      --muted: #94a3b8;
-      --blue: #3b82f6;
-      --blue-soft: rgba(59,130,246,0.15);
-      --green: #22c55e;
-      --green-soft: rgba(34,197,94,0.15);
-      --yellow: #eab308;
-      --yellow-soft: rgba(234,179,8,0.15);
-      --red: #ef4444;
-      --red-soft: rgba(239,68,68,0.15);
-      --purple: #a855f7;
-      --purple-soft: rgba(168,85,247,0.15);
-    }
-
-    .app-shell {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      background: linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
-      border-right: 1px solid var(--line);
-      padding: 22px 16px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    .brand {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .brand-sub {
-      color: #93c5fd;
-      font-size: 13px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .nav-group-title {
-      color: var(--muted);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin: 20px 0 10px;
-    }
-
-    .nav-btn {
-      width: 100%;
-      text-align: left;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: #e2e8f0;
-      cursor: pointer;
-      font-size: 14px;
-      margin-bottom: 8px;
-      transition: 0.18s ease;
-    }
-
-    .nav-btn:hover {
-      background: #172033;
-      border-color: #334155;
-    }
-
-    .nav-btn.active {
-      background: var(--blue-soft);
-      border-color: rgba(59,130,246,0.35);
-      color: #93c5fd;
-    }
-
-    .main { min-width: 0; }
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(11,17,32,0.94);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line);
-      padding: 14px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .topbar-left, .topbar-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .command-input {
-      background: #0f172a;
-      color: white;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 11px 14px;
-      min-width: 260px;
-      outline: none;
-    }
-
-    .chip {
-      display: inline-block;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      border: 1px solid #334155;
-      background: #1e293b;
-      color: #e2e8f0;
-    }
-
-    .chip.blue { background: var(--blue-soft); color: #93c5fd; border-color: rgba(59,130,246,0.35); }
-    .chip.green { background: var(--green-soft); color: #86efac; border-color: rgba(34,197,94,0.35); }
-    .chip.yellow { background: var(--yellow-soft); color: #fde68a; border-color: rgba(234,179,8,0.35); }
-    .chip.red { background: var(--red-soft); color: #fca5a5; border-color: rgba(239,68,68,0.35); }
-    .chip.purple { background: var(--purple-soft); color: #d8b4fe; border-color: rgba(168,85,247,0.35); }
-
-    .workspace {
-      padding: 24px 22px 40px;
-    }
-
-    .view { display: none; }
-    .view.active { display: block; }
-
-    .page-head { margin-bottom: 18px; }
-
-    .page-title {
-      font-size: 34px;
-      margin: 0 0 8px;
-    }
-
-    .page-sub {
-      color: #cbd5e1;
-      line-height: 1.6;
-      max-width: 900px;
-      margin: 0;
-    }
-
-    .grid-4, .grid-3, .grid-2, .cards, .signal-grid, .workflow-grid, .agent-grid, .unit-grid, .benchmark-grid, .brief-grid {
-      display: grid;
-      gap: 16px;
-    }
-    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .cards { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
-    .signal-grid, .workflow-grid, .agent-grid, .unit-grid, .benchmark-grid, .brief-grid {
-      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
-    }
-
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-      min-width: 0;
-    }
-
-    .panel h3 {
-      margin: 0 0 10px;
-      font-size: 18px;
-    }
-
-    .metric-label {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .metric-value {
-      font-size: 30px;
-      font-weight: 700;
-      color: #f8fafc;
-      margin-bottom: 6px;
-    }
-
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .result-box {
-      background: #0b1120;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 14px;
-      line-height: 1.75;
-      color: #e2e8f0;
-      margin-top: 14px;
-    }
-
-    .toolbar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-      margin-bottom: 16px;
-    }
-
-    button, .btn {
-      padding: 11px 16px;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 14px;
-      transition: 0.18s ease;
-    }
-
-    button:hover, .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary { background: var(--blue); color: white; }
-    .btn-secondary { background: transparent; color: #93c5fd; border: 1px solid var(--blue); }
-    .btn-ghost { background: #172033; color: #e2e8f0; border: 1px solid #334155; }
-    .btn-danger { background: #7f1d1d; color: #fecaca; border: 1px solid #b91c1c; }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 12px 13px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      background: #0b1120;
-      color: white;
-      outline: none;
-      font-family: inherit;
-      font-size: 14px;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--blue);
-    }
-
-    label {
-      display: block;
-      margin: 14px 0 7px;
-      font-weight: 600;
-      color: #e2e8f0;
-      font-size: 14px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 14px;
-    }
-
-    .full-width { grid-column: 1 / -1; }
-
-    .mini-lines {
-      display: grid;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .mini-line {
-      font-size: 14px;
-      color: #cbd5e1;
-      line-height: 1.65;
-    }
-
-    .signal-card, .workflow-card, .agent-card, .step-card {
-      background: #0f172a;
-      border: 1px solid #23324b;
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .signal-title, .workflow-title, .agent-title, .step-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .signal-actions, .workflow-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .table-wrap {
-      margin-top: 14px;
-      overflow-x: auto;
-      border: 1px solid #23324b;
-      border-radius: 16px;
-      background: #111c34;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 1180px;
-    }
-
-    th, td {
-      padding: 12px 12px;
-      border-bottom: 1px solid #23324b;
-      text-align: left;
-      vertical-align: top;
-      font-size: 14px;
-    }
-
-    th {
-      color: #93c5fd;
-      background: #0f172a;
-      position: sticky;
-      top: 0;
-    }
-
-    .queue-list { display: grid; gap: 12px; }
-
-    .queue-item {
-      background: #0f172a;
-      border: 1px solid #23324b;
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 16px;
-    }
-
-    .object-tree { display: grid; gap: 8px; }
-
-    .object-node {
-      padding: 11px 12px;
-      border-radius: 10px;
-      border: 1px solid #23324b;
-      background: #0f172a;
-      cursor: pointer;
-      color: #e2e8f0;
-      font-size: 14px;
-    }
-
-    .object-node.active {
-      background: var(--blue-soft);
-      border-color: rgba(59,130,246,0.35);
-      color: #93c5fd;
-    }
-
-    .kanban {
-      display: grid;
-      grid-template-columns: repeat(9, minmax(220px,1fr));
-      gap: 14px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-    }
-
-    .kanban-col {
-      min-width: 220px;
-      background: #0f172a;
-      border: 1px solid #23324b;
-      border-radius: 16px;
-      padding: 14px;
-    }
-
-    .kanban-title {
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #e2e8f0;
-    }
-
-    .kanban-card {
-      background: #111c34;
-      border: 1px solid #23324b;
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 10px;
-      cursor: pointer;
-    }
-
-    .brief-box {
-      background: #0b1120;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 16px;
-      line-height: 1.8;
-      color: #e2e8f0;
-      margin-top: 12px;
-    }
-
-    .step-stack {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
-    .step-card.current-step {
-      border-color: rgba(59,130,246,0.5);
-      background: rgba(59,130,246,0.08);
-    }
-
-    .inline-meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 1180px) {
-      .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .split { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 980px) {
-      .app-shell { grid-template-columns: 1fr; }
-      .sidebar {
-        position: static;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--line);
-      }
-      .form-grid, .grid-3, .grid-2, .grid-4 {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media print {
-      .sidebar, .topbar, .toolbar, .signal-actions, .workflow-actions {
-        display: none !important;
-      }
-      body {
-        background: white;
-        color: black;
-      }
-      .panel, .brief-box, .signal-card, .workflow-card, .agent-card, .queue-item, .kanban-col, .kanban-card, .step-card {
-        background: white !important;
-        color: black !important;
-        box-shadow: none !important;
-        border: 1px solid #ccc !important;
-      }
-    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%, #0a0d14 100%);color:var(--text);font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 48px}
+    .hero{background:linear-gradient(135deg, rgba(59,130,246,.16), rgba(96,165,250,.08));border:1px solid rgba(96,165,250,.22);border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+    h1{margin:0 0 10px;font-size:clamp(28px,4vw,44px);line-height:1.1}
+    .sub{color:var(--muted);font-size:16px;line-height:1.6;max-width:980px}
+    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .chip{padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.03);border-radius:999px;color:#cfe0ff;font-size:13px}
+    .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 18px}
+    .left-actions,.right-actions{display:flex;flex-wrap:wrap;gap:12px}
+    button{appearance:none;border:none;cursor:pointer;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;transition:.18s ease transform}
+    button:hover{transform:translateY(-1px)}
+    .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+    .secondary{background:#172131;color:#dbeafe;border:1px solid #2c3d58}
+    .success{background:#13291a;color:#86efac;border:1px solid #295536}
+    .panel{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 18px 46px rgba(0,0,0,.22)}
+    .panel-head{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+    .panel-head h2{margin:0;font-size:18px}
+    .panel-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .meta{display:flex;flex-wrap:wrap;gap:8px}
+    .meta span{font-size:12px;color:#c2d4f3;background:#101826;border:1px solid #273244;padding:6px 9px;border-radius:999px}
+    textarea{width:100%;min-height:72vh;display:block;border:none;outline:none;resize:vertical;background:#0a1220;color:#ebf3ff;padding:22px;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;tab-size:2}
+    .footer-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7}
+    .steps{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .step{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:16px}
+    .step strong{display:block;margin-bottom:6px}
+    .small{font-size:12px;color:var(--muted)}
+    .status{font-weight:700;color:#86efac}
+    @media (max-width:760px){.wrap{padding:18px 12px 28px}.hero{padding:20px}textarea{min-height:78vh;padding:16px;font-size:12.5px}.panel-head{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">DeepNexivra</div>
-      <div class="brand-sub">Workflow Engine Lite v1<br>Command OS action layer</div>
+  <div class="wrap">
+    <section class="hero">
+      <h1>LaborOS Replit Master Prompt</h1>
+      <div class="sub">
+        This is a GitHub Pages-ready standalone HTML file containing a peak-detailed master prompt for Replit Agent.
+        Commit this file as <strong>index.html</strong> in your GitHub Pages repository, open the page, then use the
+        <strong>Copy Full Prompt</strong> button and paste the prompt into Replit.
+      </div>
+      <div class="chips">
+        <div class="chip">Standalone HTML</div>
+        <div class="chip">GitHub Pages Ready</div>
+        <div class="chip">Copy-to-Clipboard</div>
+        <div class="chip">Replit Agent Prompt</div>
+        <div class="chip">Enterprise Full-Stack App Build</div>
+      </div>
+    </section>
 
-      <div class="nav-group-title">Command</div>
-      <button class="nav-btn active" data-view="command-center">Command Center</button>
-      <button class="nav-btn" data-view="twin-explorer">Twin Explorer</button>
-      <button class="nav-btn" data-view="signals">Signals</button>
-      <button class="nav-btn" data-view="scenario-studio">Scenario Studio</button>
+    <div class="toolbar">
+      <div class="left-actions">
+        <button class="primary" id="copyBtn">Copy Full Prompt</button>
+        <button class="secondary" id="downloadBtn">Download Prompt as TXT</button>
+        <button class="success" id="selectBtn">Select Prompt</button>
+      </div>
+      <div class="right-actions small">
+        <span class="status" id="status">Ready</span>
+      </div>
+    </div>
 
-      <div class="nav-group-title">Execution</div>
-      <button class="nav-btn" data-view="workflow-board">Workflow Board</button>
-      <button class="nav-btn" data-view="agent-console">Agent Console</button>
-      <button class="nav-btn" data-view="outcome-ledger">Outcome Ledger</button>
-      <button class="nav-btn" data-view="briefing">Executive Briefing</button>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="topbar-left">
-          <input class="command-input" id="commandBar" placeholder="Command bar — shell placeholder" />
-          <span class="chip blue" id="activeCaseChip">Case: Unnamed</span>
-          <span class="chip" id="systemStatusChip">System: Awaiting Model</span>
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>Master Prompt</h2>
+          <p>Paste this entire prompt into Replit Agent in one message.</p>
         </div>
-        <div class="topbar-right">
-          <span class="chip purple" id="confidenceChip">Confidence: --</span>
-          <span class="chip yellow" id="approvalChip">Pending Approvals: 0</span>
-          <span class="chip green" id="workflowChip">Open Workflows: 0</span>
-          <button class="btn-ghost" onclick="loadDemoEnvironment()">Load Demo</button>
+        <div class="meta">
+          <span>Format: Plain text prompt</span>
+          <span>Target: Replit Agent</span>
+          <span>Mode: One-pass full-stack build</span>
         </div>
       </div>
+      <textarea id="promptBox" spellcheck="false">Build a full-stack production-style internal enterprise web application called “LaborOS” with the flagship module “Vacancy Control”.
 
-      <div class="workspace">
-        <section class="view active" id="command-center">
-          <div class="page-head">
-            <h1 class="page-title">Command Center</h1>
-            <p class="page-sub">Mission control for system health, active signals, recommended interventions, workflow status, and latest learning.</p>
-          </div>
+This is not a landing page.
+This is not a toy dashboard.
+This is not a school project.
+This is not a prototype with empty placeholders.
+This must be a serious, polished, data-dense enterprise operations application that feels like software used daily by supervisors, operations leaders, and HR/labor review teams inside a large diagnostics, healthcare, lab, or other high-compliance shift-based organization.
 
-          <div class="grid-4">
-            <div class="panel" id="ccSystemHealthCard"></div>
-            <div class="panel" id="ccTopSignalCard"></div>
-            <div class="panel" id="ccTopRecommendationCard"></div>
-            <div class="panel" id="ccWorkflowStatusCard"></div>
-          </div>
+IMPORTANT EXECUTION RULES
+- Do not ask me follow-up clarification questions unless something is absolutely impossible.
+- Make strong, reasonable enterprise-grade assumptions and continue building.
+- Build the app end to end in one pass.
+- Install dependencies, create the project structure, create the database schema, seed realistic data, run migrations, fix compile/runtime issues, and make sure the app actually renders.
+- If any library choice causes issues, use the closest stable alternative and keep going.
+- Do not stop at mock UI only. Build real working screens with connected state, realistic seeded data, database persistence, and believable workflow logic.
+- No landing page. The default route should open the actual product dashboard.
+- No raw code output screen. The app must render fully.
 
-          <div class="grid-4" style="margin-top:16px;">
-            <div class="panel" id="ccUtilPressureCard"></div>
-            <div class="panel" id="ccCostPressureCard"></div>
-            <div class="panel" id="ccStaffPressureCard"></div>
-            <div class="panel" id="ccVarianceCard"></div>
-          </div>
+PRIMARY PRODUCT GOAL
+Build a workforce operations platform that solves this problem:
+When a shift becomes uncovered, the organization must determine who is eligible, who should be offered first, what is compliant, what is fair, what is lowest risk, and how to document the final decision.
 
-          <div class="panel" style="margin-top:16px;">
-            <h3>Prioritized Signal Queue</h3>
-            <div class="queue-list" id="ccSignalQueue"></div>
-          </div>
-        </section>
+CORE WORKFLOW
+vacancy created -> candidate eligibility evaluated -> candidates ranked -> offer wave launched -> offer states tracked -> candidate accepts/declines -> assignment confirmed -> decision record stored -> audit log visible -> control tower updates
 
-        <section class="view" id="twin-explorer">
-          <div class="page-head">
-            <h1 class="page-title">Twin Explorer</h1>
-            <p class="page-sub">Build and inspect the operational twin across up to 4 active units, along with constraints and system-level rollups.</p>
-          </div>
+PRODUCT NAME
+LaborOS
 
-          <div class="split">
-            <div class="panel">
-              <h3>Case & Constraint Setup</h3>
-              <div class="form-grid">
-                <div>
-                  <label for="caseName">Case Name</label>
-                  <input id="caseName" placeholder="Example: Lab Ops Weekly Review" />
-                </div>
-                <div>
-                  <label for="operationType">Operation Type</label>
-                  <select id="operationType">
-                    <option value="lab">Lab Operations</option>
-                    <option value="healthcare">Healthcare Operations</option>
-                    <option value="warehouse">Warehouse Operations</option>
-                    <option value="service">Service Operations</option>
-                    <option value="manufacturing">Manufacturing Support</option>
-                    <option value="custom">Custom Operation</option>
-                  </select>
-                </div>
-                <div class="full-width">
-                  <label for="decisionObjective">Decision Objective</label>
-                  <textarea id="decisionObjective" placeholder="Example: Decide whether productivity improvement is stronger than headcount reduction under budget pressure"></textarea>
-                </div>
-                <div>
-                  <label for="maxLaborBudget">Maximum Labor Budget ($)</label>
-                  <input type="number" id="maxLaborBudget" />
-                </div>
-                <div>
-                  <label for="minimumStaffingFloor">Minimum Total Staffing Floor</label>
-                  <input type="number" id="minimumStaffingFloor" />
-                </div>
-                <div>
-                  <label for="preferredUtilizationMin">Preferred Utilization Min (%)</label>
-                  <input type="number" id="preferredUtilizationMin" />
-                </div>
-                <div>
-                  <label for="preferredUtilizationMax">Preferred Utilization Max (%)</label>
-                  <input type="number" id="preferredUtilizationMax" />
-                </div>
-                <div>
-                  <label for="maximumUtilization">Maximum Utilization Ceiling (%)</label>
-                  <input type="number" id="maximumUtilization" />
-                </div>
-                <div>
-                  <label for="shortageTolerancePercent">Shortage Tolerance (%)</label>
-                  <input type="number" id="shortageTolerancePercent" />
-                </div>
-                <div>
-                  <label for="maxCostIncreasePercent">Preferred Max Cost Increase (%)</label>
-                  <input type="number" id="maxCostIncreasePercent" />
-                </div>
-                <div>
-                  <label for="minimumSavingsTargetPercent">Preferred Minimum Savings Target (%)</label>
-                  <input type="number" id="minimumSavingsTargetPercent" />
-                </div>
-              </div>
+FIRST MODULE
+Vacancy Control
 
-              <div class="toolbar">
-                <button class="btn-primary" onclick="saveCaseAndConstraints()">Save Case & Constraints</button>
-                <button class="btn-ghost" onclick="resetConstraintsToDefault()">Reset Constraints</button>
-              </div>
+TARGET ENVIRONMENT
+Large multi-site enterprise with high-compliance shift-based operations such as diagnostics networks, labs, healthcare operations, or similar.
 
-              <div class="result-box" id="caseConstraintBox">Case and constraint summary will appear here.</div>
-            </div>
+TECH STACK
+Use a stack that works well in Replit and can run immediately:
+- Next.js (latest stable, App Router) with TypeScript
+- Tailwind CSS
+- shadcn/ui or similar polished component library
+- lucide-react icons
+- Prisma ORM
+- SQLite for local development in Replit so the app is self-contained and runnable immediately
+- React Query or server actions / route handlers for data access
+- Zustand or simple local state where useful
+- Recharts or similar for dashboard charts if needed
+- Clean modular architecture
 
-            <div class="panel">
-              <h3>Object Explorer</h3>
-              <div class="object-tree" id="objectTree"></div>
-              <div class="result-box" id="objectDetailBox">Select an object to inspect its details.</div>
-            </div>
-          </div>
+DATABASE CHOICE
+Use SQLite through Prisma for now because I want this runnable immediately in Replit with no external setup.
+Structure the code so it could later migrate to PostgreSQL without major rewrites.
 
-          <div class="unit-grid" style="margin-top:16px;">
-            <div class="panel">
-              <h3>Unit 1</h3>
-              <div class="form-grid">
-                <div><label for="unit1Name">Unit Name</label><input id="unit1Name" placeholder="Accessioning" /></div>
-                <div><label for="unit1Staff">Available Staff</label><input type="number" id="unit1Staff" /></div>
-                <div><label for="unit1Workload">Required Workload</label><input type="number" id="unit1Workload" /></div>
-                <div><label for="unit1Shift">Shift Hours</label><input type="number" id="unit1Shift" /></div>
-                <div><label for="unit1Productivity">Productivity / Staff / Hr</label><input type="number" id="unit1Productivity" /></div>
-                <div><label for="unit1Wage">Hourly Wage ($)</label><input type="number" id="unit1Wage" /></div>
-              </div>
-              <div class="result-box" id="unit1Output">Unit output will appear here.</div>
-            </div>
+AUTHENTICATION
+Do not implement full authentication right now.
+Use demo mode with role switching built into the UI.
+Include a clear role switcher in the top bar with these roles:
+- Supervisor / Scheduler
+- Operations Manager
+- HR / Labor Review
+- Rule Administrator
+- Employee
 
-            <div class="panel">
-              <h3>Unit 2</h3>
-              <div class="form-grid">
-                <div><label for="unit2Name">Unit Name</label><input id="unit2Name" placeholder="Processing" /></div>
-                <div><label for="unit2Staff">Available Staff</label><input type="number" id="unit2Staff" /></div>
-                <div><label for="unit2Workload">Required Workload</label><input type="number" id="unit2Workload" /></div>
-                <div><label for="unit2Shift">Shift Hours</label><input type="number" id="unit2Shift" /></div>
-                <div><label for="unit2Productivity">Productivity / Staff / Hr</label><input type="number" id="unit2Productivity" /></div>
-                <div><label for="unit2Wage">Hourly Wage ($)</label><input type="number" id="unit2Wage" /></div>
-              </div>
-              <div class="result-box" id="unit2Output">Unit output will appear here.</div>
-            </div>
+NOTIFICATIONS
+Use in-app notifications only for this version.
+Simulate offer states:
+- sent
+- delivered
+- viewed
+- accepted
+- declined
+- expired
 
-            <div class="panel">
-              <h3>Unit 3</h3>
-              <div class="form-grid">
-                <div><label for="unit3Name">Unit Name</label><input id="unit3Name" placeholder="Logistics" /></div>
-                <div><label for="unit3Staff">Available Staff</label><input type="number" id="unit3Staff" /></div>
-                <div><label for="unit3Workload">Required Workload</label><input type="number" id="unit3Workload" /></div>
-                <div><label for="unit3Shift">Shift Hours</label><input type="number" id="unit3Shift" /></div>
-                <div><label for="unit3Productivity">Productivity / Staff / Hr</label><input type="number" id="unit3Productivity" /></div>
-                <div><label for="unit3Wage">Hourly Wage ($)</label><input type="number" id="unit3Wage" /></div>
-              </div>
-              <div class="result-box" id="unit3Output">Unit output will appear here.</div>
-            </div>
+REAL-TIME
+Use simple polling or lightweight real-time refresh behavior for Offer Monitor and Control Tower if feasible, but do not block the build if full real-time is too heavy. The UI should still feel live and dynamic.
 
-            <div class="panel">
-              <h3>Unit 4</h3>
-              <div class="form-grid">
-                <div><label for="unit4Name">Unit Name</label><input id="unit4Name" placeholder="Support" /></div>
-                <div><label for="unit4Staff">Available Staff</label><input type="number" id="unit4Staff" /></div>
-                <div><label for="unit4Workload">Required Workload</label><input type="number" id="unit4Workload" /></div>
-                <div><label for="unit4Shift">Shift Hours</label><input type="number" id="unit4Shift" /></div>
-                <div><label for="unit4Productivity">Productivity / Staff / Hr</label><input type="number" id="unit4Productivity" /></div>
-                <div><label for="unit4Wage">Hourly Wage ($)</label><input type="number" id="unit4Wage" /></div>
-              </div>
-              <div class="result-box" id="unit4Output">Unit output will appear here.</div>
-            </div>
-          </div>
+DESIGN / BRANDING
+Use a dark professional enterprise theme with a strong blue accent color.
+Visual direction:
+- expensive internal enterprise software
+- dark left sidebar
+- clean top command bar
+- dense KPI cards
+- polished data tables
+- sharp status badges
+- clear visual hierarchy
+- dense but readable layout
+- serious operations software feel
+- desktop-first, but still usable on tablet/mobile
+- avoid sparse pages and giant empty areas
+- no marketing illustrations
+- no consumer app style
 
-          <div class="toolbar">
-            <button class="btn-primary" onclick="calculateOperationalTwin()">Calculate Operational Twin</button>
-          </div>
+ORGANIZATION / DOMAIN MODEL
+Implement database-backed models for at least the following:
 
-          <div class="grid-4">
-            <div class="panel"><div class="metric-label">Total Available Staff</div><div class="metric-value" id="systemTotalStaff">--</div></div>
-            <div class="panel"><div class="metric-label">Total Required Staff</div><div class="metric-value" id="systemRequiredStaff">--</div></div>
-            <div class="panel"><div class="metric-label">System Utilization</div><div class="metric-value" id="systemUtilization">--</div></div>
-            <div class="panel"><div class="metric-label">Total Labor Cost</div><div class="metric-value" id="systemLaborCost">--</div></div>
-          </div>
+Organization:
+- Enterprise
+- Region
+- Site
+- Department
+- Role
+- UnionGroup
 
-          <div class="result-box" id="systemSummaryBox">System summary will appear here after twin calculation.</div>
-        </section>
+Workforce:
+- Employee
+- EmployeeRoleAssignment
+- EmployeeSkillAssignment
+- EmployeeCertificationAssignment
 
-        <section class="view" id="signals">
-          <div class="page-head">
-            <h1 class="page-title">Signals</h1>
-            <p class="page-sub">Detected operational issues, anomalies, and priority opportunities that need attention.</p>
-          </div>
+Capability:
+- Skill
+- Certification
+- CrossCoverageRule
 
-          <div class="split">
-            <div class="panel">
-              <h3>Signal Queue</h3>
-              <div id="signalList" class="queue-list"></div>
-            </div>
-            <div class="panel">
-              <h3>Signal Detail</h3>
-              <div id="signalDetailBox" class="result-box">Select a signal to inspect it in more detail.</div>
-            </div>
-          </div>
-        </section>
+Operations:
+- ShiftTemplate
+- ShiftInstance
+- Vacancy
+- CandidateEvaluation
+- OfferWave
+- Offer
+- Assignment
+- Escalation
 
-        <section class="view" id="scenario-studio">
-          <div class="page-head">
-            <h1 class="page-title">Scenario Studio</h1>
-            <p class="page-sub">Simulate alternate futures globally or by unit, score them, and route the strongest path into workflow.</p>
-          </div>
+Governance:
+- RuleSet
+- RuleVersion
+- Rule
+- DecisionRecord
+- AuditEvent
 
-          <div class="split">
-            <div class="panel">
-              <h3>Scenario Controls</h3>
-              <label for="scenarioType">Scenario Type</label>
-              <select id="scenarioType">
-                <option value="demand_up">Demand Increase</option>
-                <option value="demand_down">Demand Decrease</option>
-                <option value="productivity_up">Productivity Improvement</option>
-                <option value="productivity_down">Productivity Decline</option>
-                <option value="wage_up">Wage Increase</option>
-                <option value="wage_down">Wage Decrease</option>
-                <option value="staff_up">Increase Staff</option>
-                <option value="staff_down">Reduce Staff</option>
-              </select>
+SEED DATA
+Generate rich realistic seeded enterprise data automatically on first run.
+Seed:
+- 1 enterprise
+- 3 regions
+- 10 sites
+- 4 departments per site
+- 120 to 160 employees
+- mixed roles across sites and departments
+- full-time / part-time / casual mix
+- realistic certifications
+- realistic skill coverage
+- realistic seniority dates
+- different overtime burdens
+- different fatigue profiles
+- active open vacancies across multiple sites
+- some candidates blocked by expired certification
+- some blocked by fatigue / rest rules
+- some active offer waves
+- some accepted offers
+- some declined offers
+- some escalated vacancies
+- some completed decisions
+- some override decisions
+- some fairness anomalies
 
-              <label for="scenarioPercent">Scenario Change (%)</label>
-              <input type="number" id="scenarioPercent" placeholder="10" />
+Use realistic site and department names such as:
+- Boston Medical Lab
+- NYC Central Diagnostics
+- Atlanta Regional Lab
+- Chicago Core Lab
+- Tampa Bay Diagnostics
+- Chemistry
+- Hematology
+- Microbiology
+- Pathology
 
-              <label for="scenarioScope">Scenario Scope</label>
-              <select id="scenarioScope" onchange="toggleScenarioTargetUnit()">
-                <option value="global">Global — All Units</option>
-                <option value="single">Single Unit</option>
-              </select>
+Use believable employee names and roles.
 
-              <div id="scenarioTargetWrap" style="display:none;">
-                <label for="scenarioTargetUnit">Target Unit</label>
-                <select id="scenarioTargetUnit"></select>
-              </div>
+BUSINESS RULES
 
-              <label for="scenarioNote">Scenario Note</label>
-              <textarea id="scenarioNote" placeholder="Optional scenario note"></textarea>
+Hard rules: candidate must be ineligible if any fail
+- missing required certification
+- expired certification
+- wrong role assignment
+- not authorized for site
+- overlapping shift
+- insufficient rest window
+- max weekly hours exceeded
+- inactive/leave status
+- cross-site not allowed when vacancy forbids it
 
-              <div class="toolbar">
-                <button class="btn-primary" onclick="calculateScenarioPreview()">Run Scenario</button>
-                <button class="btn-secondary" id="saveScenarioBtn" onclick="saveCurrentScenario()" disabled>Save Scenario</button>
-              </div>
-            </div>
+Soft rules: eligible candidates must be ranked using a weighted score
+- lower overtime burden
+- lower fatigue risk
+- better fairness distribution
+- lower cost impact
+- better site continuity
+- better role continuity
+- seniority influence if configured
+- cross-site burden penalty if applicable
 
-            <div class="panel">
-              <h3>Scenario Output</h3>
-              <div class="grid-2">
-                <div class="panel" style="padding:14px;">
-                  <div class="metric-label">Projected Required Staff</div>
-                  <div class="metric-value" id="scenarioRequiredStaff">--</div>
-                </div>
-                <div class="panel" style="padding:14px;">
-                  <div class="metric-label">Projected Utilization</div>
-                  <div class="metric-value" id="scenarioUtilization">--</div>
-                </div>
-                <div class="panel" style="padding:14px;">
-                  <div class="metric-label">Projected Labor Cost</div>
-                  <div class="metric-value" id="scenarioLaborCost">--</div>
-                </div>
-                <div class="panel" style="padding:14px;">
-                  <div class="metric-label">Cost Delta</div>
-                  <div class="metric-value" id="scenarioCostDelta">--</div>
-                </div>
-              </div>
-              <div class="result-box" id="scenarioResultBox">Scenario results will appear here.</div>
-              <div class="result-box" id="scenarioUnitImpactBox">Unit-level scenario impact will appear here.</div>
-            </div>
-          </div>
+EXPLAINABILITY IS MANDATORY
+For each candidate evaluation, show:
+- eligible/ineligible status
+- hard-rule pass/fail trace
+- score breakdown
+- fairness index
+- fatigue risk
+- estimated labor cost
+- explanation narrative
+- why ranked above or below peers
+- why ineligible candidates were filtered out
 
-          <div class="panel" style="margin-top:16px;">
-            <h3>Scenario Universe</h3>
-            <div class="grid-3">
-              <div class="panel" id="bestOverallCard" style="padding:14px;"></div>
-              <div class="panel" id="cheapestViableCard" style="padding:14px;"></div>
-              <div class="panel" id="safestViableCard" style="padding:14px;"></div>
-            </div>
+STATE MACHINES
 
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Scenario</th>
-                    <th>Scope</th>
-                    <th>Constraint Fit</th>
-                    <th>Required Staff</th>
-                    <th>Projected Staff</th>
-                    <th>Utilization</th>
-                    <th>Labor Cost</th>
-                    <th>Cost Delta</th>
-                    <th>Risk</th>
-                    <th>Recommendation</th>
-                    <th>Score</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="scenarioTableBody">
-                  <tr><td colspan="12" class="muted">No scenarios saved yet.</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+Vacancy states:
+- draft
+- open
+- evaluating
+- evaluated
+- offer_in_progress
+- accepted_pending_confirmation
+- assigned
+- closed
+- closed_unfilled
+- manual_review
+- escalated
+- cancelled
 
-        <section class="view" id="workflow-board">
-          <div class="page-head">
-            <h1 class="page-title">Workflow Board</h1>
-            <p class="page-sub">Generated intervention workflows move through analysis, approval, execution, monitoring, escalation, blocking, and closure.</p>
-          </div>
+Offer states:
+- queued
+- sent
+- delivered
+- viewed
+- accepted
+- declined
+- expired
+- cancelled
 
-          <div class="toolbar">
-            <button class="btn-primary" onclick="generateWorkflowFromSelectedScenario()">Generate Workflow from Selected Scenario</button>
-            <button class="btn-secondary" onclick="generateWorkflowFromTopSignal()">Generate Workflow from Top Signal</button>
-          </div>
+Assignment states:
+- proposed
+- confirmed
+- active
+- completed
+- cancelled
 
-          <div class="kanban" id="workflowKanban"></div>
+REQUIRED ROUTES / PAGES
+Create a real navigable app with at least these routes:
 
-          <div class="split" style="margin-top:16px;">
-            <div class="panel">
-              <h3>Workflow Detail Drawer</h3>
-              <div id="workflowDetailBox" class="result-box">Select a workflow card to inspect its steps, owners, approvals, due state, and linkage.</div>
-            </div>
-            <div class="panel">
-              <h3>Workflow Action Console</h3>
-              <div id="workflowActionBox" class="result-box">Workflow actions will appear here after selecting a workflow.</div>
-            </div>
-          </div>
-        </section>
+- /dashboard
+- /vacancies
+- /vacancies/[id]
+- /candidate-evaluation or integrate this deeply into vacancy detail
+- /offer-monitor
+- /assignments
+- /decision-log
+- /control-tower
+- /hr-review
+- /rules-admin
 
-        <section class="view" id="agent-console">
-          <div class="page-head">
-            <h1 class="page-title">Agent Console</h1>
-            <p class="page-sub">The visible intelligence layer. These agents detect, compare, orchestrate, and brief.</p>
-          </div>
+If it is cleaner, Candidate Evaluation can also live inside Vacancy Detail as a major panel, but it must still be one of the strongest parts of the product.
 
-          <div class="agent-grid" id="agentGrid"></div>
-        </section>
+SIDEBAR NAVIGATION
+Include:
+- Dashboard
+- Vacancies
+- Candidate Evaluation
+- Offer Waves or Offer Monitor
+- Assignments
+- Decision Log
+- Control Tower
+- HR Review Console
+- Rules Admin
 
-        <section class="view" id="outcome-ledger">
-          <div class="page-head">
-            <h1 class="page-title">Outcome Ledger</h1>
-            <p class="page-sub">Track actual results against the selected scenario and measure variance by unit and system.</p>
-          </div>
+TOP BAR
+Include:
+- global search box
+- role switcher
+- notification icon
+- current demo user label
 
-          <div class="panel">
-            <h3>Selected Scenario Outcome Capture</h3>
-            <div id="outcomeIntro" class="result-box">Select a scenario first.</div>
-            <div id="outcomeFormArea"></div>
-            <div class="toolbar" id="outcomeToolbar" style="display:none;">
-              <button class="btn-primary" onclick="saveActualOutcomes()">Save Actual Outcome</button>
-              <button class="btn-ghost" onclick="loadProjectedAsActual()">Load Projected Values</button>
-              <button class="btn-danger" onclick="clearActualOutcomeForSelected()">Clear Actual Outcome</button>
-            </div>
-            <div id="outcomeResultBox" class="result-box">Actual outcome result will appear here.</div>
-          </div>
+REQUIRED SCREENS
 
-          <div class="grid-2" style="margin-top:16px;">
-            <div class="panel">
-              <h3>System Variance</h3>
-              <div id="systemVarianceBox" class="result-box">System variance will appear here after saving actual outcomes.</div>
-            </div>
-            <div class="panel">
-              <h3>Unit Variance</h3>
-              <div id="unitVarianceBox" class="result-box">Unit variance will appear here after saving actual outcomes.</div>
-            </div>
-          </div>
-        </section>
+1. DASHBOARD
+Build a serious operations dashboard with:
+- open vacancies
+- critical vacancies
+- average time to fill
+- expiring offers
+- active escalations
+- auto-resolved percentage
+- fairness alerts
+- fatigue alerts
+- recent activity panel
+- site risk summary
+- quick action button “Create Vacancy”
 
-        <section class="view" id="briefing">
-          <div class="page-head">
-            <h1 class="page-title">Executive Briefing</h1>
-            <p class="page-sub">Summarize the issue, the recommendation, the workflow, the outcome, and the learning signal for leadership.</p>
-          </div>
+IMPORTANT: average time to fill must never be negative.
 
-          <div class="toolbar">
-            <button class="btn-primary" onclick="renderExecutiveBrief()">Refresh Brief</button>
-            <button class="btn-ghost" onclick="window.print()">Print / Save as PDF</button>
-          </div>
+2. VACANCIES LIST
+Build a polished searchable/filterable table with:
+- vacancy ID
+- site
+- department
+- role
+- urgency
+- state
+- current wave
+- SLA due
+- recommended candidate summary
+- fill risk
+Filters:
+- site
+- urgency
+- state
+- department
+- role
+- date range if feasible
 
-          <div class="brief-box" id="executiveBriefBox">Executive briefing will appear here.</div>
-        </section>
+Rows must be clickable and open Vacancy Detail.
+
+3. CREATE VACANCY
+Implement a working form/modal that creates a real record.
+Fields:
+- site
+- department
+- role
+- linked shift instance if applicable
+- reason code
+- required start/end
+- urgency
+- priority
+- required certifications
+- required skills
+- allow cross-site coverage
+- allow overtime
+- notes
+
+4. VACANCY DETAIL
+This must be a command screen, not a weak details page.
+Include:
+- vacancy summary
+- site / department / role
+- urgency and SLA
+- staffing requirements
+- current state
+- evaluation summary
+- active offer wave summary
+- escalation history
+- recommended next action
+- links/actions to evaluate candidates, launch offers, confirm assignment, and inspect decision log
+
+5. CANDIDATE EVALUATION
+This must be one of the strongest screens/features in the app.
+Build a ranked candidate table with:
+- rank
+- employee
+- home site
+- role match
+- certification status
+- hours worked this week
+- overtime last 30 days
+- fairness index
+- fatigue risk
+- estimated labor cost
+- final score
+- recommendation badge
+
+Each row must expand into a rich detail panel showing:
+- hard rule pass/fail trace
+- score breakdown
+- explanation narrative
+- why not ranked #1
+- why filtered out if ineligible
+- seniority context
+- cross-site burden note
+- recent offer history if available
+
+Clearly separate eligible and ineligible candidates visually.
+
+6. OFFER MONITOR
+Build a real operational monitoring view with:
+- vacancy
+- current wave
+- list of offers
+- offer status transitions
+- sent / delivered / viewed / accepted / declined / expired
+- countdowns
+- escalation state
+- next-candidate logic
+
+7. ASSIGNMENTS
+Show active and completed assignments with:
+- source
+- linked vacancy
+- employee
+- role
+- site
+- state
+- assigned time
+
+8. DECISION LOG
+Build an audit timeline view with:
+- vacancy created
+- evaluation completed
+- offer sent
+- response received
+- escalation triggered
+- override submitted
+- assignment confirmed
+- decision recorded
+
+Make it feel defensible and enterprise-grade.
+
+9. CONTROL TOWER
+Build an executive-grade operations command center with:
+- open critical vacancies
+- open vacancies
+- average time to fill
+- active escalations
+- auto-resolved percentage
+- overtime exposure
+- fairness alerts
+- fatigue alerts
+- site performance grid
+- network critical vacancies table
+- strongest risk sites
+- open escalation detail panel
+- drill-down capability to site or department if feasible
+
+Make this feel like an executive control center, not just another dashboard.
+
+10. HR REVIEW CONSOLE
+Build a compliance/labor review workspace with:
+- search by vacancy, employee, site
+- filters for site, decision type, override
+- table showing selected employee vs recommended employee
+- override indicator
+- drill-down into a decision record
+Inside drill-down, include:
+- selected employee
+- recommended employee
+- override reason code
+- override narrative
+- candidate ranking snapshot
+- audit timeline
+- decision mode
+- rule version used
+- evidence/export action button concept
+
+11. RULES ADMIN
+Build a basic but real rules administration experience:
+- rulesets list
+- versions
+- scope
+- active/published status
+- simple rule editor view
+- simulation concept/panel if feasible
+
+It does not have to be enterprise-perfect, but it must look real and connected.
+
+CORE APP LOGIC
+Implement believable connected logic:
+- creating a vacancy inserts a record
+- evaluating a vacancy generates candidate evaluations
+- candidate ranking uses hard + soft rules
+- launching offer wave creates offers
+- accepting/declining updates offer and vacancy states
+- confirming assignment updates vacancy to assigned/closed
+- decision record is stored
+- audit events are recorded
+- dashboard/control tower KPIs derive from actual database state, not random hardcoded numbers
+
+KPI INTEGRITY
+- No impossible metrics
+- No negative average time to fill
+- KPI math must be believable and internally consistent
+
+UX QUALITY BAR
+- No empty placeholder pages
+- No huge wasted space
+- Use width effectively
+- Dense tables must still be readable
+- Sticky headers where helpful
+- Better truncation and responsive behavior
+- Premium badges for critical/high/medium/low
+- Clear color semantics for escalated, override, accepted, blocked, expired
+
+PROJECT STRUCTURE
+Create a clean maintainable codebase with clear separation such as:
+- app/
+- components/
+- lib/
+- prisma/
+- data or seed/
+- types/
+
+DATABASE / PRISMA
+- Create the Prisma schema
+- Create and run migrations
+- Seed the database automatically or provide a simple seed command
+- Ensure app boots cleanly in Replit
+
+DELIVERABLE EXPECTATIONS
+When finished:
+- app compiles and runs
+- database is seeded
+- routes work
+- key workflows are connected
+- UI is polished and enterprise-grade
+- data looks realistic
+- no raw placeholder shell
+- no compile/runtime errors left unresolved
+
+FINAL EXECUTION REQUIREMENT
+After building:
+- run the app
+- fix any broken imports, migrations, typings, or runtime issues
+- verify the core screens render
+- ensure the app opens directly into the product experience
+- provide a concise README with run instructions and a summary of what was built
+
+Make strong autonomous decisions and complete the full build.
+Do not stop at a partial scaffold.
+Build the app.</textarea>
+    </section>
+
+    <div class="steps">
+      <div class="step">
+        <strong>Step 1</strong>
+        Commit this file as <code>index.html</code> in your GitHub Pages repo.
       </div>
-    </main>
+      <div class="step">
+        <strong>Step 2</strong>
+        Open the hosted page and click <strong>Copy Full Prompt</strong>.
+      </div>
+      <div class="step">
+        <strong>Step 3</strong>
+        Paste the copied prompt into Replit Agent in one message.
+      </div>
+      <div class="step">
+        <strong>Step 4</strong>
+        Let Replit build the app, then review the generated routes and workflow.
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Use this page as a prompt vault and copy surface. The HTML itself is not the LaborOS application.
+      It is the website wrapper around the master prompt so you can host it on GitHub Pages and copy it cleanly anytime.
+    </div>
   </div>
 
   <script>
-    const STORAGE = {
-      caseMeta: "dnx_cmd_case_meta_v1",
-      twin: "dnx_cmd_twin_v1",
-      constraints: "dnx_cmd_constraints_v1",
-      scenarios: "dnx_cmd_scenarios_v1",
-      selectedScenarioId: "dnx_cmd_selected_scenario_v1",
-      workflows: "dnx_cmd_workflows_v1_lite",
-      selectedWorkflowId: "dnx_cmd_selected_workflow_v1_lite",
-      actuals: "dnx_cmd_actuals_v1"
-    };
+    const promptBox = document.getElementById('promptBox');
+    const statusEl = document.getElementById('status');
 
-    const DEFAULT_CONSTRAINTS = {
-      maxLaborBudget: 25000,
-      minimumStaffingFloor: 100,
-      preferredUtilizationMin: 75,
-      preferredUtilizationMax: 85,
-      maximumUtilization: 95,
-      shortageTolerancePercent: 0,
-      maxCostIncreasePercent: 10,
-      minimumSavingsTargetPercent: 5
-    };
-
-    let currentScenarioPreview = null;
-    let currentSignalId = null;
-    let currentObjectKey = null;
-
-    function saveJSON(key, value) {
-      localStorage.setItem(key, JSON.stringify(value));
+    function setStatus(msg){
+      statusEl.textContent = msg;
+      setTimeout(() => { statusEl.textContent = 'Ready'; }, 2200);
     }
 
-    function loadJSON(key, fallback) {
-      try {
-        const v = JSON.parse(localStorage.getItem(key));
-        return v ?? fallback;
-      } catch {
-        return fallback;
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try{
+        await navigator.clipboard.writeText(promptBox.value);
+        setStatus('Prompt copied');
+      }catch(e){
+        promptBox.focus();
+        promptBox.select();
+        document.execCommand('copy');
+        setStatus('Prompt copied');
       }
-    }
-
-    function fmtMoney(v) {
-      return "$" + Number(v).toFixed(2);
-    }
-
-    function fmtPct(v) {
-      return Number(v).toFixed(2) + "%";
-    }
-
-    function byId(id) {
-      return document.getElementById(id);
-    }
-
-    function slugify(text) {
-      return String(text || "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-    }
-
-    function getCaseMeta() {
-      return {
-        caseName: byId("caseName").value.trim() || "Unnamed Operational Case",
-        operationType: byId("operationType").value,
-        decisionObjective: byId("decisionObjective").value.trim() || "No decision objective provided yet."
-      };
-    }
-
-    function setCaseMeta(meta) {
-      byId("caseName").value = meta.caseName || "";
-      byId("operationType").value = meta.operationType || "custom";
-      byId("decisionObjective").value = meta.decisionObjective || "";
-    }
-
-    function getConstraints() {
-      return {
-        maxLaborBudget: parseFloat(byId("maxLaborBudget").value),
-        minimumStaffingFloor: parseFloat(byId("minimumStaffingFloor").value),
-        preferredUtilizationMin: parseFloat(byId("preferredUtilizationMin").value),
-        preferredUtilizationMax: parseFloat(byId("preferredUtilizationMax").value),
-        maximumUtilization: parseFloat(byId("maximumUtilization").value),
-        shortageTolerancePercent: parseFloat(byId("shortageTolerancePercent").value),
-        maxCostIncreasePercent: parseFloat(byId("maxCostIncreasePercent").value),
-        minimumSavingsTargetPercent: parseFloat(byId("minimumSavingsTargetPercent").value)
-      };
-    }
-
-    function setConstraints(c) {
-      byId("maxLaborBudget").value = c.maxLaborBudget;
-      byId("minimumStaffingFloor").value = c.minimumStaffingFloor;
-      byId("preferredUtilizationMin").value = c.preferredUtilizationMin;
-      byId("preferredUtilizationMax").value = c.preferredUtilizationMax;
-      byId("maximumUtilization").value = c.maximumUtilization;
-      byId("shortageTolerancePercent").value = c.shortageTolerancePercent;
-      byId("maxCostIncreasePercent").value = c.maxCostIncreasePercent;
-      byId("minimumSavingsTargetPercent").value = c.minimumSavingsTargetPercent;
-    }
-
-    function validateConstraints(c) {
-      if (Object.values(c).some(v => isNaN(v))) return false;
-      if (c.maxLaborBudget <= 0 || c.maximumUtilization <= 0) return false;
-      if (c.preferredUtilizationMin >= c.preferredUtilizationMax) return false;
-      if (c.preferredUtilizationMax > c.maximumUtilization) return false;
-      return true;
-    }
-
-    function getUnitInput(index) {
-      return {
-        index,
-        name: byId("unit" + index + "Name").value.trim(),
-        staff: parseFloat(byId("unit" + index + "Staff").value),
-        workload: parseFloat(byId("unit" + index + "Workload").value),
-        shift: parseFloat(byId("unit" + index + "Shift").value),
-        productivity: parseFloat(byId("unit" + index + "Productivity").value),
-        wage: parseFloat(byId("unit" + index + "Wage").value)
-      };
-    }
-
-    function setUnitInput(unit) {
-      byId("unit" + unit.index + "Name").value = unit.name || "";
-      byId("unit" + unit.index + "Staff").value = unit.staff || "";
-      byId("unit" + unit.index + "Workload").value = unit.workload || "";
-      byId("unit" + unit.index + "Shift").value = unit.shift || "";
-      byId("unit" + unit.index + "Productivity").value = unit.productivity || "";
-      byId("unit" + unit.index + "Wage").value = unit.wage || "";
-    }
-
-    function isUnitActive(u) {
-      return u.name && u.staff > 0 && u.workload > 0 && u.shift > 0 && u.productivity > 0 && u.wage > 0;
-    }
-
-    function classifyUnitStatus(utilization, gap) {
-      if (utilization > 100 || gap < 0) return "Critical";
-      if (utilization > 90 || gap <= 1) return "Stressed";
-      if (utilization > 85 || utilization < 70) return "Watch";
-      return "Healthy";
-    }
-
-    function classifySystemStatus(utilization, gap) {
-      if (utilization > 100 || gap < 0) return "Non-Viable";
-      if (utilization > 92) return "High Pressure";
-      if (utilization > 85 || gap <= 2) return "Caution";
-      return "Stable";
-    }
-
-    function chipClassFromStatus(status) {
-      const green = ["Healthy", "Stable", "Compliant", "Low Risk", "High Confidence", "Recommend", "Strongly Recommend", "Resolved", "On Track", "Completed", "Approved"];
-      const yellow = ["Watch", "Caution", "Moderate Risk", "Moderate Confidence", "Consider with Caution", "Due Soon", "Pending Approval", "In Analysis", "Monitoring"];
-      const red = ["Stressed", "Critical", "Non-Viable", "High Pressure", "Hard Constraint Breach", "High Risk", "Low Confidence", "Do Not Recommend", "Overdue", "Blocked", "Escalated"];
-      if (green.includes(status)) return "green";
-      if (yellow.includes(status)) return "yellow";
-      if (red.includes(status)) return "red";
-      return "blue";
-    }
-
-    function deriveUnit(u) {
-      const requiredStaff = Math.ceil(u.workload / (u.shift * u.productivity));
-      const utilization = (requiredStaff / u.staff) * 100;
-      const laborCost = u.staff * u.wage * u.shift;
-      const staffGap = u.staff - requiredStaff;
-      const unitStatus = classifyUnitStatus(utilization, staffGap);
-      return { ...u, requiredStaff, utilization, laborCost, staffGap, unitStatus };
-    }
-
-    function summarizeSystem(units) {
-      const totalAvailableStaff = units.reduce((s, u) => s + u.staff, 0);
-      const totalRequiredStaff = units.reduce((s, u) => s + u.requiredStaff, 0);
-      const totalLaborCost = units.reduce((s, u) => s + u.laborCost, 0);
-      const systemUtilization = totalAvailableStaff > 0 ? (totalRequiredStaff / totalAvailableStaff) * 100 : 0;
-      const systemGap = totalAvailableStaff - totalRequiredStaff;
-      const systemStatus = classifySystemStatus(systemUtilization, systemGap);
-      return { totalAvailableStaff, totalRequiredStaff, totalLaborCost, systemUtilization, systemGap, systemStatus };
-    }
-
-    function calculateOperationalTwin() {
-      const units = [1,2,3,4].map(getUnitInput).filter(isUnitActive).map(deriveUnit);
-      if (!units.length) {
-        byId("systemSummaryBox").innerHTML = "Please complete at least one full unit with valid positive values.";
-        return;
-      }
-
-      const caseMeta = getCaseMeta();
-      const twin = { caseMeta, units, system: summarizeSystem(units) };
-      saveJSON(STORAGE.twin, twin);
-      saveJSON(STORAGE.caseMeta, caseMeta);
-
-      renderTwinExplorer();
-      renderObjectExplorer();
-      renderCommandCenter();
-      renderSignals();
-      renderScenarioStudio();
-      renderWorkflowBoard();
-      renderAgentConsole();
-      renderOutcomeLedger();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    function saveCaseAndConstraints() {
-      const caseMeta = getCaseMeta();
-      const constraints = getConstraints();
-      if (!validateConstraints(constraints)) {
-        byId("caseConstraintBox").innerHTML = "Please complete valid case and constraint values.";
-        return;
-      }
-
-      saveJSON(STORAGE.caseMeta, caseMeta);
-      saveJSON(STORAGE.constraints, constraints);
-
-      byId("caseConstraintBox").innerHTML =
-        "<strong>Case Name:</strong> " + caseMeta.caseName + "<br>" +
-        "<strong>Operation Type:</strong> " + caseMeta.operationType + "<br>" +
-        "<strong>Decision Objective:</strong> " + caseMeta.decisionObjective + "<br><br>" +
-        "<strong>Constraint Profile:</strong><br>" +
-        "Budget ≤ " + fmtMoney(constraints.maxLaborBudget) + "<br>" +
-        "Staffing Floor ≥ " + constraints.minimumStaffingFloor + "<br>" +
-        "Preferred Utilization " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%<br>" +
-        "Utilization Ceiling ≤ " + constraints.maximumUtilization + "%";
-
-      updateTopbar();
-      renderCommandCenter();
-      renderSignals();
-      renderScenarioStudio();
-      renderExecutiveBrief();
-    }
-
-    function resetConstraintsToDefault() {
-      setConstraints(DEFAULT_CONSTRAINTS);
-      saveJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      saveCaseAndConstraints();
-    }
-
-    function loadShellState() {
-      const caseMeta = loadJSON(STORAGE.caseMeta, {
-        caseName: "Unnamed Operational Case",
-        operationType: "custom",
-        decisionObjective: ""
-      });
-      const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const twin = loadJSON(STORAGE.twin, null);
-
-      setCaseMeta(caseMeta);
-      setConstraints(constraints);
-
-      if (twin && twin.units) {
-        twin.units.forEach(setUnitInput);
-      }
-
-      byId("caseConstraintBox").innerHTML =
-        "<strong>Case Name:</strong> " + caseMeta.caseName + "<br>" +
-        "<strong>Operation Type:</strong> " + caseMeta.operationType + "<br>" +
-        "<strong>Decision Objective:</strong> " + (caseMeta.decisionObjective || "No decision objective provided yet.") + "<br><br>" +
-        "<strong>Constraint Profile:</strong><br>" +
-        "Budget ≤ " + fmtMoney(constraints.maxLaborBudget) + "<br>" +
-        "Staffing Floor ≥ " + constraints.minimumStaffingFloor + "<br>" +
-        "Preferred Utilization " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%<br>" +
-        "Utilization Ceiling ≤ " + constraints.maximumUtilization + "%";
-    }
-
-    function renderTwinExplorer() {
-      const twin = loadJSON(STORAGE.twin, null);
-      if (!twin) return;
-
-      twin.units.forEach(function (u) {
-        byId("unit" + u.index + "Output").innerHTML =
-          "<strong>" + u.name + "</strong><br>" +
-          "<span class='chip " + chipClassFromStatus(u.unitStatus) + "'>" + u.unitStatus + "</span><br><br>" +
-          "Required Staff: " + u.requiredStaff + "<br>" +
-          "Utilization: " + fmtPct(u.utilization) + "<br>" +
-          "Labor Cost: " + fmtMoney(u.laborCost) + "<br>" +
-          "Staff Gap / Surplus: " + u.staffGap;
-      });
-
-      for (let i = 1; i <= 4; i++) {
-        const exists = twin.units.find(u => u.index === i);
-        if (!exists) byId("unit" + i + "Output").innerHTML = "Unit not active in the current twin.";
-      }
-
-      byId("systemTotalStaff").innerText = twin.system.totalAvailableStaff;
-      byId("systemRequiredStaff").innerText = twin.system.totalRequiredStaff;
-      byId("systemUtilization").innerText = fmtPct(twin.system.systemUtilization);
-      byId("systemLaborCost").innerText = fmtMoney(twin.system.totalLaborCost);
-
-      byId("systemSummaryBox").innerHTML =
-        "<strong>System Summary:</strong><br>" +
-        "The current twin models <strong>" + twin.units.length + "</strong> active unit(s). " +
-        "System utilization is <strong>" + fmtPct(twin.system.systemUtilization) + "</strong>, " +
-        "total labor cost is <strong>" + fmtMoney(twin.system.totalLaborCost) + "</strong>, " +
-        "and the staffing gap / surplus is <strong>" + twin.system.systemGap + "</strong>.";
-    }
-
-    function renderObjectExplorer() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const tree = byId("objectTree");
-      if (!twin) {
-        tree.innerHTML = "<div class='muted'>Calculate the operational twin first.</div>";
-        return;
-      }
-
-      let html = "<div class='object-node" + (currentObjectKey === "system" ? " active" : "") + "' onclick=\"selectObjectNode('system')\">System Total</div>";
-      twin.units.forEach(function (u) {
-        html += "<div class='object-node" + (currentObjectKey === ("unit_" + u.index) ? " active" : "") + "' onclick=\"selectObjectNode('unit_" + u.index + "')\">" + u.name + "</div>";
-      });
-      tree.innerHTML = html;
-
-      if (!currentObjectKey) currentObjectKey = "system";
-      renderObjectDetail();
-      updateScenarioTargetOptions();
-    }
-
-    function selectObjectNode(key) {
-      currentObjectKey = key;
-      renderObjectExplorer();
-    }
-
-    function renderObjectDetail() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const box = byId("objectDetailBox");
-      if (!twin) {
-        box.innerHTML = "No operational twin available.";
-        return;
-      }
-
-      if (currentObjectKey === "system") {
-        box.innerHTML =
-          "<strong>System Total</strong><br>" +
-          "Total Available Staff: " + twin.system.totalAvailableStaff + "<br>" +
-          "Total Required Staff: " + twin.system.totalRequiredStaff + "<br>" +
-          "System Utilization: " + fmtPct(twin.system.systemUtilization) + "<br>" +
-          "Total Labor Cost: " + fmtMoney(twin.system.totalLaborCost) + "<br>" +
-          "System Status: " + twin.system.systemStatus + "<br><br>" +
-          "Linked Signals: " + generateSignals().length;
-        return;
-      }
-
-      const unitIndex = Number(currentObjectKey.replace("unit_", ""));
-      const unit = twin.units.find(u => u.index === unitIndex);
-      if (!unit) {
-        box.innerHTML = "Object not found.";
-        return;
-      }
-
-      box.innerHTML =
-        "<strong>" + unit.name + "</strong><br>" +
-        "Available Staff: " + unit.staff + "<br>" +
-        "Required Workload: " + unit.workload + "<br>" +
-        "Shift Hours: " + unit.shift + "<br>" +
-        "Productivity: " + unit.productivity + "<br>" +
-        "Hourly Wage: " + fmtMoney(unit.wage) + "<br><br>" +
-        "Required Staff: " + unit.requiredStaff + "<br>" +
-        "Utilization: " + fmtPct(unit.utilization) + "<br>" +
-        "Labor Cost: " + fmtMoney(unit.laborCost) + "<br>" +
-        "Gap / Surplus: " + unit.staffGap + "<br>" +
-        "Unit Status: " + unit.unitStatus;
-    }
-
-    function updateScenarioTargetOptions() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const select = byId("scenarioTargetUnit");
-      select.innerHTML = "";
-
-      if (!twin || !twin.units.length) {
-        select.innerHTML = "<option value='1'>Unit 1</option>";
-        return;
-      }
-
-      twin.units.forEach(function (u) {
-        const opt = document.createElement("option");
-        opt.value = u.index;
-        opt.textContent = u.name;
-        select.appendChild(opt);
-      });
-    }
-
-    function toggleScenarioTargetUnit() {
-      byId("scenarioTargetWrap").style.display = byId("scenarioScope").value === "single" ? "block" : "none";
-    }
-
-    function evaluateScenarioConstraints(projectedUnits, projectedSystem, baselineSystem, constraints) {
-      const hardBreaches = [];
-      const softWarnings = [];
-      const tolerance = constraints.shortageTolerancePercent / 100;
-
-      if (projectedSystem.totalLaborCost > constraints.maxLaborBudget) hardBreaches.push("Labor budget cap exceeded");
-      if (projectedSystem.totalAvailableStaff < constraints.minimumStaffingFloor) hardBreaches.push("Minimum total staffing floor breached");
-      if (projectedSystem.systemUtilization > constraints.maximumUtilization) hardBreaches.push("Maximum utilization ceiling exceeded");
-
-      const systemShortThreshold = projectedSystem.totalRequiredStaff * (1 - tolerance);
-      if (projectedSystem.totalAvailableStaff < systemShortThreshold) hardBreaches.push("System staffing falls below shortage tolerance");
-
-      projectedUnits.forEach(function (u) {
-        const unitShort = u.requiredStaff * (1 - tolerance);
-        if (u.staff < unitShort) softWarnings.push(u.name + " staffing is below tolerance");
-        if (u.utilization > constraints.maximumUtilization) softWarnings.push(u.name + " exceeds hard utilization ceiling");
-        else if (u.utilization < constraints.preferredUtilizationMin || u.utilization > constraints.preferredUtilizationMax) {
-          softWarnings.push(u.name + " sits outside preferred utilization band");
-        }
-      });
-
-      const costIncreasePct = ((projectedSystem.totalLaborCost - baselineSystem.totalLaborCost) / baselineSystem.totalLaborCost) * 100;
-      const savingsPct = ((baselineSystem.totalLaborCost - projectedSystem.totalLaborCost) / baselineSystem.totalLaborCost) * 100;
-
-      if (costIncreasePct > constraints.maxCostIncreasePercent) softWarnings.push("Preferred max cost increase exceeded");
-      if (savingsPct < constraints.minimumSavingsTargetPercent) softWarnings.push("Preferred savings target not achieved");
-
-      const summary = hardBreaches.length ? "Hard Constraint Breach" : (softWarnings.length ? softWarnings.length + " Warning" + (softWarnings.length > 1 ? "s" : "") : "Compliant");
-      return { hardBreaches, softWarnings, viable: hardBreaches.length === 0, summary, costIncreasePct, savingsPct };
-    }
-
-    function scoreScenario(projectedUnits, projectedSystem, baselineSystem, constraints, evalObj) {
-      const costDeltaPct = ((projectedSystem.totalLaborCost - baselineSystem.totalLaborCost) / baselineSystem.totalLaborCost) * 100;
-      let costScore = 15;
-      if (costDeltaPct <= -10) costScore = 100;
-      else if (costDeltaPct <= 0) costScore = 90;
-      else if (costDeltaPct <= constraints.maxCostIncreasePercent / 2) costScore = 78;
-      else if (costDeltaPct <= constraints.maxCostIncreasePercent) costScore = 62;
-      else if (costDeltaPct <= constraints.maxCostIncreasePercent * 2) costScore = 35;
-
-      const gap = projectedSystem.totalAvailableStaff - projectedSystem.totalRequiredStaff;
-      const gapPct = (gap / projectedSystem.totalRequiredStaff) * 100;
-      let capacityScore = 0;
-      if (gapPct >= 0 && gapPct <= 5) capacityScore = 100;
-      else if (gapPct > 5 && gapPct <= 15) capacityScore = 85;
-      else if (gapPct > 15 && gapPct <= 30) capacityScore = 65;
-      else if (gapPct > 30) capacityScore = 40;
-      else if (gapPct >= -constraints.shortageTolerancePercent) capacityScore = 55;
-      else if (gapPct >= -5) capacityScore = 25;
-
-      const u = projectedSystem.systemUtilization;
-      let utilScore = 0;
-      if (u >= constraints.preferredUtilizationMin && u <= constraints.preferredUtilizationMax) utilScore = 100;
-      else if (u > constraints.preferredUtilizationMax && u <= constraints.maximumUtilization) utilScore = Math.max(15, 85 - (u - constraints.preferredUtilizationMax) * 6);
-      else if (u < constraints.preferredUtilizationMin) utilScore = Math.max(20, 85 - (constraints.preferredUtilizationMin - u) * 3);
-
-      const complianceScore = evalObj.viable ? Math.max(55, 100 - evalObj.softWarnings.length * 10) : Math.max(0, 15 - (evalObj.hardBreaches.length - 1) * 5);
-
-      const stressedUnits = projectedUnits.filter(x => x.unitStatus === "Stressed" || x.unitStatus === "Critical").length;
-      const watchUnits = projectedUnits.filter(x => x.unitStatus === "Watch").length;
-      let strategicScore = evalObj.viable ? 75 - stressedUnits * 18 - watchUnits * 7 : 10;
-      if (u >= constraints.preferredUtilizationMin && u <= constraints.preferredUtilizationMax) strategicScore += 10;
-      strategicScore = Math.max(10, Math.min(95, strategicScore));
-
-      const finalScore = (
-        costScore * 0.25 +
-        capacityScore * 0.25 +
-        utilScore * 0.20 +
-        complianceScore * 0.20 +
-        strategicScore * 0.10
-      );
-
-      let riskLevel = "Low Risk";
-      if (!evalObj.viable || stressedUnits > 0 || projectedSystem.systemUtilization > 92) riskLevel = "High Risk";
-      else if (watchUnits > 0 || evalObj.softWarnings.length >= 2) riskLevel = "Moderate Risk";
-
-      let recommendationClass = "Do Not Recommend";
-      if (!evalObj.viable) recommendationClass = "Non-Viable";
-      else if (finalScore >= 85 && riskLevel === "Low Risk") recommendationClass = "Strongly Recommend";
-      else if (finalScore >= 72) recommendationClass = "Recommend";
-      else if (finalScore >= 55) recommendationClass = "Consider with Caution";
-
-      return {
-        costScore, capacityScore, utilScore, complianceScore, strategicScore,
-        finalScore: Number(finalScore.toFixed(1)),
-        riskLevel,
-        recommendationClass
-      };
-    }
-
-    function getScenarioLabel(type) {
-      const labels = {
-        demand_up: "Demand Increase",
-        demand_down: "Demand Decrease",
-        productivity_up: "Productivity Improvement",
-        productivity_down: "Productivity Decline",
-        wage_up: "Wage Increase",
-        wage_down: "Wage Decrease",
-        staff_up: "Increase Staff",
-        staff_down: "Reduce Staff"
-      };
-      return labels[type] || "Scenario";
-    }
-
-    function calculateScenarioPreview() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      if (!twin) {
-        byId("scenarioResultBox").innerHTML = "Build the operational twin first.";
-        return;
-      }
-
-      const type = byId("scenarioType").value;
-      const percent = parseFloat(byId("scenarioPercent").value);
-      const scope = byId("scenarioScope").value;
-      const targetIndex = Number(byId("scenarioTargetUnit").value || 1);
-      const note = byId("scenarioNote").value.trim();
-
-      if (isNaN(percent) || percent <= 0) {
-        byId("scenarioResultBox").innerHTML = "Enter a valid positive scenario percentage.";
-        return;
-      }
-
-      const pct = percent / 100;
-      const projectedUnits = twin.units.map(function (u) {
-        const apply = scope === "global" || u.index === targetIndex;
-        const clone = { index: u.index, name: u.name, staff: u.staff, workload: u.workload, shift: u.shift, productivity: u.productivity, wage: u.wage };
-
-        if (apply) {
-          if (type === "demand_up") clone.workload *= (1 + pct);
-          if (type === "demand_down") clone.workload *= (1 - pct);
-          if (type === "productivity_up") clone.productivity *= (1 + pct);
-          if (type === "productivity_down") clone.productivity *= (1 - pct);
-          if (type === "wage_up") clone.wage *= (1 + pct);
-          if (type === "wage_down") clone.wage *= (1 - pct);
-          if (type === "staff_up") clone.staff = Math.ceil(clone.staff * (1 + pct));
-          if (type === "staff_down") clone.staff = Math.max(1, Math.floor(clone.staff * (1 - pct)));
-        }
-
-        return deriveUnit(clone);
-      });
-
-      const projectedSystem = summarizeSystem(projectedUnits);
-      const evalObj = evaluateScenarioConstraints(projectedUnits, projectedSystem, twin.system, constraints);
-      const score = scoreScenario(projectedUnits, projectedSystem, twin.system, constraints, evalObj);
-
-      const targetUnit = scope === "single" ? projectedUnits.find(u => u.index === targetIndex) : null;
-      const scenarioName = getScenarioLabel(type) + " +" + percent + "%" + (scope === "single" && targetUnit ? " — " + targetUnit.name : " — Global");
-
-      let reasons = [];
-      if (evalObj.viable) reasons.push("stays inside the hard operating limits");
-      if (score.utilScore >= 85) reasons.push("keeps utilization closer to the preferred band");
-      if (score.capacityScore >= 85) reasons.push("maintains strong staffing fit");
-      if (score.costScore >= 85) reasons.push("improves labor cost efficiency");
-
-      const whyThisWon = reasons.length ? reasons.slice(0, 3).join(", ") : "balances the main decision dimensions better than weaker alternatives";
-
-      let tradeoff = "This path still needs operating review after implementation.";
-      if (!evalObj.viable) tradeoff = "This path breaks one or more hard constraints and should not be treated as operationally valid.";
-      else if (evalObj.softWarnings.length) tradeoff = "It remains viable, but carries warning pressure around " + evalObj.softWarnings.slice(0, 3).join(", ").toLowerCase() + ".";
-      else if (type === "productivity_up") tradeoff = "The gain depends on actually delivering the projected productivity improvement.";
-      else if (type === "staff_down") tradeoff = "Lower staffing improves cost posture but can reduce resilience under future shocks.";
-
-      let nextAction = "Review this path against current operating assumptions before execution.";
-      if (!evalObj.viable) nextAction = "Do not implement this scenario unless budget, staffing, or utilization assumptions change materially.";
-      else if (score.riskLevel === "Low Risk") nextAction = "Use this as a primary candidate and validate it through a short pilot or management review.";
-      else nextAction = "Proceed cautiously and monitor system and unit stress closely if selected.";
-
-      currentScenarioPreview = {
-        id: "scenario_" + Date.now(),
-        createdAt: new Date().toISOString(),
-        caseMeta: twin.caseMeta,
-        scenarioName,
-        scenarioType: type,
-        scenarioPercent: percent,
-        scenarioScope: scope,
-        targetUnitName: targetUnit ? targetUnit.name : "All Units",
-        note,
-        projectedUnits,
-        projectedSystem,
-        baselineUnits: JSON.parse(JSON.stringify(twin.units)),
-        baselineSystem: JSON.parse(JSON.stringify(twin.system)),
-        constraintsUsed: constraints,
-        hardBreaches: evalObj.hardBreaches,
-        softWarnings: evalObj.softWarnings,
-        constraintSummary: evalObj.summary,
-        viable: evalObj.viable,
-        riskLevel: score.riskLevel,
-        recommendationClass: score.recommendationClass,
-        finalScore: score.finalScore,
-        whyThisWon,
-        tradeoff,
-        nextAction
-      };
-
-      byId("scenarioRequiredStaff").innerText = projectedSystem.totalRequiredStaff;
-      byId("scenarioUtilization").innerText = fmtPct(projectedSystem.systemUtilization);
-      byId("scenarioLaborCost").innerText = fmtMoney(projectedSystem.totalLaborCost);
-      const delta = projectedSystem.totalLaborCost - twin.system.totalLaborCost;
-      byId("scenarioCostDelta").innerText = (delta >= 0 ? "+" : "-") + fmtMoney(Math.abs(delta));
-
-      byId("scenarioResultBox").innerHTML =
-        "<strong>Scenario:</strong> " + scenarioName + "<br>" +
-        "<strong>Scope:</strong> <span class='scope-highlight'>" + (scope === "global" ? "Global — All Units" : "Single Unit — " + currentScenarioPreview.targetUnitName) + "</span><br>" +
-        "<strong>Constraint Fit:</strong> " + evalObj.summary + "<br>" +
-        "<strong>Hard Breaches:</strong> " + (evalObj.hardBreaches.length ? evalObj.hardBreaches.join(", ") : "None") + "<br>" +
-        "<strong>Soft Warnings:</strong> " + (evalObj.softWarnings.length ? evalObj.softWarnings.slice(0, 5).join(", ") : "None") + "<br>" +
-        "<strong>Risk Level:</strong> " + score.riskLevel + "<br>" +
-        "<strong>Recommendation:</strong> " + score.recommendationClass + "<br>" +
-        "<strong>Decision Score:</strong> " + score.finalScore + "/100<br><br>" +
-        "<strong>Why it scores this way:</strong> " + whyThisWon + "<br>" +
-        "<strong>Tradeoff:</strong> " + tradeoff + "<br>" +
-        "<strong>Next Action:</strong> " + nextAction;
-
-      byId("scenarioUnitImpactBox").innerHTML =
-        projectedUnits.map(u =>
-          "<div class='mini-line'><strong>" + u.name + ":</strong> Required Staff " + u.requiredStaff +
-          ", Utilization " + fmtPct(u.utilization) +
-          ", Labor Cost " + fmtMoney(u.laborCost) +
-          ", Status <span class='chip " + chipClassFromStatus(u.unitStatus) + "'>" + u.unitStatus + "</span></div>"
-        ).join("");
-
-      byId("saveScenarioBtn").disabled = false;
-    }
-
-    function saveCurrentScenario() {
-      if (!currentScenarioPreview) {
-        alert("Run a scenario first.");
-        return;
-      }
-
-      const scenarios = loadJSON(STORAGE.scenarios, []);
-      scenarios.push(currentScenarioPreview);
-      saveJSON(STORAGE.scenarios, scenarios);
-      renderScenarioStudio();
-      renderCommandCenter();
-      renderSignals();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      byId("saveScenarioBtn").disabled = true;
-      byId("saveScenarioBtn").innerText = "Scenario Saved";
-      setTimeout(() => { byId("saveScenarioBtn").innerText = "Save Scenario"; }, 1000);
-    }
-
-    function getScenarios() {
-      return loadJSON(STORAGE.scenarios, []);
-    }
-
-    function setSelectedScenario(id) {
-      localStorage.setItem(STORAGE.selectedScenarioId, id);
-      renderScenarioStudio();
-      renderCommandCenter();
-      renderWorkflowBoard();
-      renderOutcomeLedger();
-      renderAgentConsole();
-      renderExecutiveBrief();
-    }
-
-    function getSelectedScenario() {
-      const id = localStorage.getItem(STORAGE.selectedScenarioId);
-      return getScenarios().find(s => s.id === id) || null;
-    }
-
-    function deleteScenario(id) {
-      const scenarios = getScenarios().filter(s => s.id !== id);
-      saveJSON(STORAGE.scenarios, scenarios);
-
-      const actuals = loadJSON(STORAGE.actuals, {});
-      delete actuals[id];
-      saveJSON(STORAGE.actuals, actuals);
-
-      const workflows = loadJSON(STORAGE.workflows, []).filter(w => w.linkedScenarioId !== id);
-      saveJSON(STORAGE.workflows, workflows);
-
-      if (localStorage.getItem(STORAGE.selectedScenarioId) === id) {
-        localStorage.removeItem(STORAGE.selectedScenarioId);
-      }
-
-      renderScenarioStudio();
-      renderCommandCenter();
-      renderSignals();
-      renderWorkflowBoard();
-      renderOutcomeLedger();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    function getCandidateScenarios() {
-      const scenarios = getScenarios();
-      const preferred = scenarios.filter(s => s.viable && s.recommendationClass !== "Do Not Recommend" && s.recommendationClass !== "Non-Viable");
-      return preferred.length ? preferred : scenarios.filter(s => s.viable);
-    }
-
-    function getBestOverallScenario() {
-      const c = getCandidateScenarios();
-      if (!c.length) return null;
-      return c.slice().sort((a,b) => b.finalScore - a.finalScore)[0];
-    }
-
-    function getCheapestViableScenario() {
-      const c = getCandidateScenarios();
-      if (!c.length) return null;
-      return c.slice().sort((a,b) => a.projectedSystem.totalLaborCost - b.projectedSystem.totalLaborCost)[0];
-    }
-
-    function getSafestViableScenario() {
-      const c = getCandidateScenarios();
-      if (!c.length) return null;
-      return c.slice().sort((a,b) => {
-        const rd = riskRank(a.riskLevel) - riskRank(b.riskLevel);
-        if (rd !== 0) return rd;
-        return b.finalScore - a.finalScore;
-      })[0];
-    }
-
-    function riskRank(risk) {
-      if (risk === "Low Risk") return 1;
-      if (risk === "Moderate Risk") return 2;
-      return 3;
-    }
-
-    function renderScenarioStudio() {
-      updateScenarioTargetOptions();
-      const scenarios = getScenarios();
-      const selected = getSelectedScenario();
-      const best = getBestOverallScenario();
-      const cheapest = getCheapestViableScenario();
-      const safest = getSafestViableScenario();
-
-      function renderWinner(el, title, scenario, fallback) {
-        if (!scenario) {
-          el.innerHTML = "<h3>" + title + "</h3><div class='muted'>" + fallback + "</div>";
-          return;
-        }
-        el.innerHTML =
-          "<h3>" + title + "</h3>" +
-          "<div class='metric-value' style='font-size:20px;'>" + scenario.scenarioName + "</div>" +
-          "<div class='mini-lines'>" +
-          "<div class='mini-line'><strong>Score:</strong> " + scenario.finalScore + "/100</div>" +
-          "<div class='mini-line'><strong>Utilization:</strong> " + fmtPct(scenario.projectedSystem.systemUtilization) + "</div>" +
-          "<div class='mini-line'><strong>Labor Cost:</strong> " + fmtMoney(scenario.projectedSystem.totalLaborCost) + "</div>" +
-          "</div>";
-      }
-
-      renderWinner(byId("bestOverallCard"), "Best Overall", best, "No saved scenarios yet.");
-      renderWinner(byId("cheapestViableCard"), "Cheapest Viable", cheapest, "No saved scenarios yet.");
-      renderWinner(byId("safestViableCard"), "Safest Viable", safest, "No saved scenarios yet.");
-
-      const tbody = byId("scenarioTableBody");
-      if (!scenarios.length) {
-        tbody.innerHTML = "<tr><td colspan='12' class='muted'>No scenarios saved yet.</td></tr>";
-        return;
-      }
-
-      tbody.innerHTML = scenarios.slice().sort((a,b) => {
-        if (a.viable !== b.viable) return a.viable ? -1 : 1;
-        return b.finalScore - a.finalScore;
-      }).map(function (s) {
-        const selectedBadge = selected && selected.id === s.id ? "<br><span class='chip green'>Selected</span>" : "";
-        const scopeText = s.scenarioScope === "global" ? "Global" : "Single — " + s.targetUnitName;
-        const delta = s.projectedSystem.totalLaborCost - s.baselineSystem.totalLaborCost;
-
-        return (
-          "<tr>" +
-            "<td><strong>" + s.scenarioName + "</strong>" + selectedBadge + "<br><span class='muted'>" + (s.note || "No note") + "</span></td>" +
-            "<td>" + scopeText + "</td>" +
-            "<td><span class='chip " + chipClassFromStatus(s.constraintSummary) + "'>" + s.constraintSummary + "</span></td>" +
-            "<td>" + s.projectedSystem.totalRequiredStaff + "</td>" +
-            "<td>" + s.projectedSystem.totalAvailableStaff + "</td>" +
-            "<td>" + fmtPct(s.projectedSystem.systemUtilization) + "</td>" +
-            "<td>" + fmtMoney(s.projectedSystem.totalLaborCost) + "</td>" +
-            "<td>" + (delta >= 0 ? "+" : "-") + fmtMoney(Math.abs(delta)) + "</td>" +
-            "<td><span class='chip " + chipClassFromStatus(s.riskLevel) + "'>" + s.riskLevel + "</span></td>" +
-            "<td><span class='chip " + chipClassFromStatus(s.recommendationClass) + "'>" + s.recommendationClass + "</span></td>" +
-            "<td>" + s.finalScore + "</td>" +
-            "<td>" +
-              "<button class='btn-ghost' onclick=\"setSelectedScenario('" + s.id + "')\">Select</button><br><br>" +
-              "<button class='btn-primary' onclick=\"generateWorkflowFromScenarioId('" + s.id + "')\">Workflow</button><br><br>" +
-              "<button class='btn-danger' onclick=\"deleteScenario('" + s.id + "')\">Delete</button>" +
-            "</td>" +
-          "</tr>"
-        );
-      }).join("");
-    }
-
-    function getWorkflowStore() {
-      return loadJSON(STORAGE.workflows, []);
-    }
-
-    function saveWorkflowStore(store) {
-      saveJSON(STORAGE.workflows, store);
-    }
-
-    function getWorkflowStatuses() {
-      return ["Detected", "In Analysis", "Pending Approval", "Approved", "In Execution", "Monitoring", "Blocked", "Escalated", "Closed"];
-    }
-
-    function getSignalWorkflowStatus(signalId) {
-      const workflows = getWorkflowStore();
-      const linked = workflows.filter(w => w.linkedSignalId === signalId || (w.sourceType === "Signal" && w.sourceRef === signalId));
-      if (!linked.length) return "New";
-      const open = linked.find(w => w.status !== "Closed");
-      if (open) return "In Workflow";
-      return "Resolved";
-    }
-
-    function getLinkedWorkflowForScenario(scenarioId) {
-      return getWorkflowStore().filter(w => w.linkedScenarioId === scenarioId);
-    }
-
-    function generateSignals() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const signals = [];
-
-      if (!twin) return [];
-
-      function pushSignal(title, severity, affected, cause, impact, response, linkedScenarioId = null) {
-        const id = "signal_" + slugify(title);
-        signals.push({
-          id,
-          title,
-          severity,
-          affected,
-          cause,
-          impact,
-          response,
-          status: getSignalWorkflowStatus(id),
-          linkedScenarioId
-        });
-      }
-
-      if (twin.system.systemUtilization > constraints.preferredUtilizationMax) {
-        pushSignal(
-          "System utilization pressure",
-          twin.system.systemUtilization > constraints.maximumUtilization ? "Critical" : "High",
-          "All Units",
-          "System utilization is " + fmtPct(twin.system.systemUtilization) + ", above the preferred range.",
-          "May reduce resilience and create service pressure across the operation.",
-          "Open Scenario Studio"
-        );
-      }
-
-      if (twin.system.totalLaborCost > constraints.maxLaborBudget) {
-        pushSignal(
-          "Labor budget pressure",
-          "High",
-          "All Units",
-          "Current labor cost is " + fmtMoney(twin.system.totalLaborCost) + ", above the defined budget ceiling.",
-          "Creates financial pressure and may require intervention.",
-          "Generate Workflow"
-        );
-      }
-
-      if (twin.system.systemGap < 0 || twin.system.systemGap <= 2) {
-        pushSignal(
-          "System staffing tightness",
-          twin.system.systemGap < 0 ? "Critical" : "Medium",
-          "All Units",
-          "System staff gap / surplus is " + twin.system.systemGap + ".",
-          "Limited buffer may create execution risk under demand volatility.",
-          "Open Scenario Studio"
-        );
-      }
-
-      twin.units.forEach(function (u) {
-        if (u.unitStatus === "Critical" || u.unitStatus === "Stressed") {
-          pushSignal(
-            u.name + " operational stress",
-            u.unitStatus === "Critical" ? "Critical" : "High",
-            u.name,
-            u.name + " is currently at " + fmtPct(u.utilization) + " utilization with status " + u.unitStatus + ".",
-            "May become the limiting unit in the broader operation.",
-            "View in Twin"
-          );
-        } else if (u.unitStatus === "Watch") {
-          pushSignal(
-            u.name + " watch condition",
-            "Medium",
-            u.name,
-            u.name + " is outside the preferred operating posture.",
-            "Requires monitoring before it becomes a blocking issue.",
-            "Monitor Only"
-          );
-        }
-      });
-
-      const selected = getSelectedScenario();
-      const actuals = loadJSON(STORAGE.actuals, {});
-      if (selected && actuals[selected.id]) {
-        const actual = actuals[selected.id];
-        const costDeltaPct = ((actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost) / selected.projectedSystem.totalLaborCost) * 100;
-        const utilDelta = actual.system.systemUtilization - selected.projectedSystem.systemUtilization;
-        if (Math.abs(costDeltaPct) > 5 || Math.abs(utilDelta) > 5) {
-          pushSignal(
-            "Forecast variance detected",
-            "High",
-            "Selected Scenario",
-            "Actual results have drifted materially from the selected scenario forecast.",
-            "May reduce confidence in the original recommendation.",
-            "Open Outcome Ledger",
-            selected.id
-          );
-        }
-      }
-
-      const workflows = getWorkflowStore();
-      const pendingApprovals = workflows.filter(w => w.status === "Pending Approval").length;
-      if (pendingApprovals > 0) {
-        pushSignal(
-          "Pending workflow approvals",
-          "Medium",
-          "Workflow Board",
-          pendingApprovals + " workflow(s) are waiting for approval.",
-          "Execution may stall if approvals are not cleared.",
-          "Open Workflow Board"
-        );
-      }
-
-      const severityRank = { Critical: 4, High: 3, Medium: 2, Low: 1 };
-      return signals.sort((a, b) => severityRank[b.severity] - severityRank[a.severity]);
-    }
-
-    function renderSignals() {
-      const signals = generateSignals();
-      const list = byId("signalList");
-
-      if (!signals.length) {
-        list.innerHTML = "<div class='muted'>No active signals detected.</div>";
-        byId("signalDetailBox").innerHTML = "No active signals detected.";
-        return;
-      }
-
-      if (!currentSignalId) currentSignalId = signals[0].id;
-      const detail = signals.find(s => s.id === currentSignalId) || signals[0];
-      currentSignalId = detail.id;
-
-      list.innerHTML = signals.map(function (s) {
-        return (
-          "<div class='signal-card'>" +
-            "<div class='signal-title'>" + s.title + "</div>" +
-            "<span class='chip " + chipClassFromStatus(s.severity) + "'>" + s.severity + "</span> " +
-            "<span class='chip " + chipClassFromStatus(s.status) + "'>" + s.status + "</span>" +
-            "<div class='mini-lines'>" +
-              "<div class='mini-line'><strong>Affected:</strong> " + s.affected + "</div>" +
-              "<div class='mini-line'><strong>Trigger:</strong> " + s.cause + "</div>" +
-              "<div class='mini-line'><strong>Impact:</strong> " + s.impact + "</div>" +
-            "</div>" +
-            "<div class='signal-actions'>" +
-              "<button class='btn-ghost' onclick=\"selectSignal('" + s.id + "')\">Open</button>" +
-              "<button class='btn-primary' onclick=\"generateWorkflowFromSignalId('" + s.id + "')\">Workflow</button>" +
-            "</div>" +
-          "</div>"
-        );
-      }).join("");
-
-      byId("signalDetailBox").innerHTML =
-        "<strong>" + detail.title + "</strong><br>" +
-        "<span class='chip " + chipClassFromStatus(detail.severity) + "'>" + detail.severity + "</span> " +
-        "<span class='chip " + chipClassFromStatus(detail.status) + "'>" + detail.status + "</span><br><br>" +
-        "<strong>Affected Object:</strong> " + detail.affected + "<br>" +
-        "<strong>Trigger Summary:</strong> " + detail.cause + "<br>" +
-        "<strong>Business Impact:</strong> " + detail.impact + "<br>" +
-        "<strong>Recommended Response:</strong> " + detail.response + "<br><br>" +
-        "<div class='toolbar'>" +
-          "<button class='btn-ghost' onclick=\"navigateTo('twin-explorer')\">View in Twin</button>" +
-          "<button class='btn-secondary' onclick=\"navigateTo('scenario-studio')\">Open Scenarios</button>" +
-          "<button class='btn-primary' onclick=\"generateWorkflowFromSignalId('" + detail.id + "')\">Generate Workflow</button>" +
-        "</div>";
-    }
-
-    function selectSignal(id) {
-      currentSignalId = id;
-      renderSignals();
-      navigateTo("signals");
-    }
-
-    function getCurrentWorkflowStep(workflow) {
-      return workflow.steps[workflow.currentStepIndex] || null;
-    }
-
-    function getDueState(workflow) {
-      if (!workflow || workflow.status === "Closed") return "Closed";
-      const step = getCurrentWorkflowStep(workflow);
-      if (!step) return "Closed";
-      const start = new Date(workflow.currentStepStartedAt || workflow.createdAt).getTime();
-      const dueAt = start + (step.dueHours * 3600 * 1000);
-      const now = Date.now();
-      if (now > dueAt) return "Overdue";
-      if (now > start + (step.dueHours * 0.8 * 3600 * 1000)) return "Due Soon";
-      return "On Track";
-    }
-
-    function getWorkflowStatusFromStep(step) {
-      if (!step) return "Closed";
-      if (step.approvalRequired && step.status === "Pending") return "Pending Approval";
-      if (/assign|execute/i.test(step.title)) return "In Execution";
-      if (/monitor|close/i.test(step.title)) return "Monitoring";
-      return "In Analysis";
-    }
-
-    function completeCurrentStepInternal(workflow, markAs) {
-      const step = getCurrentWorkflowStep(workflow);
-      if (!step) {
-        workflow.status = "Closed";
-        workflow.outcomeStatus = "Resolved";
-        return;
-      }
-
-      step.status = markAs || "Completed";
-      step.completedAt = new Date().toISOString();
-
-      workflow.currentStepIndex += 1;
-      workflow.currentStepStartedAt = new Date().toISOString();
-
-      const nextStep = getCurrentWorkflowStep(workflow);
-      if (!nextStep) {
-        workflow.status = "Closed";
-        workflow.outcomeStatus = workflow.outcomeStatus === "Escalated" ? "Escalated" : (workflow.outcomeStatus === "Blocked" ? "Blocked" : "Resolved");
-        return;
-      }
-
-      nextStep.status = nextStep.status || "Pending";
-      workflow.status = getWorkflowStatusFromStep(nextStep);
-    }
-
-    function createWorkflowStepsForScenario(scenario) {
-      return [
-        { id: "step_review", title: "Review current state", owner: "Ops Analyst", approvalRequired: false, dueHours: 4, type: "review", status: "Pending" },
-        { id: "step_validate", title: "Validate scenario assumptions", owner: "Workforce Analyst", approvalRequired: false, dueHours: 6, type: "analysis", status: "Pending" },
-        { id: "step_approve", title: "Approve intervention", owner: "Ops Manager", approvalRequired: true, dueHours: 8, type: "approval", status: "Pending" },
-        { id: "step_assign", title: "Assign execution owner", owner: "Ops Manager", approvalRequired: false, dueHours: 12, type: "assignment", status: "Pending" },
-        { id: "step_execute", title: "Execute selected action", owner: "Unit Lead", approvalRequired: false, dueHours: 24, type: "execution", status: "Pending" },
-        { id: "step_monitor", title: "Monitor actual result", owner: "Ops Analyst", approvalRequired: false, dueHours: 48, type: "monitoring", status: "Pending" },
-        { id: "step_close", title: "Close workflow", owner: "Ops Manager", approvalRequired: false, dueHours: 72, type: "closure", status: "Pending" }
-      ];
-    }
-
-    function createWorkflowStepsForSignal(signal) {
-      return [
-        { id: "step_review_signal", title: "Review signal details", owner: "Ops Analyst", approvalRequired: false, dueHours: 4, type: "review", status: "Pending" },
-        { id: "step_validate_state", title: "Validate current operating state", owner: "Workforce Analyst", approvalRequired: false, dueHours: 6, type: "analysis", status: "Pending" },
-        { id: "step_simulate", title: "Simulate response options", owner: "Scenario Agent", approvalRequired: false, dueHours: 8, type: "analysis", status: "Pending" },
-        { id: "step_gate", title: "Approve intervention path", owner: "Ops Manager", approvalRequired: true, dueHours: 12, type: "approval", status: "Pending" },
-        { id: "step_execute", title: "Execute chosen action", owner: "Unit Lead", approvalRequired: false, dueHours: 24, type: "execution", status: "Pending" },
-        { id: "step_monitor", title: "Monitor outcome", owner: "Ops Analyst", approvalRequired: false, dueHours: 48, type: "monitoring", status: "Pending" },
-        { id: "step_close", title: "Close workflow", owner: "Ops Manager", approvalRequired: false, dueHours: 72, type: "closure", status: "Pending" }
-      ];
-    }
-
-    function buildWorkflowFromScenario(scenario) {
-      const signals = generateSignals();
-      const bestLinkedSignal = signals.find(s => scenario.targetUnitName === "All Units" || s.affected === scenario.targetUnitName || s.affected === "All Units");
-      const priority = scenario.riskLevel === "High Risk" ? "High" : (scenario.riskLevel === "Moderate Risk" ? "Medium" : "Low");
-
-      return {
-        id: "workflow_" + Date.now(),
-        title: "Intervention — " + scenario.scenarioName,
-        sourceType: "Scenario",
-        sourceRef: scenario.id,
-        linkedSignalId: bestLinkedSignal ? bestLinkedSignal.id : null,
-        linkedScenarioId: scenario.id,
-        priority,
-        owner: "Ops Manager",
-        affected: scenario.targetUnitName || "All Units",
-        status: "Detected",
-        createdAt: new Date().toISOString(),
-        currentStepIndex: 0,
-        currentStepStartedAt: new Date().toISOString(),
-        steps: createWorkflowStepsForScenario(scenario),
-        stageHistory: [{ at: new Date().toISOString(), status: "Detected", note: "Workflow created from scenario." }],
-        outcomeStatus: "Open",
-        notes: scenario.note || ""
-      };
-    }
-
-    function buildWorkflowFromSignal(signal) {
-      const bestScenario = getBestOverallScenario();
-      return {
-        id: "workflow_" + Date.now(),
-        title: "Response — " + signal.title,
-        sourceType: "Signal",
-        sourceRef: signal.id,
-        linkedSignalId: signal.id,
-        linkedScenarioId: bestScenario ? bestScenario.id : null,
-        priority: signal.severity === "Critical" ? "High" : signal.severity,
-        owner: "Ops Manager",
-        affected: signal.affected,
-        status: "Detected",
-        createdAt: new Date().toISOString(),
-        currentStepIndex: 0,
-        currentStepStartedAt: new Date().toISOString(),
-        steps: createWorkflowStepsForSignal(signal),
-        stageHistory: [{ at: new Date().toISOString(), status: "Detected", note: "Workflow created from signal." }],
-        outcomeStatus: "Open",
-        notes: signal.cause
-      };
-    }
-
-    function saveWorkflow(workflow) {
-      const workflows = getWorkflowStore();
-      workflows.push(workflow);
-      saveWorkflowStore(workflows);
-      localStorage.setItem(STORAGE.selectedWorkflowId, workflow.id);
-      renderWorkflowBoard();
-      renderCommandCenter();
-      renderSignals();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-      navigateTo("workflow-board");
-    }
-
-    function setSelectedWorkflow(id) {
-      localStorage.setItem(STORAGE.selectedWorkflowId, id);
-      renderWorkflowBoard();
-    }
-
-    function getSelectedWorkflow() {
-      const id = localStorage.getItem(STORAGE.selectedWorkflowId);
-      return getWorkflowStore().find(w => w.id === id) || null;
-    }
-
-    function updateWorkflow(workflowId, updater) {
-      const workflows = getWorkflowStore();
-      const workflow = workflows.find(w => w.id === workflowId);
-      if (!workflow) return;
-      updater(workflow);
-      saveWorkflowStore(workflows);
-      renderWorkflowBoard();
-      renderCommandCenter();
-      renderSignals();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    function addStageHistory(workflow, status, note) {
-      workflow.stageHistory.push({ at: new Date().toISOString(), status, note });
-    }
-
-    function startWorkflowAnalysis(id) {
-      updateWorkflow(id, function (w) {
-        if (w.status === "Detected") {
-          w.status = "In Analysis";
-          addStageHistory(w, "In Analysis", "Workflow analysis started.");
-        }
-      });
-    }
-
-    function completeWorkflowStep(id) {
-      updateWorkflow(id, function (w) {
-        if (["Blocked", "Escalated", "Closed", "Pending Approval"].includes(w.status)) return;
-        const step = getCurrentWorkflowStep(w);
-        if (!step || step.approvalRequired) return;
-        completeCurrentStepInternal(w, "Completed");
-        addStageHistory(w, w.status, "Completed step: " + step.title);
-      });
-    }
-
-    function approveWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        const step = getCurrentWorkflowStep(w);
-        if (!step || !step.approvalRequired) return;
-        step.status = "Approved";
-        step.completedAt = new Date().toISOString();
-        w.currentStepIndex += 1;
-        w.currentStepStartedAt = new Date().toISOString();
-        const next = getCurrentWorkflowStep(w);
-        if (!next) {
-          w.status = "Closed";
-          w.outcomeStatus = "Resolved";
-        } else {
-          next.status = next.status || "Pending";
-          w.status = "Approved";
-        }
-        addStageHistory(w, "Approved", "Approval gate cleared.");
-      });
-    }
-
-    function activateApprovedWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        if (w.status !== "Approved") return;
-        const step = getCurrentWorkflowStep(w);
-        if (!step) {
-          w.status = "Closed";
-          return;
-        }
-        w.status = getWorkflowStatusFromStep(step);
-        addStageHistory(w, w.status, "Workflow activated after approval.");
-      });
-    }
-
-    function blockWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        w.status = "Blocked";
-        w.outcomeStatus = "Blocked";
-        addStageHistory(w, "Blocked", "Workflow was blocked.");
-      });
-    }
-
-    function escalateWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        w.status = "Escalated";
-        w.outcomeStatus = "Escalated";
-        addStageHistory(w, "Escalated", "Workflow was escalated.");
-      });
-    }
-
-    function reopenWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        if (!["Blocked", "Escalated"].includes(w.status)) return;
-        const step = getCurrentWorkflowStep(w);
-        w.status = step ? getWorkflowStatusFromStep(step) : "In Analysis";
-        w.outcomeStatus = "Open";
-        addStageHistory(w, w.status, "Workflow reopened.");
-      });
-    }
-
-    function closeWorkflow(id) {
-      updateWorkflow(id, function (w) {
-        const step = getCurrentWorkflowStep(w);
-        if (step && step.title.toLowerCase().includes("close")) {
-          step.status = "Completed";
-          step.completedAt = new Date().toISOString();
-        }
-        w.currentStepIndex = w.steps.length;
-        w.status = "Closed";
-        w.outcomeStatus = w.outcomeStatus === "Blocked" ? "Blocked" : (w.outcomeStatus === "Escalated" ? "Escalated" : "Resolved");
-        addStageHistory(w, "Closed", "Workflow manually closed.");
-      });
-    }
-
-    function generateWorkflowFromSelectedScenario() {
-      const scenario = getSelectedScenario();
-      if (!scenario) {
-        alert("Select a scenario first.");
-        return;
-      }
-      saveWorkflow(buildWorkflowFromScenario(scenario));
-    }
-
-    function generateWorkflowFromScenarioId(id) {
-      const scenario = getScenarios().find(s => s.id === id);
-      if (!scenario) return;
-      setSelectedScenario(id);
-      saveWorkflow(buildWorkflowFromScenario(scenario));
-    }
-
-    function generateWorkflowFromTopSignal() {
-      const signal = generateSignals()[0];
-      if (!signal) {
-        alert("No active signals available.");
-        return;
-      }
-      saveWorkflow(buildWorkflowFromSignal(signal));
-    }
-
-    function generateWorkflowFromSignalId(id) {
-      const signal = generateSignals().find(s => s.id === id);
-      if (!signal) return;
-      currentSignalId = id;
-      saveWorkflow(buildWorkflowFromSignal(signal));
-    }
-
-    function renderWorkflowBoard() {
-      const workflows = getWorkflowStore();
-      const selected = getSelectedWorkflow();
-      const board = byId("workflowKanban");
-      const statuses = getWorkflowStatuses();
-
-      board.innerHTML = statuses.map(function (status) {
-        const items = workflows.filter(w => w.status === status);
-        return (
-          "<div class='kanban-col'>" +
-            "<div class='kanban-title'>" + status + "</div>" +
-            (items.length ? items.map(function (w) {
-              const currentStep = getCurrentWorkflowStep(w);
-              const dueState = getDueState(w);
-              return (
-                "<div class='kanban-card' onclick=\"setSelectedWorkflow('" + w.id + "')\">" +
-                  "<div class='workflow-title'>" + w.title + "</div>" +
-                  "<span class='chip " + (w.priority === "High" ? "red" : (w.priority === "Medium" ? "yellow" : "blue")) + "'>" + w.priority + "</span> " +
-                  "<span class='chip " + chipClassFromStatus(dueState) + "'>" + dueState + "</span>" +
-                  "<div class='mini-lines'>" +
-                    "<div class='mini-line'><strong>Owner:</strong> " + w.owner + "</div>" +
-                    "<div class='mini-line'><strong>Affected:</strong> " + w.affected + "</div>" +
-                    "<div class='mini-line'><strong>Current Step:</strong> " + (currentStep ? currentStep.title : "Complete") + "</div>" +
-                  "</div>" +
-                "</div>"
-              );
-            }).join("") : "<div class='muted'>No workflows</div>") +
-          "</div>"
-        );
-      }).join("");
-
-      if (!selected) {
-        byId("workflowDetailBox").innerHTML = "Select a workflow card to inspect its steps, owners, approvals, due state, and linkage.";
-        byId("workflowActionBox").innerHTML = "Workflow actions will appear here after selecting a workflow.";
-        return;
-      }
-
-      const linkedScenario = selected.linkedScenarioId ? getScenarios().find(s => s.id === selected.linkedScenarioId) : null;
-      const linkedSignal = selected.linkedSignalId ? generateSignals().find(s => s.id === selected.linkedSignalId) : null;
-      const dueState = getDueState(selected);
-      const actualExists = linkedScenario ? !!getActualStore()[linkedScenario.id] : false;
-
-      byId("workflowDetailBox").innerHTML =
-        "<strong>" + selected.title + "</strong><br>" +
-        "<span class='chip " + chipClassFromStatus(selected.status) + "'>" + selected.status + "</span> " +
-        "<span class='chip " + (selected.priority === "High" ? "red" : (selected.priority === "Medium" ? "yellow" : "blue")) + "'>" + selected.priority + "</span> " +
-        "<span class='chip " + chipClassFromStatus(dueState) + "'>" + dueState + "</span><br><br>" +
-        "<strong>Owner:</strong> " + selected.owner + "<br>" +
-        "<strong>Affected:</strong> " + selected.affected + "<br>" +
-        "<strong>Source:</strong> " + selected.sourceType + "<br>" +
-        "<strong>Linked Signal:</strong> " + (linkedSignal ? linkedSignal.title : "None") + "<br>" +
-        "<strong>Linked Scenario:</strong> " + (linkedScenario ? linkedScenario.scenarioName : "None") + "<br>" +
-        "<strong>Outcome Status:</strong> " + selected.outcomeStatus + "<br><br>" +
-        "<strong>Workflow Steps</strong>" +
-        "<div class='step-stack'>" +
-          selected.steps.map(function (step, i) {
-            return (
-              "<div class='step-card " + (i === selected.currentStepIndex ? "current-step" : "") + "'>" +
-                "<div class='step-title'>" + (i + 1) + ". " + step.title + "</div>" +
-                "<div class='inline-meta'>" +
-                  "<span class='chip blue'>Owner: " + step.owner + "</span>" +
-                  "<span class='chip " + (step.approvalRequired ? "yellow" : "green") + "'>" + (step.approvalRequired ? "Approval Gate" : "Action Step") + "</span>" +
-                  "<span class='chip " + chipClassFromStatus(step.status) + "'>" + step.status + "</span>" +
-                  "<span class='chip purple'>Due: " + step.dueHours + "h</span>" +
-                "</div>" +
-              "</div>"
-            );
-          }).join("") +
-        "</div><br>" +
-        "<strong>Stage History</strong><br>" +
-        selected.stageHistory.map(h => new Date(h.at).toLocaleString() + " — " + h.status + " — " + h.note).join("<br>");
-
-      const currentStep = getCurrentWorkflowStep(selected);
-      let actions = "";
-
-      if (selected.status === "Detected") {
-        actions += "<button class='btn-primary' onclick=\"startWorkflowAnalysis('" + selected.id + "')\">Start Analysis</button>";
-      }
-      if (selected.status === "Approved") {
-        actions += "<button class='btn-primary' onclick=\"activateApprovedWorkflow('" + selected.id + "')\">Activate Next Stage</button>";
-      }
-      if (!["Blocked", "Escalated", "Closed", "Pending Approval", "Approved"].includes(selected.status) && currentStep && !currentStep.approvalRequired) {
-        actions += "<button class='btn-secondary' onclick=\"completeWorkflowStep('" + selected.id + "')\">Complete Current Step</button>";
-      }
-      if (selected.status === "Pending Approval" && currentStep && currentStep.approvalRequired) {
-        actions += "<button class='btn-primary' onclick=\"approveWorkflow('" + selected.id + "')\">Approve Gate</button>";
-      }
-      if (!["Closed"].includes(selected.status)) {
-        actions += "<button class='btn-ghost' onclick=\"blockWorkflow('" + selected.id + "')\">Block</button>";
-        actions += "<button class='btn-ghost' onclick=\"escalateWorkflow('" + selected.id + "')\">Escalate</button>";
-      }
-      if (["Blocked", "Escalated"].includes(selected.status)) {
-        actions += "<button class='btn-secondary' onclick=\"reopenWorkflow('" + selected.id + "')\">Reopen</button>";
-      }
-      if ((selected.status === "Monitoring" && actualExists) || selected.status === "Escalated" || selected.status === "Blocked") {
-        actions += "<button class='btn-danger' onclick=\"closeWorkflow('" + selected.id + "')\">Close Workflow</button>";
-      }
-
-      byId("workflowActionBox").innerHTML =
-        "<strong>Current Step:</strong> " + (currentStep ? currentStep.title : "Complete") + "<br>" +
-        "<strong>Due State:</strong> " + dueState + "<br>" +
-        "<strong>Approval Gate:</strong> " + (currentStep && currentStep.approvalRequired ? "Yes" : "No") + "<br>" +
-        "<strong>Linked Actual Outcome:</strong> " + (actualExists ? "Captured" : "Not captured") + "<br><br>" +
-        "<div class='toolbar'>" + actions + "</div>" +
-        "<div class='toolbar'>" +
-          "<button class='btn-ghost' onclick=\"navigateTo('signals')\">Open Signals</button>" +
-          "<button class='btn-ghost' onclick=\"navigateTo('scenario-studio')\">Open Scenarios</button>" +
-          "<button class='btn-ghost' onclick=\"navigateTo('outcome-ledger')\">Open Outcome Ledger</button>" +
-        "</div>";
-    }
-
-    function getActualStore() {
-      return loadJSON(STORAGE.actuals, {});
-    }
-
-    function getSelectedActualOutcome() {
-      const selected = getSelectedScenario();
-      if (!selected) return null;
-      return getActualStore()[selected.id] || null;
-    }
-
-    function renderOutcomeLedger() {
-      const selected = getSelectedScenario();
-      const actual = getSelectedActualOutcome();
-
-      if (!selected) {
-        byId("outcomeIntro").innerHTML = "Select a saved scenario in Scenario Studio first.";
-        byId("outcomeFormArea").innerHTML = "";
-        byId("outcomeToolbar").style.display = "none";
-        byId("outcomeResultBox").innerHTML = "Actual outcome result will appear here.";
-        byId("systemVarianceBox").innerHTML = "System variance will appear here after saving actual outcomes.";
-        byId("unitVarianceBox").innerHTML = "Unit variance will appear here after saving actual outcomes.";
-        return;
-      }
-
-      const linkedWorkflows = getWorkflowStore().filter(w => w.linkedScenarioId === selected.id);
-
-      byId("outcomeIntro").innerHTML =
-        "<strong>Selected Scenario:</strong> " + selected.scenarioName + "<br>" +
-        "<strong>Projected Utilization:</strong> " + fmtPct(selected.projectedSystem.systemUtilization) + "<br>" +
-        "<strong>Projected Labor Cost:</strong> " + fmtMoney(selected.projectedSystem.totalLaborCost) + "<br>" +
-        "<strong>Linked Workflows:</strong> " + (linkedWorkflows.length ? linkedWorkflows.map(w => w.title + " (" + w.status + ")").join(", ") : "None");
-
-      byId("outcomeFormArea").innerHTML =
-        selected.projectedUnits.map(function (u) {
-          const prefix = "actual_" + selected.id + "_" + u.index + "_";
-          const preset = actual ? actual.units.find(x => x.index === u.index) : null;
-          return (
-            "<div class='panel' style='margin-top:14px;'>" +
-              "<h3>" + u.name + "</h3>" +
-              "<div class='muted'>Projected reference: Staff " + u.staff + ", Workload " + u.workload + ", Productivity " + u.productivity + ", Labor Cost " + fmtMoney(u.laborCost) + "</div>" +
-              "<div class='form-grid'>" +
-                "<div><label for='" + prefix + "staff'>Actual Staff</label><input type='number' id='" + prefix + "staff' value='" + (preset ? preset.actualStaff : u.staff) + "' /></div>" +
-                "<div><label for='" + prefix + "workload'>Actual Workload</label><input type='number' id='" + prefix + "workload' value='" + (preset ? preset.actualWorkload : u.workload) + "' /></div>" +
-                "<div><label for='" + prefix + "productivity'>Actual Productivity / Hr</label><input type='number' id='" + prefix + "productivity' value='" + (preset ? preset.actualProductivity : u.productivity) + "' /></div>" +
-                "<div><label for='" + prefix + "laborCost'>Actual Labor Cost ($)</label><input type='number' id='" + prefix + "laborCost' value='" + (preset ? preset.actualLaborCost : Number(u.laborCost.toFixed(2))) + "' /></div>" +
-              "</div>" +
-            "</div>"
-          );
-        }).join("") +
-        "<div class='panel' style='margin-top:14px;'>" +
-          "<label for='actualOutcomeNote'>Outcome Note</label>" +
-          "<textarea id='actualOutcomeNote' placeholder='Example: Logistics ran tighter than expected due to courier delay'>" + (actual ? (actual.note || "") : "") + "</textarea>" +
-        "</div>";
-
-      byId("outcomeToolbar").style.display = "flex";
-
-      if (actual) {
-        byId("outcomeResultBox").innerHTML =
-          "<strong>Actual outcome saved.</strong><br>" +
-          "System Utilization: " + fmtPct(actual.system.systemUtilization) + "<br>" +
-          "System Labor Cost: " + fmtMoney(actual.system.totalLaborCost) + "<br>" +
-          "System Status: " + actual.system.systemStatus;
-        renderVarianceBoxes(selected, actual);
-      } else {
-        byId("outcomeResultBox").innerHTML = "No actual outcome saved yet for the selected scenario.";
-        byId("systemVarianceBox").innerHTML = "System variance will appear here after saving actual outcomes.";
-        byId("unitVarianceBox").innerHTML = "Unit variance will appear here after saving actual outcomes.";
-      }
-    }
-
-    function loadProjectedAsActual() {
-      renderOutcomeLedger();
-    }
-
-    function saveActualOutcomes() {
-      const selected = getSelectedScenario();
-      if (!selected) return;
-
-      const units = [];
-      for (const u of selected.projectedUnits) {
-        const prefix = "actual_" + selected.id + "_" + u.index + "_";
-        const actualStaff = parseFloat(byId(prefix + "staff").value);
-        const actualWorkload = parseFloat(byId(prefix + "workload").value);
-        const actualProductivity = parseFloat(byId(prefix + "productivity").value);
-        const actualLaborCost = parseFloat(byId(prefix + "laborCost").value);
-
-        if ([actualStaff, actualWorkload, actualProductivity, actualLaborCost].some(v => isNaN(v) || v <= 0)) {
-          alert("Please enter valid positive actual values for all units.");
-          return;
-        }
-
-        const actualRequiredStaff = Math.ceil(actualWorkload / (u.shift * actualProductivity));
-        const actualUtilization = (actualRequiredStaff / actualStaff) * 100;
-        const actualGap = actualStaff - actualRequiredStaff;
-        const actualStatus = classifyUnitStatus(actualUtilization, actualGap);
-
-        units.push({
-          index: u.index,
-          name: u.name,
-          actualStaff,
-          actualWorkload,
-          actualProductivity,
-          actualLaborCost,
-          actualRequiredStaff,
-          actualUtilization,
-          actualGap,
-          actualStatus
-        });
-      }
-
-      const system = {
-        totalAvailableStaff: units.reduce((s,u) => s + u.actualStaff, 0),
-        totalRequiredStaff: units.reduce((s,u) => s + u.actualRequiredStaff, 0),
-        totalLaborCost: units.reduce((s,u) => s + u.actualLaborCost, 0)
-      };
-      system.systemUtilization = (system.totalRequiredStaff / system.totalAvailableStaff) * 100;
-      system.systemGap = system.totalAvailableStaff - system.totalRequiredStaff;
-      system.systemStatus = classifySystemStatus(system.systemUtilization, system.systemGap);
-
-      const actualRecord = {
-        scenarioId: selected.id,
-        savedAt: new Date().toISOString(),
-        note: byId("actualOutcomeNote").value.trim(),
-        units,
-        system
-      };
-
-      const store = getActualStore();
-      store[selected.id] = actualRecord;
-      saveJSON(STORAGE.actuals, store);
-
-      const linkedWorkflows = getWorkflowStore().filter(w => w.linkedScenarioId === selected.id);
-      if (linkedWorkflows.length) {
-        updateLinkedWorkflowsAfterOutcome(selected.id);
-      }
-
-      renderOutcomeLedger();
-      renderCommandCenter();
-      renderSignals();
-      renderWorkflowBoard();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    function updateLinkedWorkflowsAfterOutcome(scenarioId) {
-      const workflows = getWorkflowStore();
-      let changed = false;
-      workflows.forEach(function (w) {
-        if (w.linkedScenarioId === scenarioId && w.status === "Monitoring") {
-          addStageHistory(w, "Monitoring", "Actual outcome captured for linked scenario.");
-          changed = true;
-        }
-      });
-      if (changed) saveWorkflowStore(workflows);
-    }
-
-    function clearActualOutcomeForSelected() {
-      const selected = getSelectedScenario();
-      if (!selected) return;
-
-      const store = getActualStore();
-      delete store[selected.id];
-      saveJSON(STORAGE.actuals, store);
-
-      renderOutcomeLedger();
-      renderCommandCenter();
-      renderSignals();
-      renderAgentConsole();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    function renderVarianceBoxes(selected, actual) {
-      const systemCostDelta = actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost;
-      const utilDelta = actual.system.systemUtilization - selected.projectedSystem.systemUtilization;
-      const reqDelta = actual.system.totalRequiredStaff - selected.projectedSystem.totalRequiredStaff;
-
-      byId("systemVarianceBox").innerHTML =
-        "<strong>Projected vs Actual</strong><br>" +
-        "Projected Cost: " + fmtMoney(selected.projectedSystem.totalLaborCost) + "<br>" +
-        "Actual Cost: " + fmtMoney(actual.system.totalLaborCost) + "<br>" +
-        "Cost Variance: " + (systemCostDelta >= 0 ? "+" : "-") + fmtMoney(Math.abs(systemCostDelta)) + "<br><br>" +
-        "Projected Utilization: " + fmtPct(selected.projectedSystem.systemUtilization) + "<br>" +
-        "Actual Utilization: " + fmtPct(actual.system.systemUtilization) + "<br>" +
-        "Utilization Variance: " + (utilDelta >= 0 ? "+" : "-") + fmtPct(Math.abs(utilDelta)) + "<br><br>" +
-        "Required Staff Variance: " + (reqDelta >= 0 ? "+" : "") + reqDelta;
-
-      const unitVariance = selected.projectedUnits.map(function (u) {
-        const a = actual.units.find(x => x.index === u.index);
-        if (!a) return "";
-        return "<div class='mini-line'><strong>" + u.name + ":</strong> Cost " +
-          (a.actualLaborCost - u.laborCost >= 0 ? "+" : "-") + fmtMoney(Math.abs(a.actualLaborCost - u.laborCost)) +
-          ", Utilization " + (a.actualUtilization - u.utilization >= 0 ? "+" : "-") + fmtPct(Math.abs(a.actualUtilization - u.utilization)) +
-          ", Status " + a.actualStatus + "</div>";
-      }).join("");
-
-      byId("unitVarianceBox").innerHTML = "<strong>Unit Variance Detail</strong><br>" + unitVariance;
-    }
-
-    function calculateConfidence() {
-      const selected = getSelectedScenario();
-      if (!selected) return null;
-
-      const scenarios = getCandidateScenarios();
-      const actual = getSelectedActualOutcome();
-      const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const twin = loadJSON(STORAGE.twin, null);
-
-      const inputQuality = Math.min(100, 60 + (twin ? twin.units.length * 8 : 0) + (selected.caseMeta.decisionObjective ? 10 : 0) + (selected.caseMeta.caseName ? 5 : 0));
-      const maxUtilMargin = constraints.maximumUtilization - selected.projectedSystem.systemUtilization;
-      const budgetMarginPct = ((constraints.maxLaborBudget - selected.projectedSystem.totalLaborCost) / constraints.maxLaborBudget) * 100;
-      const constraintStability = Math.max(0, Math.min(100, 100 - selected.hardBreaches.length * 45 - selected.softWarnings.length * 10 - (maxUtilMargin < 5 ? 15 : 0) - (budgetMarginPct < 5 ? 10 : 0)));
-
-      let scenarioSeparation = 70;
-      if (scenarios.length >= 2) {
-        const sorted = scenarios.slice().sort((a,b) => b.finalScore - a.finalScore);
-        if (sorted[0].id === selected.id) {
-          scenarioSeparation = Math.max(20, Math.min(100, 50 + (sorted[0].finalScore - sorted[1].finalScore) * 4));
-        } else {
-          scenarioSeparation = Math.max(0, Math.min(70, 50 - (sorted[0].finalScore - selected.finalScore) * 4));
-        }
-      }
-
-      let benchmarkAlignment = 50;
-      let predictionAccuracy = 50;
-
-      if (actual) {
-        const utilHealthy = actual.system.systemUtilization >= constraints.preferredUtilizationMin && actual.system.systemUtilization <= constraints.preferredUtilizationMax;
-        const staffingHealthy = actual.system.totalAvailableStaff >= actual.system.totalRequiredStaff;
-        const costHealthy = actual.system.totalLaborCost <= constraints.maxLaborBudget;
-        const resilienceHealthy = !["Non-Viable", "High Pressure"].includes(actual.system.systemStatus);
-
-        benchmarkAlignment = (
-          (utilHealthy ? 100 : 50) +
-          (staffingHealthy ? 100 : 20) +
-          (costHealthy ? 100 : 40) +
-          (resilienceHealthy ? 100 : 40)
-        ) / 4;
-
-        const costDeltaPct = Math.abs(((actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost) / selected.projectedSystem.totalLaborCost) * 100);
-        const utilDelta = Math.abs(actual.system.systemUtilization - selected.projectedSystem.systemUtilization);
-        const reqDelta = Math.abs(actual.system.totalRequiredStaff - selected.projectedSystem.totalRequiredStaff);
-
-        predictionAccuracy = (
-          Math.max(0, 100 - costDeltaPct * 5) +
-          Math.max(0, 100 - utilDelta * 8) +
-          Math.max(0, 100 - reqDelta * 8)
-        ) / 3;
-      }
-
-      const overall = Number(((inputQuality + constraintStability + scenarioSeparation + benchmarkAlignment + predictionAccuracy) / 5).toFixed(1));
-      let label = "Moderate Confidence";
-      if (overall >= 80) label = "High Confidence";
-      if (overall < 60) label = "Low Confidence";
-
-      return {
-        inputQuality: Number(inputQuality.toFixed(1)),
-        constraintStability: Number(constraintStability.toFixed(1)),
-        scenarioSeparation: Number(scenarioSeparation.toFixed(1)),
-        benchmarkAlignment: Number(benchmarkAlignment.toFixed(1)),
-        predictionAccuracy: Number(predictionAccuracy.toFixed(1)),
-        overall,
-        label
-      };
-    }
-
-    function updateTopbar() {
-      const caseMeta = loadJSON(STORAGE.caseMeta, { caseName: "Unnamed Operational Case" });
-      const twin = loadJSON(STORAGE.twin, null);
-      const workflows = getWorkflowStore();
-      const confidence = calculateConfidence();
-
-      byId("activeCaseChip").innerText = "Case: " + (caseMeta.caseName || "Unnamed");
-      byId("systemStatusChip").innerText = "System: " + (twin ? twin.system.systemStatus : "Awaiting Model");
-      byId("systemStatusChip").className = "chip " + chipClassFromStatus(twin ? twin.system.systemStatus : "Caution");
-
-      byId("confidenceChip").innerText = "Confidence: " + (confidence ? (confidence.label + " (" + confidence.overall + "/100)") : "--");
-      byId("confidenceChip").className = "chip " + (confidence ? chipClassFromStatus(confidence.label) : "purple");
-
-      const pendingApprovals = workflows.filter(w => w.status === "Pending Approval").length;
-      const openWorkflows = workflows.filter(w => w.status !== "Closed").length;
-      byId("approvalChip").innerText = "Pending Approvals: " + pendingApprovals;
-      byId("workflowChip").innerText = "Open Workflows: " + openWorkflows;
-    }
-
-    function renderCommandCenter() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const signals = generateSignals();
-      const best = getBestOverallScenario();
-      const workflows = getWorkflowStore();
-      const actuals = loadJSON(STORAGE.actuals, {});
-      const selected = getSelectedScenario();
-
-      if (!twin) {
-        byId("ccSystemHealthCard").innerHTML = "<h3>System Health</h3><div class='muted'>Build the operational twin first.</div>";
-        byId("ccTopSignalCard").innerHTML = "<h3>Top Signal</h3><div class='muted'>No twin, so no signals yet.</div>";
-        byId("ccTopRecommendationCard").innerHTML = "<h3>Top Recommended Intervention</h3><div class='muted'>Save scenarios to see recommendations.</div>";
-        byId("ccWorkflowStatusCard").innerHTML = "<h3>Workflow Status</h3><div class='muted'>No workflows yet.</div>";
-        byId("ccUtilPressureCard").innerHTML = "<h3>Utilization Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccCostPressureCard").innerHTML = "<h3>Cost Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccStaffPressureCard").innerHTML = "<h3>Staffing Pressure</h3><div class='muted'>No twin data.</div>";
-        byId("ccVarianceCard").innerHTML = "<h3>Variance / Learning</h3><div class='muted'>No actual outcomes yet.</div>";
-        byId("ccSignalQueue").innerHTML = "<div class='muted'>No signals yet.</div>";
-        return;
-      }
-
-      const topSignal = signals[0] || null;
-      const openWorkflow = workflows.find(w => w.status !== "Closed") || null;
-      const confidence = calculateConfidence();
-
-      byId("ccSystemHealthCard").innerHTML =
-        "<h3>System Health</h3>" +
-        "<div class='metric-value'>" + twin.system.systemStatus + "</div>" +
-        "<div class='mini-lines'>" +
-          "<div class='mini-line'><strong>Utilization:</strong> " + fmtPct(twin.system.systemUtilization) + "</div>" +
-          "<div class='mini-line'><strong>Labor Cost:</strong> " + fmtMoney(twin.system.totalLaborCost) + "</div>" +
-          "<div class='mini-line'><strong>Staffing Fit:</strong> Gap / Surplus " + twin.system.systemGap + "</div>" +
-          "<div class='mini-line'><strong>Units Modeled:</strong> " + twin.units.length + "</div>" +
-        "</div>";
-
-      byId("ccTopSignalCard").innerHTML =
-        "<h3>Top Signal</h3>" +
-        (topSignal ? (
-          "<div class='metric-value' style='font-size:20px;'>" + topSignal.title + "</div>" +
-          "<span class='chip " + chipClassFromStatus(topSignal.severity) + "'>" + topSignal.severity + "</span> " +
-          "<span class='chip " + chipClassFromStatus(topSignal.status) + "'>" + topSignal.status + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Affected:</strong> " + topSignal.affected + "</div>" +
-            "<div class='mini-line'><strong>Why it matters:</strong> " + topSignal.impact + "</div>" +
-          "</div>" +
-          "<div class='toolbar'><button class='btn-ghost' onclick=\"selectSignal('" + topSignal.id + "')\">Open Signal</button></div>"
-        ) : "<div class='muted'>No active signals detected.</div>");
-
-      byId("ccTopRecommendationCard").innerHTML =
-        "<h3>Top Recommended Intervention</h3>" +
-        (best ? (
-          "<div class='metric-value' style='font-size:20px;'>" + best.scenarioName + "</div>" +
-          "<span class='chip " + chipClassFromStatus(best.recommendationClass) + "'>" + best.recommendationClass + "</span> " +
-          "<span class='chip " + (confidence ? chipClassFromStatus(confidence.label) : "purple") + "'>" + (confidence ? confidence.label : "Confidence Pending") + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Why:</strong> " + best.whyThisWon + "</div>" +
-            "<div class='mini-line'><strong>Expected Impact:</strong> Utilization " + fmtPct(best.projectedSystem.systemUtilization) + ", Cost " + fmtMoney(best.projectedSystem.totalLaborCost) + "</div>" +
-            "<div class='mini-line'><strong>Tradeoff:</strong> " + best.tradeoff + "</div>" +
-          "</div>" +
-          "<div class='toolbar'>" +
-            "<button class='btn-ghost' onclick=\"setSelectedScenario('" + best.id + "'); navigateTo('scenario-studio')\">Open Scenario</button>" +
-            "<button class='btn-primary' onclick=\"generateWorkflowFromScenarioId('" + best.id + "')\">Generate Workflow</button>" +
-          "</div>"
-        ) : "<div class='muted'>Save scenarios to see recommendations.</div>");
-
-      byId("ccWorkflowStatusCard").innerHTML =
-        "<h3>Workflow Status</h3>" +
-        (openWorkflow ? (
-          "<div class='metric-value' style='font-size:20px;'>" + openWorkflow.title + "</div>" +
-          "<span class='chip " + chipClassFromStatus(openWorkflow.status) + "'>" + openWorkflow.status + "</span> " +
-          "<span class='chip " + chipClassFromStatus(getDueState(openWorkflow)) + "'>" + getDueState(openWorkflow) + "</span>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Owner:</strong> " + openWorkflow.owner + "</div>" +
-            "<div class='mini-line'><strong>Priority:</strong> " + openWorkflow.priority + "</div>" +
-            "<div class='mini-line'><strong>Next Step:</strong> " + (getCurrentWorkflowStep(openWorkflow) ? getCurrentWorkflowStep(openWorkflow).title : "Complete") + "</div>" +
-          "</div>" +
-          "<div class='toolbar'><button class='btn-ghost' onclick=\"setSelectedWorkflow('" + openWorkflow.id + "'); navigateTo('workflow-board')\">Open Workflow</button></div>"
-        ) : "<div class='muted'>No workflows currently in motion.</div>");
-
-      byId("ccUtilPressureCard").innerHTML =
-        "<h3>Utilization Pressure</h3>" +
-        "<div class='metric-value'>" + fmtPct(twin.system.systemUtilization) + "</div>" +
-        "<div class='mini-line'>Target band depends on constraints. High utilization reduces resilience.</div>";
-
-      byId("ccCostPressureCard").innerHTML =
-        "<h3>Cost Pressure</h3>" +
-        "<div class='metric-value'>" + fmtMoney(twin.system.totalLaborCost) + "</div>" +
-        "<div class='mini-line'>Current labor cost vs budget determines cost pressure severity.</div>";
-
-      byId("ccStaffPressureCard").innerHTML =
-        "<h3>Staffing Pressure</h3>" +
-        "<div class='metric-value'>" + twin.system.systemGap + "</div>" +
-        "<div class='mini-line'>Positive means surplus, negative means shortage.</div>";
-
-      if (selected && actuals[selected.id]) {
-        const actual = actuals[selected.id];
-        const costVar = actual.system.totalLaborCost - selected.projectedSystem.totalLaborCost;
-        const utilVar = actual.system.systemUtilization - selected.projectedSystem.systemUtilization;
-
-        byId("ccVarianceCard").innerHTML =
-          "<h3>Variance / Learning</h3>" +
-          "<div class='metric-value'>" + (Math.abs(costVar) <= 1 ? "On Target" : "Drifted") + "</div>" +
-          "<div class='mini-lines'>" +
-            "<div class='mini-line'><strong>Cost Variance:</strong> " + (costVar >= 0 ? "+" : "-") + fmtMoney(Math.abs(costVar)) + "</div>" +
-            "<div class='mini-line'><strong>Utilization Variance:</strong> " + (utilVar >= 0 ? "+" : "-") + fmtPct(Math.abs(utilVar)) + "</div>" +
-          "</div>";
-      } else {
-        byId("ccVarianceCard").innerHTML =
-          "<h3>Variance / Learning</h3>" +
-          "<div class='metric-value'>Pending</div>" +
-          "<div class='mini-line'>Record actual outcomes on the selected scenario to unlock learning.</div>";
-      }
-
-      byId("ccSignalQueue").innerHTML = signals.length
-        ? signals.slice(0, 5).map(function (s) {
-            return (
-              "<div class='queue-item'>" +
-                "<div class='signal-title'>" + s.title + "</div>" +
-                "<span class='chip " + chipClassFromStatus(s.severity) + "'>" + s.severity + "</span> " +
-                "<span class='chip " + chipClassFromStatus(s.status) + "'>" + s.status + "</span>" +
-                "<div class='mini-lines'>" +
-                  "<div class='mini-line'><strong>Affected:</strong> " + s.affected + "</div>" +
-                  "<div class='mini-line'><strong>Trigger:</strong> " + s.cause + "</div>" +
-                  "<div class='mini-line'><strong>Response:</strong> " + s.response + "</div>" +
-                "</div>" +
-                "<div class='toolbar'>" +
-                  "<button class='btn-ghost' onclick=\"selectSignal('" + s.id + "')\">Open</button>" +
-                  "<button class='btn-primary' onclick=\"generateWorkflowFromSignalId('" + s.id + "')\">Generate Workflow</button>" +
-                "</div>" +
-              "</div>"
-            );
-          }).join("")
-        : "<div class='muted'>No active signals detected.</div>";
-    }
-
-    function renderAgentConsole() {
-      const signals = generateSignals();
-      const bestScenario = getBestOverallScenario();
-      const workflows = getWorkflowStore();
-      const selected = getSelectedScenario();
-      const actual = getSelectedActualOutcome();
-      const confidence = calculateConfidence();
-
-      const latestWorkflow = workflows.length ? workflows[workflows.length - 1] : null;
-      const blockedCount = workflows.filter(w => w.status === "Blocked").length;
-      const escalatedCount = workflows.filter(w => w.status === "Escalated").length;
-
-      const agents = [
-        {
-          name: "Signal Agent",
-          role: "Detects anomalies, pressure, and operational risk across the twin.",
-          output: signals.length
-            ? ("Detected " + signals.length + " active signal(s). Top issue: " + signals[0].title + ".")
-            : "No active signals detected right now."
-        },
-        {
-          name: "Scenario Agent",
-          role: "Generates and compares intervention options under the current constraints.",
-          output: bestScenario
-            ? ("Top scenario is " + bestScenario.scenarioName + " with score " + bestScenario.finalScore + "/100.")
-            : "No saved scenarios yet. Use Scenario Studio to generate alternatives."
-        },
-        {
-          name: "Workflow Agent",
-          role: "Drafts and advances workflows with owners, gates, due states, and execution stages.",
-          output: latestWorkflow
-            ? ("Latest workflow is " + latestWorkflow.title + " at stage " + latestWorkflow.status + ". Blocked: " + blockedCount + ". Escalated: " + escalatedCount + ".")
-            : "No workflow generated yet."
-        },
-        {
-          name: "Briefing Agent",
-          role: "Writes executive summaries, workflow memos, and learning notes.",
-          output: selected
-            ? ("Selected scenario is " + selected.scenarioName + (actual ? ". Actual outcome has been captured." : ". Actual outcome is still pending.") + (confidence ? " Confidence is " + confidence.label + "." : ""))
-            : "No selected scenario yet for briefing."
-        }
-      ];
-
-      byId("agentGrid").innerHTML = agents.map(function (a) {
-        return (
-          "<div class='agent-card'>" +
-            "<div class='agent-title'>" + a.name + "</div>" +
-            "<div class='mini-line'><strong>Role:</strong> " + a.role + "</div>" +
-            "<div class='result-box' style='margin-top:12px;'>" + a.output + "</div>" +
-          "</div>"
-        );
-      }).join("");
-    }
-
-    function renderExecutiveBrief() {
-      const twin = loadJSON(STORAGE.twin, null);
-      const constraints = loadJSON(STORAGE.constraints, DEFAULT_CONSTRAINTS);
-      const selected = getSelectedScenario();
-      const best = getBestOverallScenario();
-      const workflows = getWorkflowStore();
-      const actual = getSelectedActualOutcome();
-      const confidence = calculateConfidence();
-      const chosen = selected || best;
-
-      if (!twin) {
-        byId("executiveBriefBox").innerHTML = "Build the operational twin first to generate an executive briefing.";
-        return;
-      }
-
-      const signals = generateSignals();
-      const topSignal = signals[0] || null;
-      const linkedWorkflow = chosen ? workflows.find(w => w.linkedScenarioId === chosen.id && w.status !== "Closed") || workflows.find(w => w.linkedScenarioId === chosen.id) : null;
-
-      let actualSection = "No actual outcome has been recorded yet.";
-      let learningSection = "Learning signal will appear after actual outcome capture.";
-
-      if (chosen && actual) {
-        const costDelta = actual.system.totalLaborCost - chosen.projectedSystem.totalLaborCost;
-        const utilDelta = actual.system.systemUtilization - chosen.projectedSystem.systemUtilization;
-
-        actualSection =
-          "Actual Total Staff: " + actual.system.totalAvailableStaff + "<br>" +
-          "Actual Required Staff: " + actual.system.totalRequiredStaff + "<br>" +
-          "Actual Utilization: " + fmtPct(actual.system.systemUtilization) + "<br>" +
-          "Actual Labor Cost: " + fmtMoney(actual.system.totalLaborCost) + "<br>" +
-          "Actual System Status: " + actual.system.systemStatus + "<br>" +
-          (actual.note ? "Outcome Note: " + actual.note : "");
-
-        learningSection =
-          "Cost Variance: " + (costDelta >= 0 ? "+" : "-") + fmtMoney(Math.abs(costDelta)) + "<br>" +
-          "Utilization Variance: " + (utilDelta >= 0 ? "+" : "-") + fmtPct(Math.abs(utilDelta)) + "<br>" +
-          (confidence ? "Confidence: " + confidence.label + " (" + confidence.overall + "/100)" : "Confidence pending.");
-      }
-
-      byId("executiveBriefBox").innerHTML =
-        "<strong>Executive Decision Brief</strong><br><br>" +
-        "<strong>Case Name:</strong> " + twin.caseMeta.caseName + "<br>" +
-        "<strong>Operation Type:</strong> " + twin.caseMeta.operationType + "<br>" +
-        "<strong>Decision Objective:</strong> " + twin.caseMeta.decisionObjective + "<br><br>" +
-
-        "<strong>Current Operational Condition</strong><br>" +
-        "System Status: " + twin.system.systemStatus + "<br>" +
-        "System Utilization: " + fmtPct(twin.system.systemUtilization) + "<br>" +
-        "Total Labor Cost: " + fmtMoney(twin.system.totalLaborCost) + "<br>" +
-        "Staffing Gap / Surplus: " + twin.system.systemGap + "<br><br>" +
-
-        "<strong>Top Signal</strong><br>" +
-        (topSignal ? (
-          topSignal.title + "<br>" +
-          "Severity: " + topSignal.severity + "<br>" +
-          "Cause: " + topSignal.cause + "<br>" +
-          "Impact: " + topSignal.impact
-        ) : "No active signal detected.") + "<br><br>" +
-
-        "<strong>Recommended Intervention</strong><br>" +
-        (chosen ? (
-          "Scenario: " + chosen.scenarioName + "<br>" +
-          "Recommendation: " + chosen.recommendationClass + "<br>" +
-          "Why it wins: " + chosen.whyThisWon + "<br>" +
-          "Tradeoff: " + chosen.tradeoff + "<br>" +
-          "Next Action: " + chosen.nextAction
-        ) : "No scenario selected yet.") + "<br><br>" +
-
-        "<strong>Workflow Summary</strong><br>" +
-        (linkedWorkflow ? (
-          "Workflow: " + linkedWorkflow.title + "<br>" +
-          "Stage: " + linkedWorkflow.status + "<br>" +
-          "Owner: " + linkedWorkflow.owner + "<br>" +
-          "Due State: " + getDueState(linkedWorkflow) + "<br>" +
-          "Current Step: " + (getCurrentWorkflowStep(linkedWorkflow) ? getCurrentWorkflowStep(linkedWorkflow).title : "Complete")
-        ) : "No linked workflow currently open.") + "<br><br>" +
-
-        "<strong>Constraint Profile</strong><br>" +
-        "Budget Ceiling: " + fmtMoney(constraints.maxLaborBudget) + "<br>" +
-        "Staffing Floor: " + constraints.minimumStaffingFloor + "<br>" +
-        "Preferred Utilization Band: " + constraints.preferredUtilizationMin + "%–" + constraints.preferredUtilizationMax + "%<br>" +
-        "Utilization Ceiling: " + constraints.maximumUtilization + "%<br><br>" +
-
-        "<strong>Actual Outcome Summary</strong><br>" + actualSection + "<br><br>" +
-        "<strong>Learning Note</strong><br>" + learningSection;
-    }
-
-    function loadDemoEnvironment() {
-      setCaseMeta({
-        caseName: "Lab Ops Weekly Review",
-        operationType: "lab",
-        decisionObjective: "Detect the dominant operational issue, compare interventions, route the best path into workflow, and track real execution variance."
-      });
-
-      setConstraints({
-        maxLaborBudget: 21000,
-        minimumStaffingFloor: 85,
-        preferredUtilizationMin: 75,
-        preferredUtilizationMax: 85,
-        maximumUtilization: 95,
-        shortageTolerancePercent: 0,
-        maxCostIncreasePercent: 10,
-        minimumSavingsTargetPercent: 5
-      });
-
-      [
-        { index: 1, name: "Accessioning", staff: 24, workload: 1350, shift: 7.5, productivity: 8, wage: 24.5 },
-        { index: 2, name: "Processing", staff: 36, workload: 2100, shift: 7.5, productivity: 8, wage: 27.5 },
-        { index: 3, name: "Logistics", staff: 18, workload: 900, shift: 7.5, productivity: 7, wage: 23.5 },
-        { index: 4, name: "Support", staff: 14, workload: 520, shift: 7.5, productivity: 5, wage: 25.0 }
-      ].forEach(setUnitInput);
-
-      saveCaseAndConstraints();
-      calculateOperationalTwin();
-
-      byId("scenarioType").value = "productivity_up";
-      byId("scenarioPercent").value = 10;
-      byId("scenarioScope").value = "single";
-      toggleScenarioTargetUnit();
-      updateScenarioTargetOptions();
-
-      setTimeout(() => {
-        const target = [...byId("scenarioTargetUnit").options].find(o => o.textContent === "Processing");
-        if (target) byId("scenarioTargetUnit").value = target.value;
-        byId("scenarioNote").value = "Testing productivity improvement in Processing as the primary intervention.";
-        calculateScenarioPreview();
-        saveCurrentScenario();
-
-        const best = getBestOverallScenario();
-        if (best) {
-          setSelectedScenario(best.id);
-          const workflow = buildWorkflowFromScenario(best);
-          workflow.status = "Pending Approval";
-          workflow.currentStepIndex = 2;
-          workflow.currentStepStartedAt = new Date().toISOString();
-          workflow.steps[0].status = "Completed";
-          workflow.steps[0].completedAt = new Date().toISOString();
-          workflow.steps[1].status = "Completed";
-          workflow.steps[1].completedAt = new Date().toISOString();
-          workflow.stageHistory.push({ at: new Date().toISOString(), status: "In Analysis", note: "Demo analysis completed." });
-          workflow.stageHistory.push({ at: new Date().toISOString(), status: "Pending Approval", note: "Approval gate opened." });
-          saveWorkflow(workflow);
-
-          const actualStore = getActualStore();
-          actualStore[best.id] = {
-            scenarioId: best.id,
-            savedAt: new Date().toISOString(),
-            note: "Actual execution landed close to forecast, but Logistics ran slightly tighter than expected.",
-            units: best.projectedUnits.map(u => {
-              const actualStaff = u.staff;
-              const actualWorkload = u.workload;
-              const actualProductivity = u.productivity * (u.name === "Logistics" ? 0.95 : 1);
-              const actualLaborCost = u.laborCost * (u.name === "Logistics" ? 1.04 : 1);
-              const actualRequiredStaff = Math.ceil(actualWorkload / (u.shift * actualProductivity));
-              const actualUtilization = (actualRequiredStaff / actualStaff) * 100;
-              const actualGap = actualStaff - actualRequiredStaff;
-              const actualStatus = classifyUnitStatus(actualUtilization, actualGap);
-              return {
-                index: u.index,
-                name: u.name,
-                actualStaff,
-                actualWorkload,
-                actualProductivity,
-                actualLaborCost,
-                actualRequiredStaff,
-                actualUtilization,
-                actualGap,
-                actualStatus
-              };
-            }),
-            system: null
-          };
-
-          const units = actualStore[best.id].units;
-          actualStore[best.id].system = {
-            totalAvailableStaff: units.reduce((s,u)=>s+u.actualStaff,0),
-            totalRequiredStaff: units.reduce((s,u)=>s+u.actualRequiredStaff,0),
-            totalLaborCost: units.reduce((s,u)=>s+u.actualLaborCost,0)
-          };
-          actualStore[best.id].system.systemUtilization = (actualStore[best.id].system.totalRequiredStaff / actualStore[best.id].system.totalAvailableStaff) * 100;
-          actualStore[best.id].system.systemGap = actualStore[best.id].system.totalAvailableStaff - actualStore[best.id].system.totalRequiredStaff;
-          actualStore[best.id].system.systemStatus = classifySystemStatus(actualStore[best.id].system.systemUtilization, actualStore[best.id].system.systemGap);
-
-          saveJSON(STORAGE.actuals, actualStore);
-        }
-
-        renderAll();
-      }, 50);
-    }
-
-    function navigateTo(viewId) {
-      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-      byId(viewId).classList.add("active");
-
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.view === viewId);
-      });
-    }
-
-    function attachNav() {
-      document.querySelectorAll(".nav-btn").forEach(btn => {
-        btn.addEventListener("click", () => navigateTo(btn.dataset.view));
-      });
-    }
-
-    function renderAll() {
-      renderTwinExplorer();
-      renderObjectExplorer();
-      renderScenarioStudio();
-      renderSignals();
-      renderCommandCenter();
-      renderWorkflowBoard();
-      renderAgentConsole();
-      renderOutcomeLedger();
-      renderExecutiveBrief();
-      updateTopbar();
-    }
-
-    attachNav();
-    loadShellState();
-    renderAll();
-    toggleScenarioTargetUnit();
+    });
+
+    document.getElementById('selectBtn').addEventListener('click', () => {
+      promptBox.focus();
+      promptBox.select();
+      setStatus('Prompt selected');
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const blob = new Blob([promptBox.value], {type: 'text/plain;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'laboros-replit-master-prompt.txt';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus('TXT downloaded');
+    });
   </script>
 </body>
 </html>
