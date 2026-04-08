@@ -3,666 +3,1346 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LaborOS Replit Master Prompt</title>
-  <meta name="description" content="Standalone GitHub Pages-ready HTML page containing the peak-detailed Replit master prompt for building LaborOS." />
+  <title>RetireRamp OS — MVP</title>
   <style>
-    :root{
-      --bg:#0a0d14;--panel:#111827;--border:#243041;--text:#e5eefc;--muted:#95a7c6;--accent:#3b82f6;--accent-2:#60a5fa;
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #07111f;
+      color: #f8fafc;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:linear-gradient(180deg,#07101d 0%, #0a0d14 100%);color:var(--text);font-family:Inter,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-    .wrap{max-width:1180px;margin:0 auto;padding:32px 20px 48px}
-    .hero{background:linear-gradient(135deg, rgba(59,130,246,.16), rgba(96,165,250,.08));border:1px solid rgba(96,165,250,.22);border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-    h1{margin:0 0 10px;font-size:clamp(28px,4vw,44px);line-height:1.1}
-    .sub{color:var(--muted);font-size:16px;line-height:1.6;max-width:980px}
-    .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-    .chip{padding:8px 12px;border:1px solid var(--border);background:rgba(255,255,255,.03);border-radius:999px;color:#cfe0ff;font-size:13px}
-    .toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 18px}
-    .left-actions,.right-actions{display:flex;flex-wrap:wrap;gap:12px}
-    button{appearance:none;border:none;cursor:pointer;padding:12px 16px;border-radius:12px;font-weight:700;font-size:14px;transition:.18s ease transform}
-    button:hover{transform:translateY(-1px)}
-    .primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
-    .secondary{background:#172131;color:#dbeafe;border:1px solid #2c3d58}
-    .success{background:#13291a;color:#86efac;border:1px solid #295536}
-    .panel{background:rgba(17,24,39,.88);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:0 18px 46px rgba(0,0,0,.22)}
-    .panel-head{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
-    .panel-head h2{margin:0;font-size:18px}
-    .panel-head p{margin:4px 0 0;color:var(--muted);font-size:13px}
-    .meta{display:flex;flex-wrap:wrap;gap:8px}
-    .meta span{font-size:12px;color:#c2d4f3;background:#101826;border:1px solid #273244;padding:6px 9px;border-radius:999px}
-    textarea{width:100%;min-height:72vh;display:block;border:none;outline:none;resize:vertical;background:#0a1220;color:#ebf3ff;padding:22px;font:13.5px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;tab-size:2}
-    .footer-note{margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7}
-    .steps{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-    .step{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:16px}
-    .step strong{display:block;margin-bottom:6px}
-    .small{font-size:12px;color:var(--muted)}
-    .status{font-weight:700;color:#86efac}
-    @media (max-width:760px){.wrap{padding:18px 12px 28px}.hero{padding:20px}textarea{min-height:78vh;padding:16px;font-size:12.5px}.panel-head{flex-direction:column;align-items:flex-start}}
+
+    :root {
+      --bg: #07111f;
+      --panel: #0d182b;
+      --panel-2: #0f1f36;
+      --line: #20314a;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --blue: #22c7f5;
+      --blue-soft: rgba(34,199,245,0.12);
+      --green: #22c55e;
+      --green-soft: rgba(34,197,94,0.12);
+      --yellow: #f59e0b;
+      --yellow-soft: rgba(245,158,11,0.12);
+      --red: #ef4444;
+      --red-soft: rgba(239,68,68,0.12);
+      --purple: #a855f7;
+      --purple-soft: rgba(168,85,247,0.12);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #08101c 0%, #0b1629 100%);
+      border-right: 1px solid var(--line);
+      padding: 24px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .brand-sub {
+      color: #9bdcf0;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .nav-title {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 22px 0 10px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #dbe7f5;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 8px;
+      transition: 0.18s ease;
+    }
+
+    .nav-btn:hover {
+      background: #12233d;
+      border-color: #2c4468;
+    }
+
+    .nav-btn.active {
+      background: var(--blue-soft);
+      border-color: rgba(34,199,245,0.35);
+      color: #8ce8ff;
+    }
+
+    .main {
+      min-width: 0;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(7,17,31,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .topbar-left, .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid #314560;
+      background: #18263d;
+      color: #e2e8f0;
+    }
+
+    .chip.blue { background: var(--blue-soft); border-color: rgba(34,199,245,0.35); color: #9beaff; }
+    .chip.green { background: var(--green-soft); border-color: rgba(34,197,94,0.35); color: #98f2b8; }
+    .chip.yellow { background: var(--yellow-soft); border-color: rgba(245,158,11,0.35); color: #ffd28a; }
+    .chip.red { background: var(--red-soft); border-color: rgba(239,68,68,0.35); color: #ffb2b2; }
+    .chip.purple { background: var(--purple-soft); border-color: rgba(168,85,247,0.35); color: #e2bbff; }
+
+    .workspace {
+      padding: 24px 22px 40px;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .page-head {
+      margin-bottom: 18px;
+    }
+
+    .page-title {
+      margin: 0 0 8px;
+      font-size: 34px;
+    }
+
+    .page-sub {
+      margin: 0;
+      color: #c5d4e6;
+      max-width: 920px;
+      line-height: 1.7;
+    }
+
+    .grid-4, .grid-3, .grid-2, .role-grid, .task-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .role-grid { grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); }
+    .task-grid { grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(13,24,43,0.96), rgba(12,21,38,0.96));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+      min-width: 0;
+    }
+
+    .panel h3 {
+      margin: 0 0 12px;
+      font-size: 18px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 30px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .result-box {
+      background: #08111f;
+      border: 1px solid #2a3d59;
+      border-radius: 14px;
+      padding: 14px;
+      line-height: 1.75;
+      color: #dbe7f5;
+      margin-top: 14px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #eaf2fb;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 10px;
+      border: 1px solid #344866;
+      background: #08111f;
+      color: white;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--blue);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    button {
+      padding: 11px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: 0.18s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+
+    .btn-primary { background: var(--blue); color: #03131b; }
+    .btn-secondary { background: transparent; color: #9beaff; border: 1px solid var(--blue); }
+    .btn-ghost { background: #15253c; color: #dbe7f5; border: 1px solid #324764; }
+    .btn-danger { background: #7f1d1d; color: #fecaca; border: 1px solid #b91c1c; }
+
+    .role-card, .task-card {
+      background: #091425;
+      border: 1px solid #233650;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .role-title, .task-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .mini-lines {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mini-line {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #d2deee;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid #263850;
+      border-radius: 16px;
+      background: #0b1526;
+      margin-top: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #22324a;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      color: #9beaff;
+      background: #0a1322;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #091425;
+      border: 1px solid #233650;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .check-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 3px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #08111f;
+      border: 1px solid #2b3e5a;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #22c7f5, #22c55e);
+    }
+
+    .hero {
+      padding: 42px 0 18px;
+    }
+
+    .hero-title {
+      font-size: 52px;
+      line-height: 1.05;
+      margin: 0 0 18px;
+      max-width: 900px;
+    }
+
+    .hero-sub {
+      color: #c4d5e8;
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 900px;
+      margin: 0 0 22px;
+    }
+
+    .hero-glow {
+      background: radial-gradient(circle at top left, rgba(34,199,245,0.12), transparent 35%), radial-gradient(circle at bottom right, rgba(168,85,247,0.10), transparent 30%);
+      border: 1px solid #21334d;
+      border-radius: 24px;
+      padding: 26px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1180px) {
+      .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+      }
+      .grid-4, .grid-3, .grid-2, .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title { font-size: 38px; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <h1>LaborOS Replit Master Prompt</h1>
-      <div class="sub">
-        This is a GitHub Pages-ready standalone HTML file containing a peak-detailed master prompt for Replit Agent.
-        Commit this file as <strong>index.html</strong> in your GitHub Pages repository, open the page, then use the
-        <strong>Copy Full Prompt</strong> button and paste the prompt into Replit.
-      </div>
-      <div class="chips">
-        <div class="chip">Standalone HTML</div>
-        <div class="chip">GitHub Pages Ready</div>
-        <div class="chip">Copy-to-Clipboard</div>
-        <div class="chip">Replit Agent Prompt</div>
-        <div class="chip">Enterprise Full-Stack App Build</div>
-      </div>
-    </section>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">RetireRamp OS</div>
+      <div class="brand-sub">Continuity Risk + Decision + Action MVP</div>
 
-    <div class="toolbar">
-      <div class="left-actions">
-        <button class="primary" id="copyBtn">Copy Full Prompt</button>
-        <button class="secondary" id="downloadBtn">Download Prompt as TXT</button>
-        <button class="success" id="selectBtn">Select Prompt</button>
-      </div>
-      <div class="right-actions small">
-        <span class="status" id="status">Ready</span>
-      </div>
-    </div>
+      <div class="nav-title">Platform</div>
+      <button class="nav-btn active" data-view="home">Home</button>
+      <button class="nav-btn" data-view="dashboard">Command Center</button>
+      <button class="nav-btn" data-view="intake">Role Intake</button>
+      <button class="nav-btn" data-view="riskmap">Risk Map</button>
+      <button class="nav-btn" data-view="readiness">Successor Readiness</button>
+      <button class="nav-btn" data-view="actions">Action Plan</button>
+      <button class="nav-btn" data-view="brief">Executive Brief</button>
+    </aside>
 
-    <section class="panel">
-      <div class="panel-head">
-        <div>
-          <h2>Master Prompt</h2>
-          <p>Paste this entire prompt into Replit Agent in one message.</p>
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="chip blue" id="companyChip">Company: Unnamed</span>
+          <span class="chip" id="postureChip">Continuity Posture: Awaiting Data</span>
         </div>
-        <div class="meta">
-          <span>Format: Plain text prompt</span>
-          <span>Target: Replit Agent</span>
-          <span>Mode: One-pass full-stack build</span>
+        <div class="topbar-right">
+          <span class="chip red" id="criticalCountChip">Critical Roles: 0</span>
+          <span class="chip yellow" id="highCountChip">High Risk Roles: 0</span>
+          <span class="chip green" id="taskCountChip">Tasks Done: 0%</span>
         </div>
       </div>
-      <textarea id="promptBox" spellcheck="false">Build a full-stack production-style internal enterprise web application called “LaborOS” with the flagship module “Vacancy Control”.
 
-This is not a landing page.
-This is not a toy dashboard.
-This is not a school project.
-This is not a prototype with empty placeholders.
-This must be a serious, polished, data-dense enterprise operations application that feels like software used daily by supervisors, operations leaders, and HR/labor review teams inside a large diagnostics, healthcare, lab, or other high-compliance shift-based organization.
+      <div class="workspace">
+        <section class="view active" id="home">
+          <div class="hero">
+            <h1 class="hero-title">Turn retirement risk into operational readiness.</h1>
+            <p class="hero-sub">
+              RetireRamp OS helps operations teams identify fragile roles, assess successor readiness,
+              generate decision-backed action plans, and track continuity work before disruption hits.
+            </p>
+            <div class="toolbar">
+              <button class="btn-primary" onclick="navigateTo('intake')">Start Role Intake</button>
+              <button class="btn-secondary" onclick="loadDemoData()">Load Demo Data</button>
+            </div>
+          </div>
 
-IMPORTANT EXECUTION RULES
-- Do not ask me follow-up clarification questions unless something is absolutely impossible.
-- Make strong, reasonable enterprise-grade assumptions and continue building.
-- Build the app end to end in one pass.
-- Install dependencies, create the project structure, create the database schema, seed realistic data, run migrations, fix compile/runtime issues, and make sure the app actually renders.
-- If any library choice causes issues, use the closest stable alternative and keep going.
-- Do not stop at mock UI only. Build real working screens with connected state, realistic seeded data, database persistence, and believable workflow logic.
-- No landing page. The default route should open the actual product dashboard.
-- No raw code output screen. The app must render fully.
+          <div class="hero-glow">
+            <div class="grid-3">
+              <div class="panel">
+                <h3>What it solves</h3>
+                <div class="muted">Prevents operational breakdown when critical employees retire, resign, transfer, or become unavailable.</div>
+              </div>
+              <div class="panel">
+                <h3>What it does</h3>
+                <div class="muted">Scores continuity risk, measures successor readiness, recommends action, and generates execution tasks.</div>
+              </div>
+              <div class="panel">
+                <h3>Why it matters</h3>
+                <div class="muted">Companies lose productivity when role knowledge sits with one person and no ramp plan exists.</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-PRIMARY PRODUCT GOAL
-Build a workforce operations platform that solves this problem:
-When a shift becomes uncovered, the organization must determine who is eligible, who should be offered first, what is compliant, what is fair, what is lowest risk, and how to document the final decision.
+        <section class="view" id="dashboard">
+          <div class="page-head">
+            <h1 class="page-title">Command Center</h1>
+            <p class="page-sub">See overall continuity posture, fragile roles, readiness gaps, and recommended actions in one view.</p>
+          </div>
 
-CORE WORKFLOW
-vacancy created -> candidate eligibility evaluated -> candidates ranked -> offer wave launched -> offer states tracked -> candidate accepts/declines -> assignment confirmed -> decision record stored -> audit log visible -> control tower updates
+          <div class="grid-4">
+            <div class="panel" id="dashTotalRoles"></div>
+            <div class="panel" id="dashCriticalRoles"></div>
+            <div class="panel" id="dashAvgReadiness"></div>
+            <div class="panel" id="dashTopAction"></div>
+          </div>
 
-PRODUCT NAME
-LaborOS
+          <div class="grid-2" style="margin-top:16px;">
+            <div class="panel">
+              <h3>Top Fragile Roles</h3>
+              <div id="topFragileRoles" class="result-box">No roles yet.</div>
+            </div>
+            <div class="panel">
+              <h3>Continuity Alerts</h3>
+              <div id="continuityAlerts" class="result-box">No alerts yet.</div>
+            </div>
+          </div>
+        </section>
 
-FIRST MODULE
-Vacancy Control
+        <section class="view" id="intake">
+          <div class="page-head">
+            <h1 class="page-title">Role Intake</h1>
+            <p class="page-sub">Enter critical roles, successor readiness inputs, and operational continuity factors.</p>
+          </div>
 
-TARGET ENVIRONMENT
-Large multi-site enterprise with high-compliance shift-based operations such as diagnostics networks, labs, healthcare operations, or similar.
+          <div class="split">
+            <div class="panel">
+              <h3>Add / Update Role</h3>
 
-TECH STACK
-Use a stack that works well in Replit and can run immediately:
-- Next.js (latest stable, App Router) with TypeScript
-- Tailwind CSS
-- shadcn/ui or similar polished component library
-- lucide-react icons
-- Prisma ORM
-- SQLite for local development in Replit so the app is self-contained and runnable immediately
-- React Query or server actions / route handlers for data access
-- Zustand or simple local state where useful
-- Recharts or similar for dashboard charts if needed
-- Clean modular architecture
+              <label for="companyName">Company / Site Name</label>
+              <input id="companyName" placeholder="Example: Ontario Precision Manufacturing" />
 
-DATABASE CHOICE
-Use SQLite through Prisma for now because I want this runnable immediately in Replit with no external setup.
-Structure the code so it could later migrate to PostgreSQL without major rewrites.
+              <div class="form-grid">
+                <div>
+                  <label for="roleTitle">Role Title</label>
+                  <input id="roleTitle" placeholder="Senior Processing Lead" />
+                </div>
+                <div>
+                  <label for="department">Department / Unit</label>
+                  <input id="department" placeholder="Processing" />
+                </div>
+                <div>
+                  <label for="incumbentName">Incumbent Name</label>
+                  <input id="incumbentName" placeholder="Current role holder" />
+                </div>
+                <div>
+                  <label for="estimatedExit">Estimated Exit Timing</label>
+                  <select id="estimatedExit">
+                    <option value="1">Immediate / under 3 months</option>
+                    <option value="2">3–6 months</option>
+                    <option value="3">6–12 months</option>
+                    <option value="4">12+ months</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="businessCriticality">Business Criticality</label>
+                  <select id="businessCriticality">
+                    <option value="5">Very High</option>
+                    <option value="4">High</option>
+                    <option value="3">Medium</option>
+                    <option value="2">Low</option>
+                    <option value="1">Very Low</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="replacementDifficulty">Replacement Difficulty</label>
+                  <select id="replacementDifficulty">
+                    <option value="5">Very Hard</option>
+                    <option value="4">Hard</option>
+                    <option value="3">Moderate</option>
+                    <option value="2">Easy</option>
+                    <option value="1">Very Easy</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="documentationMaturity">Documentation Maturity</label>
+                  <select id="documentationMaturity">
+                    <option value="1">Very Weak</option>
+                    <option value="2">Weak</option>
+                    <option value="3">Partial</option>
+                    <option value="4">Good</option>
+                    <option value="5">Strong</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="backupCount">Available Backups</label>
+                  <input type="number" id="backupCount" min="0" placeholder="0" />
+                </div>
+                <div>
+                  <label for="timeToIndependent">Months to Independent Replacement</label>
+                  <input type="number" id="timeToIndependent" min="0" placeholder="6" />
+                </div>
+                <div>
+                  <label for="knowledgeCoverage">Successor Knowledge Coverage (%)</label>
+                  <input type="number" id="knowledgeCoverage" min="0" max="100" placeholder="40" />
+                </div>
+                <div>
+                  <label for="shadowingCompletion">Shadowing Completion (%)</label>
+                  <input type="number" id="shadowingCompletion" min="0" max="100" placeholder="20" />
+                </div>
+                <div>
+                  <label for="trainingCompletion">Training Completion (%)</label>
+                  <input type="number" id="trainingCompletion" min="0" max="100" placeholder="30" />
+                </div>
+                <div>
+                  <label for="managerConfidence">Manager Confidence (%)</label>
+                  <input type="number" id="managerConfidence" min="0" max="100" placeholder="50" />
+                </div>
+                <div>
+                  <label for="skillGapSeverity">Skill Gap Severity</label>
+                  <select id="skillGapSeverity">
+                    <option value="5">Severe</option>
+                    <option value="4">High</option>
+                    <option value="3">Moderate</option>
+                    <option value="2">Low</option>
+                    <option value="1">Minimal</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="successorName">Successor / Backup Name</label>
+                  <input id="successorName" placeholder="Optional" />
+                </div>
+                <div class="full-span">
+                  <label for="criticalTasks">Critical Tasks (comma separated)</label>
+                  <textarea id="criticalTasks" placeholder="Daily production approvals, exception handling, system reconciliation"></textarea>
+                </div>
+                <div class="full-span">
+                  <label for="roleNotes">Role Notes</label>
+                  <textarea id="roleNotes" placeholder="Undocumented process knowledge, vendor escalation knowledge, system workarounds..."></textarea>
+                </div>
+              </div>
 
-AUTHENTICATION
-Do not implement full authentication right now.
-Use demo mode with role switching built into the UI.
-Include a clear role switcher in the top bar with these roles:
-- Supervisor / Scheduler
-- Operations Manager
-- HR / Labor Review
-- Rule Administrator
-- Employee
+              <div class="toolbar">
+                <button class="btn-primary" onclick="saveRole()">Save Role</button>
+                <button class="btn-ghost" onclick="clearRoleForm()">Clear Form</button>
+              </div>
 
-NOTIFICATIONS
-Use in-app notifications only for this version.
-Simulate offer states:
-- sent
-- delivered
-- viewed
-- accepted
-- declined
-- expired
+              <div class="result-box" id="intakeFeedback">Role intake summary will appear here.</div>
+            </div>
 
-REAL-TIME
-Use simple polling or lightweight real-time refresh behavior for Offer Monitor and Control Tower if feasible, but do not block the build if full real-time is too heavy. The UI should still feel live and dynamic.
+            <div class="panel">
+              <h3>Role List</h3>
+              <div id="roleListPanel" class="result-box">No roles entered yet.</div>
+            </div>
+          </div>
+        </section>
 
-DESIGN / BRANDING
-Use a dark professional enterprise theme with a strong blue accent color.
-Visual direction:
-- expensive internal enterprise software
-- dark left sidebar
-- clean top command bar
-- dense KPI cards
-- polished data tables
-- sharp status badges
-- clear visual hierarchy
-- dense but readable layout
-- serious operations software feel
-- desktop-first, but still usable on tablet/mobile
-- avoid sparse pages and giant empty areas
-- no marketing illustrations
-- no consumer app style
+        <section class="view" id="riskmap">
+          <div class="page-head">
+            <h1 class="page-title">Risk Map</h1>
+            <p class="page-sub">See continuity risk by role, with successor gaps, ramp time, and action priority.</p>
+          </div>
 
-ORGANIZATION / DOMAIN MODEL
-Implement database-backed models for at least the following:
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Risk Score</th>
+                  <th>Risk Label</th>
+                  <th>Successor</th>
+                  <th>Readiness Score</th>
+                  <th>Ramp Time</th>
+                  <th>Recommended Action</th>
+                </tr>
+              </thead>
+              <tbody id="riskTableBody">
+                <tr><td colspan="8" class="muted">No roles entered yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-Organization:
-- Enterprise
-- Region
-- Site
-- Department
-- Role
-- UnionGroup
+        <section class="view" id="readiness">
+          <div class="page-head">
+            <h1 class="page-title">Successor Readiness</h1>
+            <p class="page-sub">Measure backup strength and identify which successors need urgent ramp support.</p>
+          </div>
 
-Workforce:
-- Employee
-- EmployeeRoleAssignment
-- EmployeeSkillAssignment
-- EmployeeCertificationAssignment
+          <div id="readinessCards" class="role-grid"></div>
+        </section>
 
-Capability:
-- Skill
-- Certification
-- CrossCoverageRule
+        <section class="view" id="actions">
+          <div class="page-head">
+            <h1 class="page-title">Action Plan</h1>
+            <p class="page-sub">Generate tasks from the strongest recommendation and track execution progress.</p>
+          </div>
 
-Operations:
-- ShiftTemplate
-- ShiftInstance
-- Vacancy
-- CandidateEvaluation
-- OfferWave
-- Offer
-- Assignment
-- Escalation
+          <div class="split">
+            <div class="panel">
+              <h3>Recommended Action Engine</h3>
+              <div id="actionEngineBox" class="result-box">Add roles first to generate an action plan.</div>
 
-Governance:
-- RuleSet
-- RuleVersion
-- Rule
-- DecisionRecord
-- AuditEvent
+              <div class="toolbar">
+                <button class="btn-primary" onclick="generateActionTasks()">Generate Task List</button>
+                <button class="btn-secondary" onclick="markAllTasksComplete()">Mark All Complete</button>
+              </div>
 
-SEED DATA
-Generate rich realistic seeded enterprise data automatically on first run.
-Seed:
-- 1 enterprise
-- 3 regions
-- 10 sites
-- 4 departments per site
-- 120 to 160 employees
-- mixed roles across sites and departments
-- full-time / part-time / casual mix
-- realistic certifications
-- realistic skill coverage
-- realistic seniority dates
-- different overtime burdens
-- different fatigue profiles
-- active open vacancies across multiple sites
-- some candidates blocked by expired certification
-- some blocked by fatigue / rest rules
-- some active offer waves
-- some accepted offers
-- some declined offers
-- some escalated vacancies
-- some completed decisions
-- some override decisions
-- some fairness anomalies
+              <div id="taskList"></div>
+            </div>
 
-Use realistic site and department names such as:
-- Boston Medical Lab
-- NYC Central Diagnostics
-- Atlanta Regional Lab
-- Chicago Core Lab
-- Tampa Bay Diagnostics
-- Chemistry
-- Hematology
-- Microbiology
-- Pathology
+            <div class="panel">
+              <h3>Execution Status</h3>
+              <div id="executionStatusBox" class="result-box">Execution summary will appear here.</div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="taskProgressFill" style="width:0%;"></div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-Use believable employee names and roles.
+        <section class="view" id="brief">
+          <div class="page-head">
+            <h1 class="page-title">Executive Brief</h1>
+            <p class="page-sub">Summarize top fragile roles, successor readiness gaps, and immediate continuity actions.</p>
+          </div>
 
-BUSINESS RULES
-
-Hard rules: candidate must be ineligible if any fail
-- missing required certification
-- expired certification
-- wrong role assignment
-- not authorized for site
-- overlapping shift
-- insufficient rest window
-- max weekly hours exceeded
-- inactive/leave status
-- cross-site not allowed when vacancy forbids it
-
-Soft rules: eligible candidates must be ranked using a weighted score
-- lower overtime burden
-- lower fatigue risk
-- better fairness distribution
-- lower cost impact
-- better site continuity
-- better role continuity
-- seniority influence if configured
-- cross-site burden penalty if applicable
-
-EXPLAINABILITY IS MANDATORY
-For each candidate evaluation, show:
-- eligible/ineligible status
-- hard-rule pass/fail trace
-- score breakdown
-- fairness index
-- fatigue risk
-- estimated labor cost
-- explanation narrative
-- why ranked above or below peers
-- why ineligible candidates were filtered out
-
-STATE MACHINES
-
-Vacancy states:
-- draft
-- open
-- evaluating
-- evaluated
-- offer_in_progress
-- accepted_pending_confirmation
-- assigned
-- closed
-- closed_unfilled
-- manual_review
-- escalated
-- cancelled
-
-Offer states:
-- queued
-- sent
-- delivered
-- viewed
-- accepted
-- declined
-- expired
-- cancelled
-
-Assignment states:
-- proposed
-- confirmed
-- active
-- completed
-- cancelled
-
-REQUIRED ROUTES / PAGES
-Create a real navigable app with at least these routes:
-
-- /dashboard
-- /vacancies
-- /vacancies/[id]
-- /candidate-evaluation or integrate this deeply into vacancy detail
-- /offer-monitor
-- /assignments
-- /decision-log
-- /control-tower
-- /hr-review
-- /rules-admin
-
-If it is cleaner, Candidate Evaluation can also live inside Vacancy Detail as a major panel, but it must still be one of the strongest parts of the product.
-
-SIDEBAR NAVIGATION
-Include:
-- Dashboard
-- Vacancies
-- Candidate Evaluation
-- Offer Waves or Offer Monitor
-- Assignments
-- Decision Log
-- Control Tower
-- HR Review Console
-- Rules Admin
-
-TOP BAR
-Include:
-- global search box
-- role switcher
-- notification icon
-- current demo user label
-
-REQUIRED SCREENS
-
-1. DASHBOARD
-Build a serious operations dashboard with:
-- open vacancies
-- critical vacancies
-- average time to fill
-- expiring offers
-- active escalations
-- auto-resolved percentage
-- fairness alerts
-- fatigue alerts
-- recent activity panel
-- site risk summary
-- quick action button “Create Vacancy”
-
-IMPORTANT: average time to fill must never be negative.
-
-2. VACANCIES LIST
-Build a polished searchable/filterable table with:
-- vacancy ID
-- site
-- department
-- role
-- urgency
-- state
-- current wave
-- SLA due
-- recommended candidate summary
-- fill risk
-Filters:
-- site
-- urgency
-- state
-- department
-- role
-- date range if feasible
-
-Rows must be clickable and open Vacancy Detail.
-
-3. CREATE VACANCY
-Implement a working form/modal that creates a real record.
-Fields:
-- site
-- department
-- role
-- linked shift instance if applicable
-- reason code
-- required start/end
-- urgency
-- priority
-- required certifications
-- required skills
-- allow cross-site coverage
-- allow overtime
-- notes
-
-4. VACANCY DETAIL
-This must be a command screen, not a weak details page.
-Include:
-- vacancy summary
-- site / department / role
-- urgency and SLA
-- staffing requirements
-- current state
-- evaluation summary
-- active offer wave summary
-- escalation history
-- recommended next action
-- links/actions to evaluate candidates, launch offers, confirm assignment, and inspect decision log
-
-5. CANDIDATE EVALUATION
-This must be one of the strongest screens/features in the app.
-Build a ranked candidate table with:
-- rank
-- employee
-- home site
-- role match
-- certification status
-- hours worked this week
-- overtime last 30 days
-- fairness index
-- fatigue risk
-- estimated labor cost
-- final score
-- recommendation badge
-
-Each row must expand into a rich detail panel showing:
-- hard rule pass/fail trace
-- score breakdown
-- explanation narrative
-- why not ranked #1
-- why filtered out if ineligible
-- seniority context
-- cross-site burden note
-- recent offer history if available
-
-Clearly separate eligible and ineligible candidates visually.
-
-6. OFFER MONITOR
-Build a real operational monitoring view with:
-- vacancy
-- current wave
-- list of offers
-- offer status transitions
-- sent / delivered / viewed / accepted / declined / expired
-- countdowns
-- escalation state
-- next-candidate logic
-
-7. ASSIGNMENTS
-Show active and completed assignments with:
-- source
-- linked vacancy
-- employee
-- role
-- site
-- state
-- assigned time
-
-8. DECISION LOG
-Build an audit timeline view with:
-- vacancy created
-- evaluation completed
-- offer sent
-- response received
-- escalation triggered
-- override submitted
-- assignment confirmed
-- decision recorded
-
-Make it feel defensible and enterprise-grade.
-
-9. CONTROL TOWER
-Build an executive-grade operations command center with:
-- open critical vacancies
-- open vacancies
-- average time to fill
-- active escalations
-- auto-resolved percentage
-- overtime exposure
-- fairness alerts
-- fatigue alerts
-- site performance grid
-- network critical vacancies table
-- strongest risk sites
-- open escalation detail panel
-- drill-down capability to site or department if feasible
-
-Make this feel like an executive control center, not just another dashboard.
-
-10. HR REVIEW CONSOLE
-Build a compliance/labor review workspace with:
-- search by vacancy, employee, site
-- filters for site, decision type, override
-- table showing selected employee vs recommended employee
-- override indicator
-- drill-down into a decision record
-Inside drill-down, include:
-- selected employee
-- recommended employee
-- override reason code
-- override narrative
-- candidate ranking snapshot
-- audit timeline
-- decision mode
-- rule version used
-- evidence/export action button concept
-
-11. RULES ADMIN
-Build a basic but real rules administration experience:
-- rulesets list
-- versions
-- scope
-- active/published status
-- simple rule editor view
-- simulation concept/panel if feasible
-
-It does not have to be enterprise-perfect, but it must look real and connected.
-
-CORE APP LOGIC
-Implement believable connected logic:
-- creating a vacancy inserts a record
-- evaluating a vacancy generates candidate evaluations
-- candidate ranking uses hard + soft rules
-- launching offer wave creates offers
-- accepting/declining updates offer and vacancy states
-- confirming assignment updates vacancy to assigned/closed
-- decision record is stored
-- audit events are recorded
-- dashboard/control tower KPIs derive from actual database state, not random hardcoded numbers
-
-KPI INTEGRITY
-- No impossible metrics
-- No negative average time to fill
-- KPI math must be believable and internally consistent
-
-UX QUALITY BAR
-- No empty placeholder pages
-- No huge wasted space
-- Use width effectively
-- Dense tables must still be readable
-- Sticky headers where helpful
-- Better truncation and responsive behavior
-- Premium badges for critical/high/medium/low
-- Clear color semantics for escalated, override, accepted, blocked, expired
-
-PROJECT STRUCTURE
-Create a clean maintainable codebase with clear separation such as:
-- app/
-- components/
-- lib/
-- prisma/
-- data or seed/
-- types/
-
-DATABASE / PRISMA
-- Create the Prisma schema
-- Create and run migrations
-- Seed the database automatically or provide a simple seed command
-- Ensure app boots cleanly in Replit
-
-DELIVERABLE EXPECTATIONS
-When finished:
-- app compiles and runs
-- database is seeded
-- routes work
-- key workflows are connected
-- UI is polished and enterprise-grade
-- data looks realistic
-- no raw placeholder shell
-- no compile/runtime errors left unresolved
-
-FINAL EXECUTION REQUIREMENT
-After building:
-- run the app
-- fix any broken imports, migrations, typings, or runtime issues
-- verify the core screens render
-- ensure the app opens directly into the product experience
-- provide a concise README with run instructions and a summary of what was built
-
-Make strong autonomous decisions and complete the full build.
-Do not stop at a partial scaffold.
-Build the app.</textarea>
-    </section>
-
-    <div class="steps">
-      <div class="step">
-        <strong>Step 1</strong>
-        Commit this file as <code>index.html</code> in your GitHub Pages repo.
+          <div class="panel">
+            <h3>Leadership Summary</h3>
+            <div id="executiveBriefBox" class="result-box">Executive brief will appear here.</div>
+          </div>
+        </section>
       </div>
-      <div class="step">
-        <strong>Step 2</strong>
-        Open the hosted page and click <strong>Copy Full Prompt</strong>.
-      </div>
-      <div class="step">
-        <strong>Step 3</strong>
-        Paste the copied prompt into Replit Agent in one message.
-      </div>
-      <div class="step">
-        <strong>Step 4</strong>
-        Let Replit build the app, then review the generated routes and workflow.
-      </div>
-    </div>
-
-    <div class="footer-note">
-      Use this page as a prompt vault and copy surface. The HTML itself is not the LaborOS application.
-      It is the website wrapper around the master prompt so you can host it on GitHub Pages and copy it cleanly anytime.
-    </div>
+    </main>
   </div>
 
   <script>
-    const promptBox = document.getElementById('promptBox');
-    const statusEl = document.getElementById('status');
+    const ROLE_KEY = "retireramp_roles_v1";
+    const TASK_KEY = "retireramp_tasks_v1";
 
-    function setStatus(msg){
-      statusEl.textContent = msg;
-      setTimeout(() => { statusEl.textContent = 'Ready'; }, 2200);
+    function byId(id) {
+      return document.getElementById(id);
     }
 
-    document.getElementById('copyBtn').addEventListener('click', async () => {
-      try{
-        await navigator.clipboard.writeText(promptBox.value);
-        setStatus('Prompt copied');
-      }catch(e){
-        promptBox.focus();
-        promptBox.select();
-        document.execCommand('copy');
-        setStatus('Prompt copied');
+    function saveJSON(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function loadJSON(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
+      } catch {
+        return fallback;
       }
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+      byId(viewId).classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === viewId);
+      });
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => navigateTo(btn.dataset.view));
     });
 
-    document.getElementById('selectBtn').addEventListener('click', () => {
-      promptBox.focus();
-      promptBox.select();
-      setStatus('Prompt selected');
-    });
+    function getRoles() {
+      return loadJSON(ROLE_KEY, []);
+    }
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const blob = new Blob([promptBox.value], {type: 'text/plain;charset=utf-8'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'laboros-replit-master-prompt.txt';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setStatus('TXT downloaded');
-    });
+    function setRoles(roles) {
+      saveJSON(ROLE_KEY, roles);
+    }
+
+    function getTasks() {
+      return loadJSON(TASK_KEY, []);
+    }
+
+    function setTasks(tasks) {
+      saveJSON(TASK_KEY, tasks);
+    }
+
+    function riskLabel(score) {
+      if (score >= 75) return "Critical";
+      if (score >= 55) return "High";
+      if (score >= 35) return "Watch";
+      return "Low";
+    }
+
+    function readinessLabel(score) {
+      if (score >= 90) return "Ready";
+      if (score >= 75) return "Near Ready";
+      if (score >= 55) return "Partially Ready";
+      if (score >= 35) return "Early Stage";
+      return "Not Ready";
+    }
+
+    function chipClass(label) {
+      const green = ["Low", "Ready", "Near Ready"];
+      const yellow = ["Watch", "Partially Ready", "Early Stage"];
+      const red = ["Critical", "High", "Not Ready"];
+      if (green.includes(label)) return "green";
+      if (yellow.includes(label)) return "yellow";
+      if (red.includes(label)) return "red";
+      return "blue";
+    }
+
+    function scoreRole(role) {
+      const exitLikelihoodScore = (5 - Number(role.estimatedExit)) * 25;
+      const criticalityScore = ((Number(role.businessCriticality) - 1) / 4) * 100;
+      const replacementDifficultyScore = ((Number(role.replacementDifficulty) - 1) / 4) * 100;
+      const documentationWeaknessScore = ((5 - Number(role.documentationMaturity)) / 4) * 100;
+
+      let backupWeaknessScore = 100;
+      if (Number(role.backupCount) >= 2) backupWeaknessScore = 20;
+      else if (Number(role.backupCount) === 1) backupWeaknessScore = 50;
+
+      let rampTimeScore = 20;
+      const months = Number(role.timeToIndependent);
+      if (months >= 12) rampTimeScore = 100;
+      else if (months >= 9) rampTimeScore = 80;
+      else if (months >= 6) rampTimeScore = 60;
+      else if (months >= 3) rampTimeScore = 40;
+
+      const score =
+        exitLikelihoodScore * 0.15 +
+        criticalityScore * 0.25 +
+        replacementDifficultyScore * 0.20 +
+        documentationWeaknessScore * 0.15 +
+        backupWeaknessScore * 0.15 +
+        rampTimeScore * 0.10;
+
+      return Number(score.toFixed(1));
+    }
+
+    function scoreReadiness(role) {
+      const knowledgeCoverage = Number(role.knowledgeCoverage);
+      const shadowing = Number(role.shadowingCompletion);
+      const training = Number(role.trainingCompletion);
+      const confidence = Number(role.managerConfidence);
+      const skillGapSeverity = Number(role.skillGapSeverity);
+      const months = Number(role.timeToIndependent);
+
+      const skillGapScore = ((5 - skillGapSeverity) / 4) * 100;
+
+      let independenceScore = 100;
+      if (months >= 12) independenceScore = 20;
+      else if (months >= 9) independenceScore = 35;
+      else if (months >= 6) independenceScore = 55;
+      else if (months >= 3) independenceScore = 75;
+
+      const score =
+        knowledgeCoverage * 0.25 +
+        shadowing * 0.20 +
+        training * 0.20 +
+        confidence * 0.15 +
+        skillGapScore * 0.10 +
+        independenceScore * 0.10;
+
+      return Number(score.toFixed(1));
+    }
+
+    function recommendAction(role) {
+      const risk = scoreRole(role);
+      const readiness = scoreReadiness(role);
+
+      if (risk >= 75 && readiness < 55) {
+        return "Launch immediate handoff and successor training";
+      }
+      if (risk >= 75 && Number(role.backupCount) === 0) {
+        return "Assign backup now and capture critical knowledge";
+      }
+      if (risk >= 55 && readiness < 75) {
+        return "Prioritize structured ramp plan";
+      }
+      if (Number(role.documentationMaturity) <= 2) {
+        return "Document role knowledge and exception handling";
+      }
+      return "Monitor role and maintain successor readiness";
+    }
+
+    function gatherRoleForm() {
+      return {
+        id: "role_" + Date.now(),
+        companyName: byId("companyName").value.trim() || "Unnamed Company",
+        roleTitle: byId("roleTitle").value.trim(),
+        department: byId("department").value.trim(),
+        incumbentName: byId("incumbentName").value.trim(),
+        estimatedExit: byId("estimatedExit").value,
+        businessCriticality: byId("businessCriticality").value,
+        replacementDifficulty: byId("replacementDifficulty").value,
+        documentationMaturity: byId("documentationMaturity").value,
+        backupCount: byId("backupCount").value,
+        timeToIndependent: byId("timeToIndependent").value,
+        knowledgeCoverage: byId("knowledgeCoverage").value,
+        shadowingCompletion: byId("shadowingCompletion").value,
+        trainingCompletion: byId("trainingCompletion").value,
+        managerConfidence: byId("managerConfidence").value,
+        skillGapSeverity: byId("skillGapSeverity").value,
+        successorName: byId("successorName").value.trim(),
+        criticalTasks: byId("criticalTasks").value.trim(),
+        roleNotes: byId("roleNotes").value.trim()
+      };
+    }
+
+    function validateRole(role) {
+      const requiredFields = [
+        role.roleTitle, role.department, role.incumbentName,
+        role.backupCount, role.timeToIndependent, role.knowledgeCoverage,
+        role.shadowingCompletion, role.trainingCompletion, role.managerConfidence
+      ];
+      return requiredFields.every(v => v !== "" && v !== null && v !== undefined);
+    }
+
+    function saveRole() {
+      const role = gatherRoleForm();
+
+      if (!validateRole(role)) {
+        byId("intakeFeedback").innerHTML = "Please complete the required role and successor readiness fields.";
+        return;
+      }
+
+      const roles = getRoles();
+      roles.push(role);
+      setRoles(roles);
+
+      byId("intakeFeedback").innerHTML =
+        "<strong>Saved:</strong> " + role.roleTitle + "<br>" +
+        "Continuity risk and readiness scores are now available in the platform.";
+
+      clearRoleForm(false);
+      renderAll();
+    }
+
+    function clearRoleForm(clearCompany = true) {
+      if (clearCompany) byId("companyName").value = "";
+      byId("roleTitle").value = "";
+      byId("department").value = "";
+      byId("incumbentName").value = "";
+      byId("estimatedExit").value = "1";
+      byId("businessCriticality").value = "5";
+      byId("replacementDifficulty").value = "5";
+      byId("documentationMaturity").value = "1";
+      byId("backupCount").value = "";
+      byId("timeToIndependent").value = "";
+      byId("knowledgeCoverage").value = "";
+      byId("shadowingCompletion").value = "";
+      byId("trainingCompletion").value = "";
+      byId("managerConfidence").value = "";
+      byId("skillGapSeverity").value = "5";
+      byId("successorName").value = "";
+      byId("criticalTasks").value = "";
+      byId("roleNotes").value = "";
+    }
+
+    function deleteRole(id) {
+      const roles = getRoles().filter(r => r.id !== id);
+      setRoles(roles);
+      renderAll();
+    }
+
+    function renderRoleList() {
+      const roles = getRoles();
+      if (!roles.length) {
+        byId("roleListPanel").innerHTML = "No roles entered yet.";
+        return;
+      }
+
+      byId("roleListPanel").innerHTML = roles.map(role => {
+        const risk = scoreRole(role);
+        const readiness = scoreReadiness(role);
+        const riskLbl = riskLabel(risk);
+        const readLbl = readinessLabel(readiness);
+
+        return `
+          <div class="role-card" style="margin-bottom:12px;">
+            <div class="role-title">${role.roleTitle}</div>
+            <span class="chip ${chipClass(riskLbl)}">${riskLbl}</span>
+            <span class="chip ${chipClass(readLbl)}">${readLbl}</span>
+            <div class="mini-lines">
+              <div class="mini-line"><strong>Department:</strong> ${role.department}</div>
+              <div class="mini-line"><strong>Incumbent:</strong> ${role.incumbentName}</div>
+              <div class="mini-line"><strong>Successor:</strong> ${role.successorName || "None assigned"}</div>
+              <div class="mini-line"><strong>Recommended Action:</strong> ${recommendAction(role)}</div>
+            </div>
+            <div class="toolbar">
+              <button class="btn-danger" onclick="deleteRole('${role.id}')">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderRiskMap() {
+      const roles = getRoles();
+      const body = byId("riskTableBody");
+
+      if (!roles.length) {
+        body.innerHTML = `<tr><td colspan="8" class="muted">No roles entered yet.</td></tr>`;
+        return;
+      }
+
+      const sorted = roles.slice().sort((a, b) => scoreRole(b) - scoreRole(a));
+
+      body.innerHTML = sorted.map(role => {
+        const risk = scoreRole(role);
+        const readiness = scoreReadiness(role);
+        const riskLbl = riskLabel(risk);
+        return `
+          <tr>
+            <td><strong>${role.roleTitle}</strong><br><span class="muted">${role.incumbentName}</span></td>
+            <td>${role.department}</td>
+            <td>${risk}</td>
+            <td><span class="chip ${chipClass(riskLbl)}">${riskLbl}</span></td>
+            <td>${role.successorName || "None"}</td>
+            <td>${readiness} / ${readinessLabel(readiness)}</td>
+            <td>${role.timeToIndependent} month(s)</td>
+            <td>${recommendAction(role)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderReadiness() {
+      const roles = getRoles();
+      const box = byId("readinessCards");
+
+      if (!roles.length) {
+        box.innerHTML = `<div class="panel"><div class="muted">No roles entered yet.</div></div>`;
+        return;
+      }
+
+      box.innerHTML = roles.map(role => {
+        const readiness = scoreReadiness(role);
+        const readLbl = readinessLabel(readiness);
+        return `
+          <div class="role-card">
+            <div class="role-title">${role.roleTitle}</div>
+            <span class="chip ${chipClass(readLbl)}">${readLbl}</span>
+            <div class="mini-lines">
+              <div class="mini-line"><strong>Successor:</strong> ${role.successorName || "None assigned"}</div>
+              <div class="mini-line"><strong>Readiness Score:</strong> ${readiness}</div>
+              <div class="mini-line"><strong>Knowledge Coverage:</strong> ${role.knowledgeCoverage}%</div>
+              <div class="mini-line"><strong>Shadowing:</strong> ${role.shadowingCompletion}%</div>
+              <div class="mini-line"><strong>Training:</strong> ${role.trainingCompletion}%</div>
+              <div class="mini-line"><strong>Manager Confidence:</strong> ${role.managerConfidence}%</div>
+              <div class="mini-line"><strong>Time to Independence:</strong> ${role.timeToIndependent} month(s)</div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:${readiness}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function getTopPriorityRole() {
+      const roles = getRoles();
+      if (!roles.length) return null;
+      return roles.slice().sort((a, b) => {
+        const scoreA = scoreRole(a) - scoreReadiness(a);
+        const scoreB = scoreRole(b) - scoreReadiness(b);
+        return scoreB - scoreA;
+      })[0];
+    }
+
+    function generateTasksForRole(role) {
+      const tasks = [];
+      const risk = scoreRole(role);
+      const readiness = scoreReadiness(role);
+
+      if (!role.successorName) {
+        tasks.push({ id: "t_" + Date.now() + "_1", title: "Assign backup / successor for " + role.roleTitle, done: false });
+      }
+      if (Number(role.documentationMaturity) <= 2) {
+        tasks.push({ id: "t_" + Date.now() + "_2", title: "Document critical knowledge and exception handling", done: false });
+      }
+      if (readiness < 55) {
+        tasks.push({ id: "t_" + Date.now() + "_3", title: "Launch accelerated training and shadowing plan", done: false });
+      }
+      if (Number(role.knowledgeCoverage) < 60) {
+        tasks.push({ id: "t_" + Date.now() + "_4", title: "Increase successor knowledge coverage above 60%", done: false });
+      }
+      if (Number(role.timeToIndependent) > 6) {
+        tasks.push({ id: "t_" + Date.now() + "_5", title: "Reduce ramp timeline with staged transfer plan", done: false });
+      }
+      if (risk >= 75) {
+        tasks.push({ id: "t_" + Date.now() + "_6", title: "Escalate continuity risk to operations leadership", done: false });
+      }
+      if (!tasks.length) {
+        tasks.push({ id: "t_" + Date.now() + "_7", title: "Monitor continuity posture and maintain readiness", done: false });
+      }
+      return tasks;
+    }
+
+    function generateActionTasks() {
+      const role = getTopPriorityRole();
+      if (!role) {
+        byId("actionEngineBox").innerHTML = "Add roles first to generate an action plan.";
+        return;
+      }
+
+      const tasks = generateTasksForRole(role);
+      setTasks(tasks);
+
+      byId("actionEngineBox").innerHTML =
+        "<strong>Primary Role at Risk:</strong> " + role.roleTitle + "<br>" +
+        "<strong>Risk Score:</strong> " + scoreRole(role) + " (" + riskLabel(scoreRole(role)) + ")<br>" +
+        "<strong>Readiness Score:</strong> " + scoreReadiness(role) + " (" + readinessLabel(scoreReadiness(role)) + ")<br>" +
+        "<strong>Recommended Action:</strong> " + recommendAction(role);
+
+      renderTasks();
+      updateTaskProgress();
+    }
+
+    function toggleTask(id) {
+      const tasks = getTasks().map(t => t.id === id ? { ...t, done: !t.done } : t);
+      setTasks(tasks);
+      renderTasks();
+      updateTaskProgress();
+      renderAll();
+    }
+
+    function markAllTasksComplete() {
+      const tasks = getTasks().map(t => ({ ...t, done: true }));
+      setTasks(tasks);
+      renderTasks();
+      updateTaskProgress();
+      renderAll();
+    }
+
+    function renderTasks() {
+      const tasks = getTasks();
+      const box = byId("taskList");
+
+      if (!tasks.length) {
+        box.innerHTML = `<div class="result-box">No tasks generated yet.</div>`;
+        return;
+      }
+
+      box.innerHTML = tasks.map(task => `
+        <div class="check-row">
+          <input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask('${task.id}')" />
+          <div>
+            <div style="font-weight:700; ${task.done ? 'text-decoration:line-through; opacity:0.7;' : ''}">${task.title}</div>
+            <div class="muted">${task.done ? "Completed" : "Pending"}</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function updateTaskProgress() {
+      const tasks = getTasks();
+      const total = tasks.length;
+      const done = tasks.filter(t => t.done).length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+
+      byId("taskProgressFill").style.width = pct + "%";
+      byId("executionStatusBox").innerHTML =
+        "<strong>Total Tasks:</strong> " + total + "<br>" +
+        "<strong>Completed:</strong> " + done + "<br>" +
+        "<strong>Completion Rate:</strong> " + pct + "%";
+
+      byId("taskCountChip").innerText = "Tasks Done: " + pct + "%";
+    }
+
+    function renderDashboard() {
+      const roles = getRoles();
+      const totalRoles = roles.length;
+      const critical = roles.filter(r => riskLabel(scoreRole(r)) === "Critical").length;
+      const high = roles.filter(r => riskLabel(scoreRole(r)) === "High").length;
+      const avgReadiness = totalRoles
+        ? (roles.reduce((sum, r) => sum + scoreReadiness(r), 0) / totalRoles).toFixed(1)
+        : "--";
+
+      const topRole = getTopPriorityRole();
+
+      byId("dashTotalRoles").innerHTML =
+        `<div class="metric-label">Total Critical Roles</div><div class="metric-value">${totalRoles}</div><div class="muted">Roles currently assessed in the platform.</div>`;
+
+      byId("dashCriticalRoles").innerHTML =
+        `<div class="metric-label">Critical-Risk Roles</div><div class="metric-value">${critical}</div><div class="muted">Roles needing immediate continuity attention.</div>`;
+
+      byId("dashAvgReadiness").innerHTML =
+        `<div class="metric-label">Average Successor Readiness</div><div class="metric-value">${avgReadiness}</div><div class="muted">Average readiness score across all successors.</div>`;
+
+      byId("dashTopAction").innerHTML =
+        `<div class="metric-label">Top Recommended Action</div><div class="metric-value" style="font-size:20px;">${topRole ? recommendAction(topRole) : "--"}</div><div class="muted">${topRole ? "Focused on " + topRole.roleTitle : "No roles yet."}</div>`;
+
+      if (!roles.length) {
+        byId("topFragileRoles").innerHTML = "No roles yet.";
+        byId("continuityAlerts").innerHTML = "No alerts yet.";
+        return;
+      }
+
+      const sorted = roles.slice().sort((a, b) => scoreRole(b) - scoreRole(a));
+
+      byId("topFragileRoles").innerHTML = sorted.slice(0, 3).map(r => `
+        <div class="mini-line"><strong>${r.roleTitle}</strong> — Risk ${scoreRole(r)} (${riskLabel(scoreRole(r))})</div>
+      `).join("");
+
+      const alerts = [];
+      sorted.forEach(r => {
+        if (!r.successorName) alerts.push(`${r.roleTitle} has no named successor`);
+        if (scoreReadiness(r) < 55) alerts.push(`${r.roleTitle} successor readiness is weak`);
+        if (Number(r.documentationMaturity) <= 2) alerts.push(`${r.roleTitle} documentation maturity is low`);
+      });
+
+      byId("continuityAlerts").innerHTML = alerts.length
+        ? alerts.slice(0, 6).map(a => `<div class="mini-line">• ${a}</div>`).join("")
+        : "No urgent alerts.";
+    }
+
+    function renderExecutiveBrief() {
+      const roles = getRoles();
+
+      if (!roles.length) {
+        byId("executiveBriefBox").innerHTML = "No roles entered yet.";
+        return;
+      }
+
+      const company = roles[0].companyName || "Unnamed Company";
+      const sorted = roles.slice().sort((a, b) => scoreRole(b) - scoreRole(a));
+      const top = sorted[0];
+      const critical = sorted.filter(r => riskLabel(scoreRole(r)) === "Critical");
+      const high = sorted.filter(r => riskLabel(scoreRole(r)) === "High");
+      const noSuccessor = sorted.filter(r => !r.successorName);
+      const weakReadiness = sorted.filter(r => scoreReadiness(r) < 55);
+
+      byId("executiveBriefBox").innerHTML = `
+        <strong>Executive Continuity Brief — ${company}</strong><br><br>
+
+        <strong>Overall Continuity Posture</strong><br>
+        ${critical.length > 0 ? "High concern due to one or more critical roles." : "Manageable, but still requires continuity discipline."}<br><br>
+
+        <strong>Top Fragile Role</strong><br>
+        ${top.roleTitle} in ${top.department} currently carries the highest continuity risk with a score of ${scoreRole(top)} (${riskLabel(scoreRole(top))}).<br><br>
+
+        <strong>Highest Priority Action</strong><br>
+        ${recommendAction(top)}<br><br>
+
+        <strong>Risk Summary</strong><br>
+        Critical Roles: ${critical.length}<br>
+        High Risk Roles: ${high.length}<br>
+        Roles with No Successor: ${noSuccessor.length}<br>
+        Roles with Weak Successor Readiness: ${weakReadiness.length}<br><br>
+
+        <strong>Immediate Recommendations</strong><br>
+        1. Protect the highest-risk role first.<br>
+        2. Name successors where none exist.<br>
+        3. Launch documentation and knowledge-transfer work for weakly documented roles.<br>
+        4. Accelerate training where readiness remains below target.<br>
+      `;
+    }
+
+    function updateTopbar() {
+      const roles = getRoles();
+      const company = roles.length ? (roles[0].companyName || "Unnamed") : "Unnamed";
+      const critical = roles.filter(r => riskLabel(scoreRole(r)) === "Critical").length;
+      const high = roles.filter(r => riskLabel(scoreRole(r)) === "High").length;
+
+      let posture = "Awaiting Data";
+      if (roles.length) {
+        if (critical > 0) posture = "High Concern";
+        else if (high > 0) posture = "At Risk";
+        else posture = "Stable";
+      }
+
+      byId("companyChip").innerText = "Company: " + company;
+      byId("postureChip").innerText = "Continuity Posture: " + posture;
+      byId("postureChip").className = "chip " + (posture === "High Concern" ? "red" : posture === "At Risk" ? "yellow" : posture === "Stable" ? "green" : "blue");
+      byId("criticalCountChip").innerText = "Critical Roles: " + critical;
+      byId("highCountChip").innerText = "High Risk Roles: " + high;
+    }
+
+    function renderAll() {
+      renderRoleList();
+      renderRiskMap();
+      renderReadiness();
+      renderDashboard();
+      renderTasks();
+      updateTaskProgress();
+      renderExecutiveBrief();
+      updateTopbar();
+    }
+
+    function loadDemoData() {
+      const demoRoles = [
+        {
+          id: "demo1",
+          companyName: "Ontario Precision Manufacturing",
+          roleTitle: "Senior Processing Lead",
+          department: "Processing",
+          incumbentName: "A. Mehta",
+          estimatedExit: "1",
+          businessCriticality: "5",
+          replacementDifficulty: "5",
+          documentationMaturity: "1",
+          backupCount: "0",
+          timeToIndependent: "9",
+          knowledgeCoverage: "30",
+          shadowingCompletion: "15",
+          trainingCompletion: "20",
+          managerConfidence: "35",
+          skillGapSeverity: "5",
+          successorName: "",
+          criticalTasks: "Exception handling, line balancing, escalation decisions",
+          roleNotes: "High undocumented knowledge concentration"
+        },
+        {
+          id: "demo2",
+          companyName: "Ontario Precision Manufacturing",
+          roleTitle: "Lab Quality Coordinator",
+          department: "Quality",
+          incumbentName: "R. Singh",
+          estimatedExit: "2",
+          businessCriticality: "4",
+          replacementDifficulty: "4",
+          documentationMaturity: "2",
+          backupCount: "1",
+          timeToIndependent: "6",
+          knowledgeCoverage: "48",
+          shadowingCompletion: "35",
+          trainingCompletion: "40",
+          managerConfidence: "52",
+          skillGapSeverity: "4",
+          successorName: "N. Patel",
+          criticalTasks: "Release approvals, deviation review, audit prep",
+          roleNotes: "Moderate documentation, weak exception transfer"
+        },
+        {
+          id: "demo3",
+          companyName: "Ontario Precision Manufacturing",
+          roleTitle: "Warehouse Shift Planner",
+          department: "Warehouse",
+          incumbentName: "J. Kumar",
+          estimatedExit: "3",
+          businessCriticality: "3",
+          replacementDifficulty: "3",
+          documentationMaturity: "4",
+          backupCount: "2",
+          timeToIndependent: "3",
+          knowledgeCoverage: "72",
+          shadowingCompletion: "65",
+          trainingCompletion: "70",
+          managerConfidence: "78",
+          skillGapSeverity: "2",
+          successorName: "S. Gill",
+          criticalTasks: "Shift sequencing, dock prioritization",
+          roleNotes: "Generally stable"
+        }
+      ];
+
+      setRoles(demoRoles);
+      setTasks([]);
+      byId("companyName").value = "Ontario Precision Manufacturing";
+      renderAll();
+      navigateTo("dashboard");
+    }
+
+    renderAll();
   </script>
 </body>
 </html>
