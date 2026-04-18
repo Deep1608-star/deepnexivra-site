@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Northstar Studio</title>
+    <title>OpsLens AI | SOP-Based Workforce Analysis</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -12,18 +12,22 @@
     />
     <style>
       :root {
-        --bg: #120f0d;
-        --panel: rgba(248, 242, 234, 0.08);
-        --panel-strong: rgba(248, 242, 234, 0.12);
-        --text: #f6efe7;
-        --muted: #c3b7ab;
-        --line: rgba(246, 239, 231, 0.12);
-        --accent: #f0a23a;
-        --accent-2: #ffdfb3;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
-        --radius-xl: 32px;
-        --radius-lg: 24px;
-        --max-width: 1180px;
+        --bg: #0c1414;
+        --bg-2: #111c1c;
+        --panel: rgba(255, 255, 255, 0.06);
+        --panel-2: rgba(255, 255, 255, 0.1);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #edf4f1;
+        --muted: #a9bbb5;
+        --accent: #58d6a3;
+        --accent-2: #bfffe3;
+        --warn: #ffbb5c;
+        --danger: #ff7f7f;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --max: 1240px;
       }
 
       * {
@@ -36,13 +40,12 @@
 
       body {
         margin: 0;
-        min-height: 100vh;
         font-family: "Manrope", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(240, 162, 58, 0.24), transparent 30%),
-          radial-gradient(circle at 80% 20%, rgba(255, 223, 179, 0.12), transparent 22%),
-          linear-gradient(160deg, #0d0b0a 0%, #18120f 45%, #100d0c 100%);
+          radial-gradient(circle at top left, rgba(88, 214, 163, 0.24), transparent 28%),
+          radial-gradient(circle at 85% 12%, rgba(191, 255, 227, 0.1), transparent 24%),
+          linear-gradient(160deg, #091111 0%, #0e1717 45%, #091010 100%);
       }
 
       body::before {
@@ -53,454 +56,418 @@
         background-image:
           linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        background-size: 72px 72px;
-        mask-image: radial-gradient(circle at center, black 35%, transparent 85%);
-        opacity: 0.3;
+        background-size: 70px 70px;
+        mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
+        opacity: 0.35;
       }
 
-      .page-shell {
-        width: min(calc(100% - 32px), var(--max-width));
+      .container {
+        width: min(calc(100% - 28px), var(--max));
         margin: 0 auto;
-        padding: 24px 0 64px;
-      }
-
-      .site-header,
-      .hero,
-      .metrics,
-      .work-grid,
-      .steps,
-      .contact-card {
+        padding: 24px 0 60px;
         position: relative;
         z-index: 1;
       }
 
-      .site-header {
+      .header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        gap: 24px;
-        padding: 8px 0 24px;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 28px;
       }
 
       .brand {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: 12px;
-        color: var(--text);
-        text-decoration: none;
-        font-family: "Space Grotesk", sans-serif;
-        font-weight: 700;
-        letter-spacing: 0.02em;
       }
 
-      .brand-mark {
-        width: 14px;
-        height: 14px;
+      .brand-dot {
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        box-shadow: 0 0 24px rgba(240, 162, 58, 0.55);
+        box-shadow: 0 0 24px rgba(88, 214, 163, 0.55);
       }
 
-      .site-nav {
-        display: inline-flex;
-        gap: 24px;
+      .brand h1 {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.1rem;
+        letter-spacing: 0.04em;
       }
 
-      .site-nav a {
+      .nav {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .nav a {
         color: var(--muted);
         text-decoration: none;
         font-size: 0.95rem;
       }
 
-      .site-nav a:hover,
-      .site-nav a:focus-visible {
+      .nav a:hover {
         color: var(--text);
       }
 
       .hero {
         display: grid;
         grid-template-columns: 1.1fr 0.9fr;
-        gap: 28px;
-        padding: 48px 0 32px;
-        align-items: center;
+        gap: 20px;
+        margin-bottom: 22px;
       }
 
-      .eyebrow,
-      .feature-label {
-        margin: 0 0 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        font-size: 0.76rem;
-        color: var(--accent-2);
-      }
-
-      .hero h1,
-      .section-heading h2,
-      .contact-card h2 {
-        margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        font-weight: 700;
-        line-height: 0.94;
-        letter-spacing: -0.04em;
-      }
-
-      .hero h1 {
-        max-width: 10ch;
-        font-size: clamp(3.8rem, 9vw, 7.25rem);
-      }
-
-      .hero-text,
-      .feature p,
-      .step p,
-      .feature-large p {
-        color: var(--muted);
-        line-height: 1.7;
-        font-size: 1.05rem;
-      }
-
-      .hero-text {
-        max-width: 42rem;
-        margin: 24px 0 0;
-      }
-
-      .hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-        margin-top: 32px;
-      }
-
-      .button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 48px;
-        padding: 0 20px;
-        border-radius: 999px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
-      }
-
-      .button:hover,
-      .button:focus-visible {
-        transform: translateY(-2px);
-      }
-
-      .button-primary {
-        color: #1a130f;
-        background: linear-gradient(135deg, var(--accent), #ffcb7a);
-      }
-
-      .button-secondary {
-        color: var(--text);
+      .card {
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .hero-card,
-      .feature,
-      .step,
-      .contact-card,
-      .metrics article {
-        border: 1px solid var(--line);
-        background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+        border-radius: var(--radius-xl);
+        background: linear-gradient(180deg, var(--panel-2), var(--panel));
         backdrop-filter: blur(14px);
         box-shadow: var(--shadow);
       }
 
-      .hero-card {
-        min-height: 530px;
-        border-radius: var(--radius-xl);
-        padding: 22px;
+      .hero-copy {
+        padding: 34px;
       }
 
-      .hero-card-top,
-      .preview-stats,
-      .contact-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-      }
-
-      .pill,
-      .muted,
-      .preview-panel p,
-      .preview-stats span,
-      .metrics span,
-      .step span {
-        color: var(--muted);
-      }
-
-      .pill {
-        display: inline-flex;
-        align-items: center;
-        min-height: 34px;
-        padding: 0 14px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 223, 179, 0.22);
-        background: rgba(255, 223, 179, 0.08);
-        font-size: 0.85rem;
-      }
-
-      .hero-preview {
-        position: relative;
-        height: calc(100% - 52px);
-        min-height: 430px;
-        margin-top: 18px;
-        overflow: hidden;
-        border-radius: 24px;
-        background:
-          radial-gradient(circle at center, rgba(240, 162, 58, 0.3), transparent 42%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-      }
-
-      .preview-orbit {
-        position: absolute;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-      }
-
-      .orbit-a {
-        width: 360px;
-        height: 360px;
-        top: 32px;
-        right: -80px;
-        animation: float-spin 18s linear infinite;
-      }
-
-      .orbit-b {
-        width: 220px;
-        height: 220px;
-        bottom: 28px;
-        left: -40px;
-        animation: float-spin 14s linear infinite reverse;
-      }
-
-      .preview-panel,
-      .preview-stats {
-        position: absolute;
-        left: 22px;
-        right: 22px;
-        border: 1px solid var(--line);
-        background: rgba(15, 13, 11, 0.72);
-        backdrop-filter: blur(10px);
-      }
-
-      .preview-panel {
-        bottom: 110px;
-        padding: 22px;
-        border-radius: 22px;
-      }
-
-      .preview-panel p {
+      .eyebrow {
         margin: 0 0 12px;
+        font-size: 0.74rem;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
-        letter-spacing: 0.16em;
-        font-size: 0.72rem;
+        color: var(--accent-2);
       }
 
-      .preview-panel strong,
-      .preview-stats strong,
-      .metrics strong,
-      .feature h3,
-      .feature-large h2,
-      .step h3 {
-        font-weight: 800;
-      }
-
-      .preview-panel strong {
-        display: block;
-        max-width: 17ch;
-        font-size: clamp(1.5rem, 2.2vw, 2rem);
-        line-height: 1.1;
-      }
-
-      .preview-stats {
-        bottom: 22px;
-        padding: 16px 18px;
-        border-radius: 18px;
-      }
-
-      .preview-stats div {
-        display: grid;
-        gap: 6px;
-      }
-
-      .metrics {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin: 12px 0 34px;
-      }
-
-      .metrics article,
-      .feature,
-      .step {
-        border-radius: var(--radius-lg);
-        padding: 24px;
-      }
-
-      .metrics article {
-        min-height: 130px;
-        display: grid;
-        align-content: space-between;
-      }
-
-      .metrics strong {
-        font-size: 1.2rem;
-      }
-
-      .work-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr 1fr;
-        gap: 18px;
-      }
-
-      .feature-large {
-        min-height: 100%;
-        padding: 28px;
-      }
-
-      .feature-large h2 {
+      .hero h2,
+      .section-title h3 {
         margin: 0;
-        font-size: clamp(2rem, 3vw, 3rem);
-        line-height: 1;
+        font-family: "Space Grotesk", sans-serif;
+        line-height: 0.95;
+        letter-spacing: -0.04em;
       }
 
-      .feature h3,
-      .step h3 {
-        margin: 0;
-        font-size: 1.35rem;
+      .hero h2 {
+        font-size: clamp(3rem, 7vw, 5.6rem);
+        max-width: 9ch;
       }
 
-      .feature p,
-      .feature-large p,
-      .step p {
-        margin-bottom: 0;
+      .hero p.lead {
+        max-width: 52ch;
+        color: var(--muted);
+        line-height: 1.75;
+        margin: 20px 0 0;
       }
 
-      .process {
-        padding: 84px 0 18px;
-      }
-
-      .section-heading {
-        max-width: 48rem;
-      }
-
-      .section-heading h2,
-      .contact-card h2 {
-        font-size: clamp(2.4rem, 5vw, 4.4rem);
-      }
-
-      .steps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
+      .hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
         margin-top: 28px;
       }
 
-      .step {
-        min-height: 240px;
+      .btn {
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 20px;
+        font-weight: 800;
+        cursor: pointer;
+        font-family: inherit;
       }
 
-      .step span {
-        display: inline-block;
-        margin-bottom: 28px;
+      .btn-primary {
+        color: #092019;
+        background: linear-gradient(135deg, var(--accent), #87efc4);
+      }
+
+      .btn-secondary {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--line);
+      }
+
+      .hero-side {
+        padding: 22px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .mini-panel {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px;
+        background: rgba(7, 13, 13, 0.5);
+      }
+
+      .mini-panel h4,
+      .panel-title {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .stat {
+        padding: 20px;
+      }
+
+      .stat span {
+        display: block;
+        color: var(--muted);
+        margin-bottom: 14px;
+        font-size: 0.88rem;
+      }
+
+      .stat strong {
+        font-size: 2rem;
         font-family: "Space Grotesk", sans-serif;
-        font-size: 0.95rem;
-        letter-spacing: 0.12em;
       }
 
-      .contact-card {
-        margin-top: 36px;
-        padding: 30px;
-        border-radius: var(--radius-xl);
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 20px;
+      }
+
+      .panel {
+        padding: 24px;
+      }
+
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .section-title p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        max-width: 58ch;
+      }
+
+      .upload-zone {
+        border: 1px dashed rgba(191, 255, 227, 0.28);
+        border-radius: 18px;
+        padding: 18px;
+        background: rgba(88, 214, 163, 0.05);
+        margin-bottom: 18px;
+      }
+
+      .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.88rem;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .table-wrap {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--accent-2);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .tag.green {
+        background: rgba(88, 214, 163, 0.14);
+        color: #98ffd1;
+      }
+
+      .tag.yellow {
+        background: rgba(255, 187, 92, 0.14);
+        color: #ffd08a;
+      }
+
+      .tag.red {
+        background: rgba(255, 127, 127, 0.14);
+        color: #ffaaaa;
+      }
+
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      .recommendation {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .recommendation h4 {
+        margin: 0 0 8px;
+      }
+
+      .recommendation p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .bar {
+        margin-top: 14px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), #9effd9);
+      }
+
+      .note {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-left: 3px solid var(--warn);
+        border-radius: 12px;
+        background: rgba(255, 187, 92, 0.09);
+        color: #ffe1b0;
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      .footer {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 0.9rem;
       }
 
       .reveal {
         opacity: 0;
-        transform: translateY(32px);
-        transition: opacity 700ms ease, transform 700ms ease;
+        transform: translateY(24px);
+        transition: 0.65s ease;
       }
 
-      .reveal.is-visible {
+      .reveal.show {
         opacity: 1;
-        transform: translateY(0);
+        transform: none;
       }
 
-      @keyframes float-spin {
-        from {
-          transform: rotate(0deg) translateY(0px);
-        }
-        50% {
-          transform: rotate(180deg) translateY(8px);
-        }
-        to {
-          transform: rotate(360deg) translateY(0px);
-        }
-      }
-
-      @media (max-width: 960px) {
+      @media (max-width: 1024px) {
         .hero,
-        .work-grid,
-        .steps,
-        .metrics {
+        .main-grid,
+        .grid-4,
+        .upload-grid {
           grid-template-columns: 1fr;
         }
-
-        .hero h1 {
-          max-width: 12ch;
-        }
-
-        .contact-card,
-        .site-header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .site-nav {
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .hero-card {
-          min-height: 480px;
-        }
       }
 
-      @media (max-width: 640px) {
-        .page-shell {
-          width: min(calc(100% - 20px), var(--max-width));
-          padding-top: 18px;
+      @media (max-width: 680px) {
+        .container {
+          width: min(calc(100% - 18px), var(--max));
         }
 
-        .hero {
-          padding-top: 28px;
-        }
-
-        .hero h1 {
-          font-size: clamp(3rem, 18vw, 4.6rem);
-        }
-
-        .hero-card,
-        .feature,
-        .feature-large,
-        .step,
-        .contact-card,
-        .metrics article {
-          border-radius: 22px;
-        }
-
-        .preview-panel strong {
-          max-width: 100%;
-        }
-
-        .preview-stats,
-        .hero-card-top {
+        .header {
           flex-direction: column;
           align-items: flex-start;
+        }
+
+        .hero-copy,
+        .panel {
+          padding: 20px;
+        }
+
+        .hero h2 {
+          font-size: clamp(2.5rem, 14vw, 4rem);
+        }
+
+        .section-title {
+          flex-direction: column;
         }
       }
 
@@ -512,8 +479,8 @@
         *,
         *::before,
         *::after {
-          animation: none !important;
           transition: none !important;
+          animation: none !important;
         }
 
         .reveal {
@@ -524,171 +491,448 @@
     </style>
   </head>
   <body>
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand" href="#top">
-          <span class="brand-mark"></span>
-          <span>Northstar Studio</span>
-        </a>
-        <nav class="site-nav" aria-label="Primary">
-          <a href="#work">Work</a>
-          <a href="#process">Process</a>
-          <a href="#contact">Contact</a>
+    <div class="container">
+      <header class="header reveal">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <h1>OpsLens AI</h1>
+        </div>
+        <nav class="nav">
+          <a href="#analyzer">Analyzer</a>
+          <a href="#coverage">Coverage</a>
+          <a href="#recommendations">Recommendations</a>
         </nav>
       </header>
 
-      <main id="top">
-        <section class="hero">
-          <div class="hero-copy reveal">
-            <p class="eyebrow">Independent product design</p>
-            <h1>Interfaces with edge, warmth, and a reason to exist.</h1>
-            <p class="hero-text">
-              We design digital experiences that feel editorial instead of interchangeable,
-              with clear systems underneath the personality.
+      <section class="hero">
+        <div class="card hero-copy reveal">
+          <p class="eyebrow">SOP-based workforce analysis</p>
+          <h2>See which duties can be covered, automated, or reassigned.</h2>
+          <p class="lead">
+            Analyze company data, compare job duties against SOP maturity, and generate role
+            continuity plans. This demo focuses on coverage and process readiness, not blind
+            headcount cuts.
+          </p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" onclick="runAnalysis()">Run analysis</button>
+            <button class="btn btn-secondary" onclick="loadSampleData()">Load sample data</button>
+          </div>
+        </div>
+
+        <div class="card hero-side reveal">
+          <div class="mini-panel">
+            <h4>What it evaluates</h4>
+            <div class="pill-row">
+              <span class="pill">Employee duties</span>
+              <span class="pill">SOP coverage</span>
+              <span class="pill">Role criticality</span>
+              <span class="pill">Automation readiness</span>
+              <span class="pill">Risk flags</span>
+            </div>
+          </div>
+          <div class="mini-panel">
+            <h4>Output</h4>
+            <p class="muted">
+              Replacement here means continuity planning: which duties can move to SOPs,
+              software, vendors, or other roles with acceptable risk.
             </p>
-            <div class="hero-actions">
-              <a class="button button-primary" href="#work">See the work</a>
-              <a class="button button-secondary" href="#process">How we build</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-4 reveal">
+        <div class="card stat">
+          <span>Total Roles</span>
+          <strong id="rolesCount">12</strong>
+        </div>
+        <div class="card stat">
+          <span>SOP Coverage</span>
+          <strong id="sopCoverage">74%</strong>
+        </div>
+        <div class="card stat">
+          <span>Automatable Duties</span>
+          <strong id="autoCoverage">38%</strong>
+        </div>
+        <div class="card stat">
+          <span>High Risk Roles</span>
+          <strong id="riskCount">3</strong>
+        </div>
+      </section>
+
+      <section class="main-grid">
+        <div class="card panel reveal" id="analyzer">
+          <div class="section-title">
+            <div>
+              <h3>Company Analyzer</h3>
+              <p>
+                Enter company context, SOP maturity, and role information. Then generate a
+                continuity analysis showing where duties can be standardized, automated, or
+                reassigned.
+              </p>
             </div>
           </div>
 
-          <div class="hero-card reveal">
-            <div class="hero-card-top">
-              <span class="pill">Live concept</span>
-              <span class="muted">Spring 2026</span>
+          <div class="upload-zone">
+            <strong>Inputs</strong>
+            <p class="muted" style="margin: 8px 0 0;">
+              In a real app this would ingest CSVs, HRIS exports, SOP documents, and job
+              descriptions.
+            </p>
+          </div>
+
+          <div class="upload-grid">
+            <div>
+              <label for="company">Company Name</label>
+              <input id="company" value="Northstar Logistics" />
             </div>
+            <div>
+              <label for="industry">Industry</label>
+              <select id="industry">
+                <option>Logistics</option>
+                <option>SaaS</option>
+                <option>Retail</option>
+                <option>Manufacturing</option>
+                <option>Healthcare</option>
+              </select>
+            </div>
+            <div>
+              <label for="employeeCount">Employee Count</label>
+              <input id="employeeCount" type="number" value="185" />
+            </div>
+            <div>
+              <label for="sopMaturity">Average SOP Maturity</label>
+              <select id="sopMaturity">
+                <option>High</option>
+                <option selected>Medium</option>
+                <option>Low</option>
+              </select>
+            </div>
+          </div>
 
-            <div class="hero-preview">
-              <div class="preview-orbit orbit-a"></div>
-              <div class="preview-orbit orbit-b"></div>
+          <div style="margin-top: 16px;">
+            <label for="duties">Role / duty dataset</label>
+            <textarea id="duties">Operations Manager | Oversees dispatch, reviews KPIs, escalates failures | SOP: High | Criticality: High
+Dispatcher | Assigns deliveries, updates route boards, handles exceptions | SOP: Medium | Criticality: High
+Payroll Coordinator | Prepares payroll, verifies attendance, resolves deductions | SOP: High | Criticality: Medium
+Recruiter | Screens candidates, schedules interviews, updates ATS | SOP: Medium | Criticality: Medium
+Admin Assistant | Handles inbox triage, document prep, meeting notes | SOP: High | Criticality: Low
+Inventory Analyst | Reconciles counts, flags variances, creates reports | SOP: Medium | Criticality: Medium</textarea>
+          </div>
 
-              <div class="preview-panel">
-                <p>Signal</p>
-                <strong>Design that turns rough ideas into memorable product surfaces.</strong>
+          <div class="toolbar">
+            <button class="btn btn-primary" onclick="runAnalysis()">Generate report</button>
+            <button class="btn btn-secondary" onclick="loadSampleData()">Reset sample</button>
+          </div>
+
+          <div class="note">
+            Use this kind of system for workforce planning and process resilience. Decisions
+            affecting people should include human review, legal checks, and fairness review.
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card panel reveal" id="coverage">
+            <div class="section-title">
+              <div>
+                <h3>Coverage Snapshot</h3>
+                <p>Live summary based on the current inputs and sample role assumptions.</p>
               </div>
+            </div>
 
-              <div class="preview-stats">
-                <div>
-                  <span>System</span>
-                  <strong>Flexible tokens</strong>
-                </div>
-                <div>
-                  <span>Motion</span>
-                  <strong>Purposeful only</strong>
-                </div>
+            <div class="recommendation">
+              <h4>Process Standardization</h4>
+              <p id="standardizationText">
+                Strongest gains are likely in repetitive admin and reporting duties where SOPs
+                already exist and exceptions are limited.
+              </p>
+              <div class="bar"><span id="bar1" style="width: 74%;"></span></div>
+            </div>
+
+            <div class="recommendation">
+              <h4>Automation Readiness</h4>
+              <p id="automationText">
+                Automate scheduling support, reporting prep, ATS updates, and inbox triage
+                before touching high-judgment operational work.
+              </p>
+              <div class="bar"><span id="bar2" style="width: 38%;"></span></div>
+            </div>
+
+            <div class="recommendation">
+              <h4>Replacement Risk</h4>
+              <p id="riskText">
+                Roles with low SOP maturity and high exception handling should not be treated as
+                near-term replacement candidates.
+              </p>
+              <div class="bar"><span id="bar3" style="width: 26%; background: linear-gradient(90deg, var(--warn), #ffd692);"></span></div>
+            </div>
+          </div>
+
+          <div class="card panel reveal" id="recommendations">
+            <div class="section-title">
+              <div>
+                <h3>Recommendations</h3>
+                <p>Suggested actions ranked by continuity and operational safety.</p>
+              </div>
+            </div>
+
+            <div id="recommendationList" class="stack">
+              <div class="recommendation">
+                <h4>Automate low-risk administrative duties</h4>
+                <p>
+                  Move inbox sorting, interview scheduling, reporting assembly, and template
+                  document prep into workflow tools first.
+                </p>
+              </div>
+              <div class="recommendation">
+                <h4>Convert tribal knowledge into SOPs</h4>
+                <p>
+                  High-risk operational roles should be documented before any reassignment or
+                  staffing change is considered.
+                </p>
+              </div>
+              <div class="recommendation">
+                <h4>Reassign, don't abruptly remove</h4>
+                <p>
+                  Build coverage maps so critical duties can shift gradually to managers,
+                  shared-service teams, or software with fallback ownership.
+                </p>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section class="metrics reveal" aria-label="Highlights">
-          <article>
-            <span>Focus</span>
-            <strong>Brand-forward UI</strong>
-          </article>
-          <article>
-            <span>Built for</span>
-            <strong>Desktop and mobile</strong>
-          </article>
-          <article>
-            <span>Approach</span>
-            <strong>Fast prototypes, sharp polish</strong>
-          </article>
-        </section>
-
-        <section class="work-grid" id="work">
-          <article class="feature feature-large reveal">
-            <p class="feature-label">Featured direction</p>
-            <h2>Magazine energy, product discipline.</h2>
-            <p>
-              This concept leans into oversized typography, layered gradients, tactile
-              cards, and strong spacing so the interface feels designed, not generated.
-            </p>
-          </article>
-
-          <article class="feature reveal">
-            <p class="feature-label">Visual system</p>
-            <h3>Burnt gold + deep ink</h3>
-            <p>
-              A warm, high-contrast palette creates atmosphere without relying on the usual
-              dark-purple startup look.
-            </p>
-          </article>
-
-          <article class="feature reveal">
-            <p class="feature-label">Layout logic</p>
-            <h3>Asymmetric but readable</h3>
-            <p>
-              The grid breaks cleanly into stacked mobile sections while keeping a more
-              editorial rhythm on wide screens.
-            </p>
-          </article>
-        </section>
-
-        <section class="process" id="process">
-          <div class="section-heading reveal">
-            <p class="eyebrow">Process</p>
-            <h2>Design choices that carry their own weight.</h2>
-          </div>
-
-          <div class="steps">
-            <article class="step reveal">
-              <span>01</span>
-              <h3>Shape the tone</h3>
-              <p>
-                Start with typography, rhythm, and color before decorating the interface
-                with components.
-              </p>
-            </article>
-
-            <article class="step reveal">
-              <span>02</span>
-              <h3>Build the system</h3>
-              <p>
-                Use reusable spacing, elevation, and motion rules so the page stays
-                coherent as it grows.
-              </p>
-            </article>
-
-            <article class="step reveal">
-              <span>03</span>
-              <h3>Keep the motion honest</h3>
-              <p>
-                Small reveal animations and a living background provide energy without
-                turning the interface into noise.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section class="contact-card reveal" id="contact">
+      <section class="card panel reveal" style="margin-top: 20px;">
+        <div class="section-title">
           <div>
-            <p class="eyebrow">Next move</p>
-            <h2>Ready for this design to become a full product surface.</h2>
+            <h3>Role Continuity Matrix</h3>
+            <p>
+              Example output showing which roles are suitable for automation support,
+              reassignment, or full human retention.
+            </p>
           </div>
-          <a class="button button-primary" href="mailto:hello@northstar.invalid">
-            Start a project
-          </a>
-        </section>
-      </main>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Primary Duties</th>
+                <th>SOP Level</th>
+                <th>Automation Fit</th>
+                <th>Continuity Action</th>
+                <th>Risk</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr>
+                <td>Admin Assistant</td>
+                <td>Inbox triage, document prep, meeting notes</td>
+                <td><span class="tag green">High</span></td>
+                <td><span class="tag green">High</span></td>
+                <td>Automate + reassign oversight</td>
+                <td><span class="tag green">Low</span></td>
+              </tr>
+              <tr>
+                <td>Recruiter</td>
+                <td>Screening, scheduling, ATS updates</td>
+                <td><span class="tag yellow">Medium</span></td>
+                <td><span class="tag green">High</span></td>
+                <td>Hybrid support with human approval</td>
+                <td><span class="tag yellow">Medium</span></td>
+              </tr>
+              <tr>
+                <td>Dispatcher</td>
+                <td>Route assignment, exception handling</td>
+                <td><span class="tag yellow">Medium</span></td>
+                <td><span class="tag yellow">Medium</span></td>
+                <td>Decision support only</td>
+                <td><span class="tag red">High</span></td>
+              </tr>
+              <tr>
+                <td>Operations Manager</td>
+                <td>KPI review, escalations, judgment calls</td>
+                <td><span class="tag green">High</span></td>
+                <td><span class="tag yellow">Low</span></td>
+                <td>Retain human owner</td>
+                <td><span class="tag red">High</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          Demo concept only. For production, connect document parsing, role-based permissions,
+          audit logs, and a proper ML or rules engine for SOP-to-duty scoring.
+        </div>
+      </section>
     </div>
 
     <script>
+      const revealItems = document.querySelectorAll(".reveal");
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
+              entry.target.classList.add("show");
               observer.unobserve(entry.target);
             }
           });
         },
-        { threshold: 0.18 }
+        { threshold: 0.15 }
       );
+      revealItems.forEach((item) => observer.observe(item));
 
-      document.querySelectorAll(".reveal").forEach((element) => {
-        observer.observe(element);
-      });
+      function loadSampleData() {
+        document.getElementById("company").value = "Northstar Logistics";
+        document.getElementById("industry").value = "Logistics";
+        document.getElementById("employeeCount").value = 185;
+        document.getElementById("sopMaturity").value = "Medium";
+        document.getElementById("duties").value =
+`Operations Manager | Oversees dispatch, reviews KPIs, escalates failures | SOP: High | Criticality: High
+Dispatcher | Assigns deliveries, updates route boards, handles exceptions | SOP: Medium | Criticality: High
+Payroll Coordinator | Prepares payroll, verifies attendance, resolves deductions | SOP: High | Criticality: Medium
+Recruiter | Screens candidates, schedules interviews, updates ATS | SOP: Medium | Criticality: Medium
+Admin Assistant | Handles inbox triage, document prep, meeting notes | SOP: High | Criticality: Low
+Inventory Analyst | Reconciles counts, flags variances, creates reports | SOP: Medium | Criticality: Medium`;
+        runAnalysis();
+      }
+
+      function runAnalysis() {
+        const raw = document.getElementById("duties").value.trim();
+        const lines = raw.split("\n").filter(Boolean);
+
+        let highRisk = 0;
+        let automatable = 0;
+        let sopHighOrMedium = 0;
+        let rows = "";
+
+        lines.forEach((line) => {
+          const parts = line.split("|").map((p) => p.trim());
+          const role = parts[0] || "Unknown Role";
+          const duties = parts[1] || "No duties listed";
+          const sop = (parts[2] || "SOP: Medium").replace("SOP:", "").trim();
+          const criticality = (parts[3] || "Criticality: Medium").replace("Criticality:", "").trim();
+
+          const isAdminLike =
+            /admin|assistant|coordinator|recruit|payroll|analyst/i.test(role + " " + duties);
+          const isJudgmentHeavy =
+            /manager|exception|escalat|oversee|review|judgment|dispatch/i.test(role + " " + duties);
+
+          let automationFit = "Low";
+          let action = "Retain human owner";
+          let risk = "High";
+
+          if ((sop === "High" || sop === "Medium") && isAdminLike && criticality !== "High") {
+            automationFit = "High";
+            action = "Automate + reassign oversight";
+            risk = "Low";
+            automatable++;
+          } else if (sop === "Medium" && !isJudgmentHeavy) {
+            automationFit = "Medium";
+            action = "Hybrid support with human approval";
+            risk = "Medium";
+            automatable++;
+          } else if (sop === "High" && criticality === "Medium") {
+            automationFit = "Medium";
+            action = "Reassign with SOP guardrails";
+            risk = "Medium";
+          }
+
+          if (sop === "High" || sop === "Medium") sopHighOrMedium++;
+          if (risk === "High") highRisk++;
+
+          rows += `
+            <tr>
+              <td>${role}</td>
+              <td>${duties}</td>
+              <td><span class="tag ${tagClassFromLevel(sop)}">${sop}</span></td>
+              <td><span class="tag ${tagClassFromLevel(automationFit)}">${automationFit}</span></td>
+              <td>${action}</td>
+              <td><span class="tag ${tagClassFromLevel(risk)}">${risk}</span></td>
+            </tr>
+          `;
+        });
+
+        const totalRoles = lines.length || 1;
+        const sopCoverage = Math.round((sopHighOrMedium / totalRoles) * 100);
+        const automationRate = Math.round((automatable / totalRoles) * 100);
+        const riskRate = Math.round((highRisk / totalRoles) * 100);
+
+        document.getElementById("rolesCount").textContent = totalRoles;
+        document.getElementById("sopCoverage").textContent = sopCoverage + "%";
+        document.getElementById("autoCoverage").textContent = automationRate + "%";
+        document.getElementById("riskCount").textContent = highRisk;
+
+        document.getElementById("bar1").style.width = sopCoverage + "%";
+        document.getElementById("bar2").style.width = automationRate + "%";
+        document.getElementById("bar3").style.width = riskRate + "%";
+
+        document.getElementById("standardizationText").textContent =
+          sopCoverage >= 70
+            ? "Documentation quality is solid enough to standardize more cross-role duties."
+            : "Before major staffing shifts, SOP quality needs improvement across core workflows.";
+
+        document.getElementById("automationText").textContent =
+          automationRate >= 45
+            ? "A meaningful share of work appears suitable for automation support or handoff."
+            : "Automation opportunities exist, but most roles still need structured human oversight.";
+
+        document.getElementById("riskText").textContent =
+          riskRate >= 40
+            ? "Too many roles are still high risk for abrupt replacement. Focus on SOP hardening first."
+            : "Replacement risk is concentrated in a smaller set of judgment-heavy or exception-heavy roles.";
+
+        document.getElementById("tableBody").innerHTML = rows;
+
+        const recs = [];
+        if (sopCoverage < 70) {
+          recs.push({
+            title: "Raise SOP maturity before workforce changes",
+            text: "Document exception handling, approvals, and fallback paths so role continuity does not depend on tribal knowledge."
+          });
+        }
+        if (automationRate > 25) {
+          recs.push({
+            title: "Start with repetitive, rules-based work",
+            text: "Prioritize scheduling, data entry, triage, reporting prep, and document assembly before high-judgment functions."
+          });
+        }
+        if (highRisk > 0) {
+          recs.push({
+            title: "Protect high-risk roles with human-in-the-loop review",
+            text: "Dispatch, escalations, judgment calls, and incident handling should keep named human owners even if software assists."
+          });
+        }
+        recs.push({
+          title: "Design reassignment plans, not sudden removal",
+          text: "Use staged handoffs, shadow periods, and measurable service levels before shifting duties away from any role."
+        });
+
+        document.getElementById("recommendationList").innerHTML = recs
+          .map(
+            (rec) => `
+              <div class="recommendation">
+                <h4>${rec.title}</h4>
+                <p>${rec.text}</p>
+              </div>
+            `
+          )
+          .join("");
+      }
+
+      function tagClassFromLevel(level) {
+        const v = String(level).toLowerCase();
+        if (v.includes("high") && !v.includes("risk")) return "green";
+        if (v.includes("medium")) return "yellow";
+        if (v.includes("low") && !v.includes("risk")) return "yellow";
+        if (v.includes("high")) return "red";
+        if (v.includes("low")) return "green";
+        return "yellow";
+      }
+
+      runAnalysis();
     </script>
   </body>
 </html>
