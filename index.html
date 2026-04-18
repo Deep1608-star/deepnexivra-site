@@ -77,6 +77,9 @@
       }
     </script>
 <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
@@ -85,6 +88,23 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
+        .animate-spin-slow {
+            animation: spin 12s linear infinite;
+        }
+        .ambient-float {
+            animation: ambient-float 8s ease-in-out infinite;
+        }
+        @keyframes ambient-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .animate-spin-slow,
+            .ambient-float,
+            .animate-pulse {
+                animation: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-background text-on-background font-body selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
@@ -92,9 +112,9 @@
 <nav class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 w-full bg-[#121317] font-['Space_Grotesk'] tracking-tight">
 <div class="text-xl font-bold text-[#62f9ee]">RetireRamp OS</div>
 <div class="hidden md:flex gap-8 items-center">
-<a class="text-[#62f9ee] border-b-2 border-[#62f9ee] pb-1 duration-200 ease-in-out" href="#">Command Center</a>
-<a class="text-slate-400 hover:text-[#62f9ee] transition-colors duration-200 ease-in-out" href="#">Risk Engine</a>
-<a class="text-slate-400 hover:text-[#62f9ee] transition-colors duration-200 ease-in-out" href="#">Continuity</a>
+<a class="text-[#62f9ee] border-b-2 border-[#62f9ee] pb-1 duration-200 ease-in-out" href="#command-center">Command Center</a>
+<a class="text-slate-400 hover:text-[#62f9ee] transition-colors duration-200 ease-in-out" href="#risk-engine">Risk Engine</a>
+<a class="text-slate-400 hover:text-[#62f9ee] transition-colors duration-200 ease-in-out" href="#continuity">Continuity</a>
 </div>
 <div class="flex items-center gap-6">
 <span class="material-symbols-outlined text-slate-400 hover:text-[#62f9ee] cursor-pointer">notifications</span>
@@ -106,9 +126,9 @@
 </nav>
 <main class="pt-16">
 <!-- Hero Section -->
-<section class="relative min-h-[921px] flex flex-col items-center justify-center px-8 overflow-hidden">
+<section id="command-center" class="relative min-h-[921px] flex flex-col items-center justify-center px-8 overflow-hidden">
 <!-- Background Neural Glow -->
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-fixed/5 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-fixed/5 rounded-full blur-[120px] pointer-events-none ambient-float"></div>
 <div class="relative z-10 text-center max-w-5xl mx-auto">
 <div class="inline-flex items-center gap-2 px-3 py-1 mb-8 bg-surface-container-low rounded-lg border border-outline-variant/10">
 <span class="w-2 h-2 rounded-full bg-primary-fixed-dim animate-pulse"></span>
@@ -120,6 +140,20 @@
 <p class="text-xl text-on-surface-variant max-w-2xl mx-auto mb-12 font-light leading-relaxed">
                     The first autonomous continuity layer for enterprise leadership. Transition roles, map institutional knowledge, and eliminate succession risk with industrial precision.
                 </p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 max-w-3xl mx-auto">
+<div class="bg-surface-container-low/70 border border-outline-variant/20 px-4 py-3 rounded-lg">
+<p class="text-[10px] font-['JetBrains_Mono'] text-slate-500">MEAN TIME TO RAMP</p>
+<p class="text-xl font-headline font-bold text-primary-fixed">45 Days</p>
+</div>
+<div class="bg-surface-container-low/70 border border-outline-variant/20 px-4 py-3 rounded-lg">
+<p class="text-[10px] font-['JetBrains_Mono'] text-slate-500">KNOWLEDGE COVERAGE</p>
+<p class="text-xl font-headline font-bold text-primary-fixed">98%</p>
+</div>
+<div class="bg-surface-container-low/70 border border-outline-variant/20 px-4 py-3 rounded-lg">
+<p class="text-[10px] font-['JetBrains_Mono'] text-slate-500">DEPLOYMENT UPTIME</p>
+<p class="text-xl font-headline font-bold text-primary-fixed">99.9999%</p>
+</div>
+</div>
 <div class="flex flex-col md:flex-row gap-6 justify-center">
 <button class="px-8 py-4 bg-primary-fixed text-on-primary-fixed font-semibold rounded-[4px] hover:scale-[1.02] transition-transform flex items-center gap-2">
                         Open Platform
@@ -184,7 +218,7 @@
 </div>
 </section>
 <!-- Strategic Value Props -->
-<section class="py-32 px-8 bg-surface-container-low">
+<section id="risk-engine" class="py-32 px-8 bg-surface-container-low">
 <div class="max-w-7xl mx-auto">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
 <div class="flex flex-col gap-6">
@@ -262,7 +296,7 @@
 </div>
 </section>
 <!-- Signature Intelligence Block -->
-<section class="py-32 px-8 overflow-hidden">
+<section id="continuity" class="py-32 px-8 overflow-hidden">
 <div class="max-w-7xl mx-auto glass-panel p-16 rounded-xl border border-outline-variant/10 relative">
 <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-tertiary-fixed-dim/10 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2"></div>
 <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
@@ -283,7 +317,7 @@
 </div>
 </div>
 </div>
-<div class="bg-surface-container-lowest p-8 rounded-lg border border-outline-variant/10">
+<div class="bg-surface-container-lowest p-8 rounded-lg border border-outline-variant/10 ambient-float">
 <div class="flex items-center justify-between mb-8">
 <span class="text-[10px] font-['JetBrains_Mono'] text-slate-500">REALTIME_DIAGNOSTICS</span>
 <div class="px-2 py-1 bg-primary-fixed/10 text-primary-fixed text-[10px] font-['JetBrains_Mono']">LIVE_FEEDS</div>
@@ -327,7 +361,7 @@
 <div class="grid grid-cols-2 md:grid-cols-3 gap-12">
 <div class="flex flex-col gap-4">
 <span class="text-[10px] font-['JetBrains_Mono'] text-slate-500 uppercase tracking-widest">Platform</span>
-<a class="text-on-surface hover:text-primary-fixed transition-colors text-sm" href="#">Command Center</a>
+<a class="text-on-surface hover:text-primary-fixed transition-colors text-sm" href="#command-center">Command Center</a>
 <a class="text-on-surface hover:text-primary-fixed transition-colors text-sm" href="#">Risk Map</a>
 <a class="text-on-surface hover:text-primary-fixed transition-colors text-sm" href="#">Decision Engine</a>
 </div>
@@ -345,7 +379,7 @@
 </div>
 </div>
 <div class="max-w-7xl mx-auto mt-20 pt-8 border-t border-outline-variant/5 flex flex-col md:flex-row justify-between items-center gap-4">
-<span class="text-[10px] font-['JetBrains_Mono'] text-slate-600">© 2024 RETIRERAMP OS. ALL RIGHTS RESERVED. SOVEREIGN_ENGINE_BUILD_v2.04</span>
+<span class="text-[10px] font-['JetBrains_Mono'] text-slate-600">© 2026 RETIRERAMP OS. ALL RIGHTS RESERVED. SOVEREIGN_ENGINE_BUILD_v2.04</span>
 <div class="flex gap-8">
 <a class="text-[10px] font-['JetBrains_Mono'] text-slate-600 hover:text-on-surface uppercase" href="#">Privacy Protocol</a>
 <a class="text-[10px] font-['JetBrains_Mono'] text-slate-600 hover:text-on-surface uppercase" href="#">Terms of Access</a>
