@@ -1,441 +1,298 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RetireRamp OS — Predictive Continuity Intelligence</title>
+  <title>Deep Nexivra | Execution Intelligence</title>
+  <meta
+    name="description"
+    content="Deep Nexivra is an execution intelligence platform for operators, founders, and modern businesses."
+  />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            bg: '#0b0c10',
-            panel: '#13151a',
-            panel2: '#1a1d24',
-            borderc: '#2a2f3b',
-            primary: '#5df7ec',
-            primaryDim: '#2ab6ac',
-            textMain: '#e7e9ee',
-            textSoft: '#9ea7b8',
-            warning: '#ffd166',
-            danger: '#ff7b7b',
-            ok: '#85f7a3'
-          },
-          boxShadow: {
-            glow: '0 0 0 1px rgba(93,247,236,.12), 0 8px 40px rgba(93,247,236,.08)',
-          },
-          animation: {
-            floaty: 'floaty 8s ease-in-out infinite',
-            pulseGlow: 'pulseGlow 2s ease-in-out infinite',
-          },
-          keyframes: {
-            floaty: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-7px)' },
-            },
-            pulseGlow: {
-              '0%, 100%': { boxShadow: '0 0 0 0 rgba(93,247,236,.35)' },
-              '70%': { boxShadow: '0 0 0 12px rgba(93,247,236,0)' },
-            },
-          },
-        }
-      }
-    }
-  </script>
-  <style>
-    html { scroll-behavior: smooth; }
-    .glass {
-      background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .grid-bg {
-      background-image:
-        radial-gradient(circle at 1px 1px, rgba(93,247,236,.18) 1px, transparent 0);
-      background-size: 24px 24px;
-    }
-    .risk-meter::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      width: var(--risk-width, 0%);
-      transition: width .5s ease;
-      background: linear-gradient(90deg, #85f7a3 0%, #ffd166 55%, #ff7b7b 100%);
-      border-radius: 9999px;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
-    }
-  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="bg-bg text-textMain font-['Inter'] selection:bg-primary selection:text-black overflow-x-hidden">
-  <div class="fixed inset-0 -z-10">
-    <div class="absolute inset-0 grid-bg opacity-20"></div>
-    <div class="absolute -top-32 left-1/2 -translate-x-1/2 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-[120px] animate-floaty"></div>
-  </div>
+<body>
+  <div class="site-bg"></div>
+  <div class="grid-overlay"></div>
 
-  <header class="fixed top-0 left-0 right-0 z-50 border-b border-borderc/70 bg-bg/70 backdrop-blur-xl">
-    <nav class="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
-      <a href="#top" class="font-['Space_Grotesk'] text-lg font-bold tracking-tight text-primary">RetireRamp OS</a>
-      <div class="hidden md:flex items-center gap-6 text-sm">
-        <a href="#platform" class="text-textSoft hover:text-primary">Platform</a>
-        <a href="#predictor" class="text-textSoft hover:text-primary">Predictor</a>
-        <a href="#methodology" class="text-textSoft hover:text-primary">Methodology</a>
+  <header class="header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark"></div>
+        <span>Deep Nexivra</span>
       </div>
-      <a href="#predictor" class="inline-flex items-center gap-2 rounded-md bg-primary text-black px-4 py-2 text-sm font-semibold hover:bg-primary/90">Run Assessment</a>
-    </nav>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#intelligence">Intelligence</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </header>
 
-  <main id="top" class="pt-20">
-    <section class="max-w-7xl mx-auto px-5 md:px-8 py-16 md:py-24" id="platform">
-      <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-10 items-center">
-        <div>
-          <div class="inline-flex items-center gap-2 text-xs tracking-[.16em] uppercase font-['JetBrains_Mono'] text-primary mb-5">
-            <span class="size-2 rounded-full bg-primary animate-pulseGlow"></span>
-            Sovereign Continuity Engine
-          </div>
-          <h1 class="font-['Space_Grotesk'] text-4xl md:text-6xl font-bold leading-tight">
-            Next-level continuity site with
-            <span class="text-primary">predictive answers</span>
-            from your own intake questions.
+  <main>
+    <section class="hero">
+      <div class="container hero-layout">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">Execution Intelligence Platform</div>
+          <h1>
+            Build decisions, systems, and outcomes
+            <span>with strategic precision.</span>
           </h1>
-          <p class="mt-6 text-textSoft max-w-2xl text-lg leading-relaxed">
-            This page is fully copy/paste ready. It includes a live risk intelligence form that converts question responses into a continuity risk score, confidence estimate, and actionable 30/60/90-day recommendations.
+          <p class="hero-text">
+            Deep Nexivra helps transform fragmented operations into a high-clarity
+            execution engine with intelligence layers, operational visibility,
+            and decision support built for modern growth.
           </p>
-          <div class="mt-8 grid sm:grid-cols-3 gap-4">
-            <div class="glass border border-borderc rounded-xl p-4">
-              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Forecast Horizon</p>
-              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">90 Days</p>
+
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">Request Demo</a>
+            <a href="#platform" class="btn btn-secondary">Explore Platform</a>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric-card">
+              <h3>01</h3>
+              <p>Unified operating layer</p>
             </div>
-            <div class="glass border border-borderc rounded-xl p-4">
-              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Risk Features</p>
-              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">7 Inputs</p>
+            <div class="metric-card">
+              <h3>02</h3>
+              <p>Signal-driven execution</p>
             </div>
-            <div class="glass border border-borderc rounded-xl p-4">
-              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Output Modes</p>
-              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">4 Views</p>
+            <div class="metric-card">
+              <h3>03</h3>
+              <p>Leadership-grade visibility</p>
             </div>
           </div>
         </div>
 
-        <aside class="glass border border-borderc rounded-2xl p-6 shadow-glow">
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="font-['Space_Grotesk'] text-xl font-semibold">Live Continuity Signal</h2>
-            <span class="text-xs font-['JetBrains_Mono'] text-primary">REALTIME</span>
-          </div>
-          <div class="space-y-4">
-            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
-              <p class="text-xs text-textSoft mb-1">Institutional Memory Coverage</p>
-              <p class="text-3xl font-bold text-ok">76%</p>
-            </div>
-            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
-              <p class="text-xs text-textSoft mb-1">Single-Point Dependency Index</p>
-              <p class="text-3xl font-bold text-warning">41 / 100</p>
-            </div>
-            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
-              <p class="text-xs text-textSoft mb-1">Readiness Velocity</p>
-              <p class="text-3xl font-bold text-primary">+12% QoQ</p>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="predictor" class="max-w-7xl mx-auto px-5 md:px-8 pb-20">
-      <div class="glass border border-borderc rounded-2xl overflow-hidden">
-        <div class="border-b border-borderc p-6 md:p-8">
-          <h2 class="font-['Space_Grotesk'] text-3xl font-bold">Continuity Predictor</h2>
-          <p class="text-textSoft mt-2">Answer the questions below. The model scores organizational fragility and predicts likely transition outcomes.</p>
-        </div>
-
-        <div class="grid lg:grid-cols-[1fr_.95fr]">
-          <form id="predictForm" class="p-6 md:p-8 space-y-5 bg-panel/50">
-            <div>
-              <label class="block text-sm mb-2">1) Team size impacted by transition</label>
-              <input id="teamSize" type="number" min="1" max="20000" value="45" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
-            </div>
-            <div>
-              <label class="block text-sm mb-2">2) Documented process coverage (%)</label>
-              <input id="docCoverage" type="range" min="0" max="100" value="55" class="w-full" />
-              <p class="text-xs text-textSoft mt-1"><span id="docCoverageVal">55</span>% documented</p>
-            </div>
-            <div>
-              <label class="block text-sm mb-2">3) Critical role concentration</label>
-              <select id="roleConcentration" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
-                <option value="low">Low (knowledge distributed)</option>
-                <option value="medium" selected>Medium</option>
-                <option value="high">High (knowledge concentrated)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm mb-2">4) Last 12-month attrition in key roles (%)</label>
-              <input id="attrition" type="number" min="0" max="100" value="18" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
-            </div>
-            <div>
-              <label class="block text-sm mb-2">5) Succession bench strength</label>
-              <select id="benchStrength" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
-                <option value="strong">Strong (2+ ready successors)</option>
-                <option value="moderate" selected>Moderate (1 likely successor)</option>
-                <option value="weak">Weak (no identified successor)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm mb-2">6) Knowledge transfer cadence</label>
-              <select id="transferCadence" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
-                <option value="weekly">Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="ad-hoc">Ad hoc only</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm mb-2">7) Operational incidents linked to handoff gaps (last quarter)</label>
-              <input id="incidents" type="number" min="0" max="100" value="3" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
+        <div class="hero-visual reveal delay-1">
+          <div class="dashboard-shell">
+            <div class="dashboard-topbar">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
 
-            <div class="pt-2 flex flex-wrap gap-3">
-              <button type="submit" class="rounded-md bg-primary text-black px-4 py-2 font-semibold hover:bg-primary/90">Predict Outcomes</button>
-              <button type="button" id="copySummary" class="rounded-md border border-borderc px-4 py-2 hover:border-primary hover:text-primary">Copy Executive Summary</button>
-            </div>
-          </form>
-
-          <div class="p-6 md:p-8 bg-panel2/60 border-t lg:border-t-0 lg:border-l border-borderc" id="resultsPanel">
-            <div class="flex items-center justify-between mb-5">
-              <h3 class="font-['Space_Grotesk'] text-2xl font-bold">Prediction Output</h3>
-              <span id="confidenceBadge" class="text-xs px-2 py-1 rounded bg-primary/15 text-primary font-['JetBrains_Mono']">Confidence: --</span>
-            </div>
-
-            <div class="rounded-xl border border-borderc p-4 mb-5 bg-panel">
-              <p class="text-sm text-textSoft mb-2">Continuity risk score</p>
-              <div class="relative h-3 bg-panel2 rounded-full overflow-hidden risk-meter" id="riskMeter" style="--risk-width:0%"></div>
-              <div class="mt-2 flex justify-between text-xs text-textSoft">
-                <span>Low</span><span>Moderate</span><span>High</span>
+            <div class="dashboard-content">
+              <div class="panel panel-large">
+                <div class="panel-header">
+                  <p>Execution Index</p>
+                  <span>Live</span>
+                </div>
+                <div class="signal-line">
+                  <div class="signal-dot"></div>
+                </div>
+                <div class="stat-row">
+                  <div>
+                    <h4>84%</h4>
+                    <p>System alignment</p>
+                  </div>
+                  <div>
+                    <h4>+29%</h4>
+                    <p>Operational uplift</p>
+                  </div>
+                  <div>
+                    <h4>12</h4>
+                    <p>Critical workflows</p>
+                  </div>
+                </div>
               </div>
-              <p id="riskLabel" class="mt-3 text-lg font-semibold">Run the model to view risk.</p>
-            </div>
 
-            <div class="grid sm:grid-cols-2 gap-4 mb-5">
-              <div class="rounded-xl border border-borderc bg-panel p-4">
-                <p class="text-xs text-textSoft mb-1">Predicted successor ramp time</p>
-                <p id="rampTime" class="text-2xl font-bold text-primary">--</p>
+              <div class="dashboard-grid">
+                <div class="panel">
+                  <div class="panel-header">
+                    <p>Active Streams</p>
+                    <span>06</span>
+                  </div>
+                  <div class="mini-bars">
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <p>Decision Layer</p>
+                    <span>AI</span>
+                  </div>
+                  <div class="radar-orb"></div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <p>Execution Load</p>
+                    <span>Stable</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill"></div>
+                  </div>
+                </div>
+
+                <div class="panel">
+                  <div class="panel-header">
+                    <p>Leadership View</p>
+                    <span>Online</span>
+                  </div>
+                  <ul class="status-list">
+                    <li><span></span>Priorities synchronized</li>
+                    <li><span></span>Workflow variance reduced</li>
+                    <li><span></span>Escalation paths visible</li>
+                  </ul>
+                </div>
               </div>
-              <div class="rounded-xl border border-borderc bg-panel p-4">
-                <p class="text-xs text-textSoft mb-1">Expected continuity exposure</p>
-                <p id="exposure" class="text-2xl font-bold text-warning">--</p>
-              </div>
-            </div>
-
-            <div class="rounded-xl border border-borderc bg-panel p-4 mb-5">
-              <p class="text-xs text-textSoft mb-2">Top model drivers</p>
-              <ul id="drivers" class="space-y-2 text-sm text-textMain list-disc list-inside">
-                <li>Awaiting assessment input.</li>
-              </ul>
-            </div>
-
-            <div class="rounded-xl border border-borderc bg-panel p-4">
-              <p class="text-xs text-textSoft mb-2">90-day research-informed action plan</p>
-              <ol id="actionPlan" class="space-y-2 text-sm list-decimal list-inside text-textMain">
-                <li>Model output will appear after you run the predictor.</li>
-              </ol>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="methodology" class="max-w-7xl mx-auto px-5 md:px-8 pb-24">
-      <div class="rounded-2xl border border-borderc bg-panel p-6 md:p-8">
-        <h2 class="font-['Space_Grotesk'] text-2xl font-bold mb-3">How this prediction works</h2>
-        <p class="text-textSoft mb-4">
-          The embedded model uses weighted scoring with transparent feature contributions. It is not a black box: each prediction exposes its top drivers and a recommended mitigation sequence. 
-          You can tune weights in the JavaScript block to match your own internal research findings.
-        </p>
-        <div class="grid md:grid-cols-3 gap-4 text-sm">
-          <div class="rounded-lg border border-borderc bg-panel2 p-4">
-            <p class="font-semibold text-primary mb-1">Feature Engineering</p>
-            <p class="text-textSoft">Converts team size, coverage, concentration, attrition, bench strength, transfer cadence, and incidents into normalized risk vectors.</p>
+    <section class="section" id="platform">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Platform</div>
+          <h2>A control surface for execution-heavy organizations.</h2>
+          <p>
+            Replace fragmented tracking, reactive coordination, and low-visibility
+            workflows with a structured operational intelligence layer.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal">
+            <div class="feature-index">01</div>
+            <h3>Execution Architecture</h3>
+            <p>
+              Create structured workflows, decision lanes, and accountability
+              systems that convert intent into measurable delivery.
+            </p>
+          </article>
+
+          <article class="feature-card reveal delay-1">
+            <div class="feature-index">02</div>
+            <h3>Strategic Visibility</h3>
+            <p>
+              Generate leadership-grade views across initiatives, risks, signal
+              points, and operational constraints.
+            </p>
+          </article>
+
+          <article class="feature-card reveal delay-2">
+            <div class="feature-index">03</div>
+            <h3>Signal Intelligence</h3>
+            <p>
+              Detect bottlenecks, inefficiencies, and hidden execution drag
+              before they expand into enterprise-level friction.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-section" id="capabilities">
+      <div class="container capability-layout">
+        <div class="capability-copy reveal">
+          <div class="eyebrow">Capabilities</div>
+          <h2>Designed for operators, builders, and high-agency teams.</h2>
+          <p>
+            The system is positioned to support execution strategy, process
+            intelligence, initiative tracking, and decision support inside a
+            modern interface.
+          </p>
+        </div>
+
+        <div class="capability-stack">
+          <div class="stack-card reveal">
+            <h3>Workflow Intelligence</h3>
+            <p>Map, optimize, and monitor execution paths.</p>
           </div>
-          <div class="rounded-lg border border-borderc bg-panel2 p-4">
-            <p class="font-semibold text-primary mb-1">Confidence Estimation</p>
-            <p class="text-textSoft">Confidence increases when inputs are internally consistent and complete; drops when values indicate ambiguity or volatility.</p>
+          <div class="stack-card reveal delay-1">
+            <h3>Decision Systems</h3>
+            <p>Translate complexity into clear operating choices.</p>
           </div>
-          <div class="rounded-lg border border-borderc bg-panel2 p-4">
-            <p class="font-semibold text-primary mb-1">Actionability Layer</p>
-            <p class="text-textSoft">Maps prediction classes to a 30/60/90-day plan for documentation, successor ramping, and incident prevention workflows.</p>
+          <div class="stack-card reveal delay-2">
+            <h3>Operational Analytics</h3>
+            <p>Surface trends, throughput, and constraint points.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="intelligence">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Intelligence Layer</div>
+          <h2>Built to feel like a live strategic operating environment.</h2>
+          <p>
+            Every interaction, surface, and motion cue is designed to communicate
+            confidence, control, and advanced systems thinking.
+          </p>
+        </div>
+
+        <div class="intelligence-board">
+          <div class="intel-card reveal">
+            <h3>Mission Control</h3>
+            <p>Centralize high-priority initiatives across business functions.</p>
+          </div>
+          <div class="intel-card reveal delay-1">
+            <h3>Signal Mapping</h3>
+            <p>Track friction points and convert them into action loops.</p>
+          </div>
+          <div class="intel-card reveal delay-2">
+            <h3>Executive View</h3>
+            <p>Present the system with clarity for leadership consumption.</p>
+          </div>
+          <div class="intel-card reveal delay-3">
+            <h3>Growth Layer</h3>
+            <p>Scale the platform into a broader decision and execution engine.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section" id="contact">
+      <div class="container">
+        <div class="cta-box reveal">
+          <div>
+            <div class="eyebrow">Deep Nexivra</div>
+            <h2>Ready to build a serious execution platform?</h2>
+            <p>
+              Establish the digital command layer now, then expand into dashboards,
+              workflows, client portals, AI agents, and enterprise-grade modules.
+            </p>
+          </div>
+          <a href="mailto:hello@deepnexivra.com" class="btn btn-primary">
+            Contact Now
+          </a>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="border-t border-borderc/70 bg-panel py-10">
-    <div class="max-w-7xl mx-auto px-5 md:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-      <p class="text-sm text-textSoft">© 2026 RetireRamp OS — Predictive Continuity Intelligence.</p>
-      <div class="flex gap-4 text-sm">
-        <a class="text-textSoft hover:text-primary" href="#platform">Platform</a>
-        <a class="text-textSoft hover:text-primary" href="#predictor">Predictor</a>
-        <a class="text-textSoft hover:text-primary" href="#methodology">Methodology</a>
+  <footer class="footer">
+    <div class="container footer-row">
+      <div>
+        <h3>Deep Nexivra</h3>
+        <p>Execution intelligence for modern business systems.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#intelligence">Intelligence</a>
       </div>
     </div>
   </footer>
 
-  <script>
-    const weights = {
-      teamSize: 0.08,
-      docCoverage: 0.22,
-      roleConcentration: 0.18,
-      attrition: 0.16,
-      benchStrength: 0.17,
-      transferCadence: 0.10,
-      incidents: 0.09
-    };
-
-    const roleFactor = { low: 0.2, medium: 0.55, high: 1 };
-    const benchFactor = { strong: 0.2, moderate: 0.6, weak: 1 };
-    const cadenceFactor = { weekly: 0.2, monthly: 0.55, 'ad-hoc': 1 };
-
-    const byId = (id) => document.getElementById(id);
-    const docCoverageInput = byId('docCoverage');
-    const docCoverageVal = byId('docCoverageVal');
-
-    docCoverageInput.addEventListener('input', () => {
-      docCoverageVal.textContent = docCoverageInput.value;
-    });
-
-    function normalizeNumber(v, min, max) {
-      return Math.max(0, Math.min(1, (v - min) / (max - min)));
-    }
-
-    function computeRisk(input) {
-      const normalized = {
-        teamSize: normalizeNumber(input.teamSize, 1, 300),
-        docCoverage: 1 - normalizeNumber(input.docCoverage, 0, 100),
-        roleConcentration: roleFactor[input.roleConcentration],
-        attrition: normalizeNumber(input.attrition, 0, 40),
-        benchStrength: benchFactor[input.benchStrength],
-        transferCadence: cadenceFactor[input.transferCadence],
-        incidents: normalizeNumber(input.incidents, 0, 12)
-      };
-
-      const contributions = Object.entries(weights).map(([k, w]) => ({
-        key: k,
-        value: normalized[k] * w
-      }));
-
-      const rawScore = contributions.reduce((sum, c) => sum + c.value, 0);
-      const score = Math.round(rawScore * 100);
-
-      const riskClass = score < 35 ? 'Low risk' : score < 65 ? 'Moderate risk' : 'High risk';
-      const rampDays = Math.round(25 + score * 0.95);
-      const exposure = score < 35 ? 'Contained' : score < 65 ? 'Manageable' : 'Elevated';
-      const consistency = 1 - Math.abs(normalized.docCoverage - normalized.transferCadence) * 0.25;
-      const confidence = Math.max(52, Math.min(96, Math.round((0.72 + consistency * 0.28) * 100 - score * 0.08)));
-
-      contributions.sort((a, b) => b.value - a.value);
-      return { score, riskClass, rampDays, exposure, confidence, contributions };
-    }
-
-    function labelForDriver(key) {
-      return {
-        teamSize: 'Large impacted team scope',
-        docCoverage: 'Low documented process coverage',
-        roleConcentration: 'Knowledge concentrated in key roles',
-        attrition: 'Elevated key-role attrition',
-        benchStrength: 'Limited successor bench depth',
-        transferCadence: 'Insufficient transfer cadence',
-        incidents: 'Operational incidents tied to handoff gaps'
-      }[key] || key;
-    }
-
-    function actionPlanFor(score) {
-      if (score < 35) {
-        return [
-          '30 days: Lock in current playbooks and record tacit decision logs for critical workflows.',
-          '60 days: Run one tabletop succession simulation to validate successor readiness.',
-          '90 days: Automate monthly knowledge transfer health checks and maintain low-risk posture.'
-        ];
-      }
-      if (score < 65) {
-        return [
-          '30 days: Prioritize top 3 fragile roles and create structured handoff briefs with owner sign-off.',
-          '60 days: Assign successor shadowing cycles and measure decision quality in parallel operations.',
-          '90 days: Deploy incident-prevention SOPs and move transfer cadence to weekly for critical roles.'
-        ];
-      }
-      return [
-        '30 days: Activate continuity task force, freeze undocumented critical changes, and start daily transfer standups.',
-        '60 days: Stand up redundancy for all high-dependency roles and execute two stress simulations.',
-        '90 days: Institutionalize succession governance with mandatory knowledge capture and escalation triggers.'
-      ];
-    }
-
-    function renderResult(model, input) {
-      byId('riskMeter').style.setProperty('--risk-width', `${model.score}%`);
-      byId('riskLabel').textContent = `${model.score}/100 — ${model.riskClass}`;
-      byId('rampTime').textContent = `${model.rampDays} days`;
-      byId('exposure').textContent = model.exposure;
-      byId('confidenceBadge').textContent = `Confidence: ${model.confidence}%`;
-
-      const drivers = byId('drivers');
-      drivers.innerHTML = '';
-      model.contributions.slice(0, 3).forEach((c) => {
-        const li = document.createElement('li');
-        li.textContent = `${labelForDriver(c.key)} (${Math.round(c.value * 100)} impact pts)`;
-        drivers.appendChild(li);
-      });
-
-      const plan = byId('actionPlan');
-      plan.innerHTML = '';
-      actionPlanFor(model.score).forEach((step) => {
-        const li = document.createElement('li');
-        li.textContent = step;
-        plan.appendChild(li);
-      });
-
-      const summary = `Continuity Predictor Summary\nRisk Score: ${model.score}/100 (${model.riskClass})\nConfidence: ${model.confidence}%\nPredicted Ramp Time: ${model.rampDays} days\nExposure: ${model.exposure}\nTop Drivers: ${model.contributions.slice(0, 3).map(c => labelForDriver(c.key)).join(', ')}\nInput Snapshot: ${JSON.stringify(input)}`;
-      byId('copySummary').dataset.summary = summary;
-    }
-
-    byId('predictForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const input = {
-        teamSize: Number(byId('teamSize').value || 0),
-        docCoverage: Number(byId('docCoverage').value || 0),
-        roleConcentration: byId('roleConcentration').value,
-        attrition: Number(byId('attrition').value || 0),
-        benchStrength: byId('benchStrength').value,
-        transferCadence: byId('transferCadence').value,
-        incidents: Number(byId('incidents').value || 0)
-      };
-
-      const model = computeRisk(input);
-      renderResult(model, input);
-    });
-
-    byId('copySummary').addEventListener('click', async () => {
-      const text = byId('copySummary').dataset.summary;
-      if (!text) {
-        alert('Run a prediction first, then copy summary.');
-        return;
-      }
-      try {
-        await navigator.clipboard.writeText(text);
-        byId('copySummary').textContent = 'Copied ✓';
-        setTimeout(() => { byId('copySummary').textContent = 'Copy Executive Summary'; }, 1200);
-      } catch {
-        alert('Clipboard copy failed in this browser.');
-      }
-    });
-
-    // Initial render with defaults.
-    byId('predictForm').dispatchEvent(new Event('submit'));
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
