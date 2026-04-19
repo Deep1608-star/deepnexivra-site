@@ -1,938 +1,441 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpsLens AI | SOP-Based Workforce Analysis</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #0c1414;
-        --bg-2: #111c1c;
-        --panel: rgba(255, 255, 255, 0.06);
-        --panel-2: rgba(255, 255, 255, 0.1);
-        --line: rgba(255, 255, 255, 0.12);
-        --text: #edf4f1;
-        --muted: #a9bbb5;
-        --accent: #58d6a3;
-        --accent-2: #bfffe3;
-        --warn: #ffbb5c;
-        --danger: #ff7f7f;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-        --radius-xl: 28px;
-        --radius-lg: 20px;
-        --radius-md: 14px;
-        --max: 1240px;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        font-family: "Manrope", sans-serif;
-        color: var(--text);
-        background:
-          radial-gradient(circle at top left, rgba(88, 214, 163, 0.24), transparent 28%),
-          radial-gradient(circle at 85% 12%, rgba(191, 255, 227, 0.1), transparent 24%),
-          linear-gradient(160deg, #091111 0%, #0e1717 45%, #091010 100%);
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        background-image:
-          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        background-size: 70px 70px;
-        mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-        opacity: 0.35;
-      }
-
-      .container {
-        width: min(calc(100% - 28px), var(--max));
-        margin: 0 auto;
-        padding: 24px 0 60px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 28px;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .brand-dot {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--accent), var(--accent-2));
-        box-shadow: 0 0 24px rgba(88, 214, 163, 0.55);
-      }
-
-      .brand h1 {
-        margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 1.1rem;
-        letter-spacing: 0.04em;
-      }
-
-      .nav {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-      }
-
-      .nav a {
-        color: var(--muted);
-        text-decoration: none;
-        font-size: 0.95rem;
-      }
-
-      .nav a:hover {
-        color: var(--text);
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: 20px;
-        margin-bottom: 22px;
-      }
-
-      .card {
-        border: 1px solid var(--line);
-        border-radius: var(--radius-xl);
-        background: linear-gradient(180deg, var(--panel-2), var(--panel));
-        backdrop-filter: blur(14px);
-        box-shadow: var(--shadow);
-      }
-
-      .hero-copy {
-        padding: 34px;
-      }
-
-      .eyebrow {
-        margin: 0 0 12px;
-        font-size: 0.74rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-        color: var(--accent-2);
-      }
-
-      .hero h2,
-      .section-title h3 {
-        margin: 0;
-        font-family: "Space Grotesk", sans-serif;
-        line-height: 0.95;
-        letter-spacing: -0.04em;
-      }
-
-      .hero h2 {
-        font-size: clamp(3rem, 7vw, 5.6rem);
-        max-width: 9ch;
-      }
-
-      .hero p.lead {
-        max-width: 52ch;
-        color: var(--muted);
-        line-height: 1.75;
-        margin: 20px 0 0;
-      }
-
-      .hero-actions {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-top: 28px;
-      }
-
-      .btn {
-        border: 0;
-        border-radius: 999px;
-        padding: 14px 20px;
-        font-weight: 800;
-        cursor: pointer;
-        font-family: inherit;
-      }
-
-      .btn-primary {
-        color: #092019;
-        background: linear-gradient(135deg, var(--accent), #87efc4);
-      }
-
-      .btn-secondary {
-        color: var(--text);
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--line);
-      }
-
-      .hero-side {
-        padding: 22px;
-        display: grid;
-        gap: 16px;
-      }
-
-      .mini-panel {
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 18px;
-        background: rgba(7, 13, 13, 0.5);
-      }
-
-      .mini-panel h4,
-      .panel-title {
-        margin: 0 0 10px;
-        font-size: 1rem;
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      .pill-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .pill {
-        padding: 8px 12px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.04);
-        font-size: 0.84rem;
-        color: var(--muted);
-      }
-
-      .grid-4 {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin-bottom: 22px;
-      }
-
-      .stat {
-        padding: 20px;
-      }
-
-      .stat span {
-        display: block;
-        color: var(--muted);
-        margin-bottom: 14px;
-        font-size: 0.88rem;
-      }
-
-      .stat strong {
-        font-size: 2rem;
-        font-family: "Space Grotesk", sans-serif;
-      }
-
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1.05fr 0.95fr;
-        gap: 20px;
-      }
-
-      .panel {
-        padding: 24px;
-      }
-
-      .section-title {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 18px;
-        margin-bottom: 18px;
-      }
-
-      .section-title p {
-        margin: 10px 0 0;
-        color: var(--muted);
-        max-width: 58ch;
-      }
-
-      .upload-zone {
-        border: 1px dashed rgba(191, 255, 227, 0.28);
-        border-radius: 18px;
-        padding: 18px;
-        background: rgba(88, 214, 163, 0.05);
-        margin-bottom: 18px;
-      }
-
-      .upload-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-      }
-
-      label {
-        display: block;
-        font-size: 0.88rem;
-        color: var(--muted);
-        margin-bottom: 8px;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--text);
-        border-radius: 12px;
-        padding: 12px 14px;
-        font: inherit;
-      }
-
-      textarea {
-        min-height: 110px;
-        resize: vertical;
-      }
-
-      .toolbar {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 14px;
-      }
-
-      .table-wrap {
-        overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 760px;
-      }
-
-      th,
-      td {
-        padding: 14px 16px;
-        text-align: left;
-        border-bottom: 1px solid var(--line);
-        vertical-align: top;
-      }
-
-      th {
-        color: var(--accent-2);
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.14em;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      tr:hover td {
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .tag {
-        display: inline-flex;
-        padding: 6px 10px;
-        border-radius: 999px;
-        font-size: 0.76rem;
-        font-weight: 700;
-      }
-
-      .tag.green {
-        background: rgba(88, 214, 163, 0.14);
-        color: #98ffd1;
-      }
-
-      .tag.yellow {
-        background: rgba(255, 187, 92, 0.14);
-        color: #ffd08a;
-      }
-
-      .tag.red {
-        background: rgba(255, 127, 127, 0.14);
-        color: #ffaaaa;
-      }
-
-      .stack {
-        display: grid;
-        gap: 16px;
-      }
-
-      .recommendation {
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        padding: 18px;
-        background: rgba(255, 255, 255, 0.04);
-      }
-
-      .recommendation h4 {
-        margin: 0 0 8px;
-      }
-
-      .recommendation p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.65;
-      }
-
-      .bar {
-        margin-top: 14px;
-        height: 10px;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-
-      .bar span {
-        display: block;
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, var(--accent), #9effd9);
-      }
-
-      .note {
-        margin-top: 16px;
-        padding: 14px 16px;
-        border-left: 3px solid var(--warn);
-        border-radius: 12px;
-        background: rgba(255, 187, 92, 0.09);
-        color: #ffe1b0;
-        font-size: 0.92rem;
-        line-height: 1.6;
-      }
-
-      .footer {
-        margin-top: 22px;
-        color: var(--muted);
-        font-size: 0.9rem;
-      }
-
-      .reveal {
-        opacity: 0;
-        transform: translateY(24px);
-        transition: 0.65s ease;
-      }
-
-      .reveal.show {
-        opacity: 1;
-        transform: none;
-      }
-
-      @media (max-width: 1024px) {
-        .hero,
-        .main-grid,
-        .grid-4,
-        .upload-grid {
-          grid-template-columns: 1fr;
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RetireRamp OS — Predictive Continuity Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            bg: '#0b0c10',
+            panel: '#13151a',
+            panel2: '#1a1d24',
+            borderc: '#2a2f3b',
+            primary: '#5df7ec',
+            primaryDim: '#2ab6ac',
+            textMain: '#e7e9ee',
+            textSoft: '#9ea7b8',
+            warning: '#ffd166',
+            danger: '#ff7b7b',
+            ok: '#85f7a3'
+          },
+          boxShadow: {
+            glow: '0 0 0 1px rgba(93,247,236,.12), 0 8px 40px rgba(93,247,236,.08)',
+          },
+          animation: {
+            floaty: 'floaty 8s ease-in-out infinite',
+            pulseGlow: 'pulseGlow 2s ease-in-out infinite',
+          },
+          keyframes: {
+            floaty: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-7px)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { boxShadow: '0 0 0 0 rgba(93,247,236,.35)' },
+              '70%': { boxShadow: '0 0 0 12px rgba(93,247,236,0)' },
+            },
+          },
         }
       }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .glass {
+      background: linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .grid-bg {
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(93,247,236,.18) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .risk-meter::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: var(--risk-width, 0%);
+      transition: width .5s ease;
+      background: linear-gradient(90deg, #85f7a3 0%, #ffd166 55%, #ff7b7b 100%);
+      border-radius: 9999px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-bg text-textMain font-['Inter'] selection:bg-primary selection:text-black overflow-x-hidden">
+  <div class="fixed inset-0 -z-10">
+    <div class="absolute inset-0 grid-bg opacity-20"></div>
+    <div class="absolute -top-32 left-1/2 -translate-x-1/2 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-[120px] animate-floaty"></div>
+  </div>
 
-      @media (max-width: 680px) {
-        .container {
-          width: min(calc(100% - 18px), var(--max));
-        }
+  <header class="fixed top-0 left-0 right-0 z-50 border-b border-borderc/70 bg-bg/70 backdrop-blur-xl">
+    <nav class="max-w-7xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
+      <a href="#top" class="font-['Space_Grotesk'] text-lg font-bold tracking-tight text-primary">RetireRamp OS</a>
+      <div class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#platform" class="text-textSoft hover:text-primary">Platform</a>
+        <a href="#predictor" class="text-textSoft hover:text-primary">Predictor</a>
+        <a href="#methodology" class="text-textSoft hover:text-primary">Methodology</a>
+      </div>
+      <a href="#predictor" class="inline-flex items-center gap-2 rounded-md bg-primary text-black px-4 py-2 text-sm font-semibold hover:bg-primary/90">Run Assessment</a>
+    </nav>
+  </header>
 
-        .header {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .hero-copy,
-        .panel {
-          padding: 20px;
-        }
-
-        .hero h2 {
-          font-size: clamp(2.5rem, 14vw, 4rem);
-        }
-
-        .section-title {
-          flex-direction: column;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        html {
-          scroll-behavior: auto;
-        }
-
-        *,
-        *::before,
-        *::after {
-          transition: none !important;
-          animation: none !important;
-        }
-
-        .reveal {
-          opacity: 1;
-          transform: none;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header class="header reveal">
-        <div class="brand">
-          <span class="brand-dot"></span>
-          <h1>OpsLens AI</h1>
-        </div>
-        <nav class="nav">
-          <a href="#analyzer">Analyzer</a>
-          <a href="#coverage">Coverage</a>
-          <a href="#recommendations">Recommendations</a>
-        </nav>
-      </header>
-
-      <section class="hero">
-        <div class="card hero-copy reveal">
-          <p class="eyebrow">SOP-based workforce analysis</p>
-          <h2>See which duties can be covered, automated, or reassigned.</h2>
-          <p class="lead">
-            Analyze company data, compare job duties against SOP maturity, and generate role
-            continuity plans. This demo focuses on coverage and process readiness, not blind
-            headcount cuts.
+  <main id="top" class="pt-20">
+    <section class="max-w-7xl mx-auto px-5 md:px-8 py-16 md:py-24" id="platform">
+      <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-10 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs tracking-[.16em] uppercase font-['JetBrains_Mono'] text-primary mb-5">
+            <span class="size-2 rounded-full bg-primary animate-pulseGlow"></span>
+            Sovereign Continuity Engine
+          </div>
+          <h1 class="font-['Space_Grotesk'] text-4xl md:text-6xl font-bold leading-tight">
+            Next-level continuity site with
+            <span class="text-primary">predictive answers</span>
+            from your own intake questions.
+          </h1>
+          <p class="mt-6 text-textSoft max-w-2xl text-lg leading-relaxed">
+            This page is fully copy/paste ready. It includes a live risk intelligence form that converts question responses into a continuity risk score, confidence estimate, and actionable 30/60/90-day recommendations.
           </p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" onclick="runAnalysis()">Run analysis</button>
-            <button class="btn btn-secondary" onclick="loadSampleData()">Load sample data</button>
-          </div>
-        </div>
-
-        <div class="card hero-side reveal">
-          <div class="mini-panel">
-            <h4>What it evaluates</h4>
-            <div class="pill-row">
-              <span class="pill">Employee duties</span>
-              <span class="pill">SOP coverage</span>
-              <span class="pill">Role criticality</span>
-              <span class="pill">Automation readiness</span>
-              <span class="pill">Risk flags</span>
+          <div class="mt-8 grid sm:grid-cols-3 gap-4">
+            <div class="glass border border-borderc rounded-xl p-4">
+              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Forecast Horizon</p>
+              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">90 Days</p>
+            </div>
+            <div class="glass border border-borderc rounded-xl p-4">
+              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Risk Features</p>
+              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">7 Inputs</p>
+            </div>
+            <div class="glass border border-borderc rounded-xl p-4">
+              <p class="text-xs font-['JetBrains_Mono'] text-textSoft">Output Modes</p>
+              <p class="text-2xl font-bold font-['Space_Grotesk'] text-primary">4 Views</p>
             </div>
           </div>
-          <div class="mini-panel">
-            <h4>Output</h4>
-            <p class="muted">
-              Replacement here means continuity planning: which duties can move to SOPs,
-              software, vendors, or other roles with acceptable risk.
-            </p>
+        </div>
+
+        <aside class="glass border border-borderc rounded-2xl p-6 shadow-glow">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="font-['Space_Grotesk'] text-xl font-semibold">Live Continuity Signal</h2>
+            <span class="text-xs font-['JetBrains_Mono'] text-primary">REALTIME</span>
           </div>
-        </div>
-      </section>
-
-      <section class="grid-4 reveal">
-        <div class="card stat">
-          <span>Total Roles</span>
-          <strong id="rolesCount">12</strong>
-        </div>
-        <div class="card stat">
-          <span>SOP Coverage</span>
-          <strong id="sopCoverage">74%</strong>
-        </div>
-        <div class="card stat">
-          <span>Automatable Duties</span>
-          <strong id="autoCoverage">38%</strong>
-        </div>
-        <div class="card stat">
-          <span>High Risk Roles</span>
-          <strong id="riskCount">3</strong>
-        </div>
-      </section>
-
-      <section class="main-grid">
-        <div class="card panel reveal" id="analyzer">
-          <div class="section-title">
-            <div>
-              <h3>Company Analyzer</h3>
-              <p>
-                Enter company context, SOP maturity, and role information. Then generate a
-                continuity analysis showing where duties can be standardized, automated, or
-                reassigned.
-              </p>
+          <div class="space-y-4">
+            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
+              <p class="text-xs text-textSoft mb-1">Institutional Memory Coverage</p>
+              <p class="text-3xl font-bold text-ok">76%</p>
+            </div>
+            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
+              <p class="text-xs text-textSoft mb-1">Single-Point Dependency Index</p>
+              <p class="text-3xl font-bold text-warning">41 / 100</p>
+            </div>
+            <div class="rounded-xl bg-panel2 p-4 border border-borderc">
+              <p class="text-xs text-textSoft mb-1">Readiness Velocity</p>
+              <p class="text-3xl font-bold text-primary">+12% QoQ</p>
             </div>
           </div>
+        </aside>
+      </div>
+    </section>
 
-          <div class="upload-zone">
-            <strong>Inputs</strong>
-            <p class="muted" style="margin: 8px 0 0;">
-              In a real app this would ingest CSVs, HRIS exports, SOP documents, and job
-              descriptions.
-            </p>
-          </div>
+    <section id="predictor" class="max-w-7xl mx-auto px-5 md:px-8 pb-20">
+      <div class="glass border border-borderc rounded-2xl overflow-hidden">
+        <div class="border-b border-borderc p-6 md:p-8">
+          <h2 class="font-['Space_Grotesk'] text-3xl font-bold">Continuity Predictor</h2>
+          <p class="text-textSoft mt-2">Answer the questions below. The model scores organizational fragility and predicts likely transition outcomes.</p>
+        </div>
 
-          <div class="upload-grid">
+        <div class="grid lg:grid-cols-[1fr_.95fr]">
+          <form id="predictForm" class="p-6 md:p-8 space-y-5 bg-panel/50">
             <div>
-              <label for="company">Company Name</label>
-              <input id="company" value="Northstar Logistics" />
+              <label class="block text-sm mb-2">1) Team size impacted by transition</label>
+              <input id="teamSize" type="number" min="1" max="20000" value="45" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
             </div>
             <div>
-              <label for="industry">Industry</label>
-              <select id="industry">
-                <option>Logistics</option>
-                <option>SaaS</option>
-                <option>Retail</option>
-                <option>Manufacturing</option>
-                <option>Healthcare</option>
+              <label class="block text-sm mb-2">2) Documented process coverage (%)</label>
+              <input id="docCoverage" type="range" min="0" max="100" value="55" class="w-full" />
+              <p class="text-xs text-textSoft mt-1"><span id="docCoverageVal">55</span>% documented</p>
+            </div>
+            <div>
+              <label class="block text-sm mb-2">3) Critical role concentration</label>
+              <select id="roleConcentration" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
+                <option value="low">Low (knowledge distributed)</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High (knowledge concentrated)</option>
               </select>
             </div>
             <div>
-              <label for="employeeCount">Employee Count</label>
-              <input id="employeeCount" type="number" value="185" />
+              <label class="block text-sm mb-2">4) Last 12-month attrition in key roles (%)</label>
+              <input id="attrition" type="number" min="0" max="100" value="18" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
             </div>
             <div>
-              <label for="sopMaturity">Average SOP Maturity</label>
-              <select id="sopMaturity">
-                <option>High</option>
-                <option selected>Medium</option>
-                <option>Low</option>
+              <label class="block text-sm mb-2">5) Succession bench strength</label>
+              <select id="benchStrength" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
+                <option value="strong">Strong (2+ ready successors)</option>
+                <option value="moderate" selected>Moderate (1 likely successor)</option>
+                <option value="weak">Weak (no identified successor)</option>
               </select>
             </div>
-          </div>
+            <div>
+              <label class="block text-sm mb-2">6) Knowledge transfer cadence</label>
+              <select id="transferCadence" class="w-full rounded-lg bg-panel2 border-borderc text-textMain">
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="ad-hoc">Ad hoc only</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm mb-2">7) Operational incidents linked to handoff gaps (last quarter)</label>
+              <input id="incidents" type="number" min="0" max="100" value="3" class="w-full rounded-lg bg-panel2 border-borderc text-textMain" />
+            </div>
 
-          <div style="margin-top: 16px;">
-            <label for="duties">Role / duty dataset</label>
-            <textarea id="duties">Operations Manager | Oversees dispatch, reviews KPIs, escalates failures | SOP: High | Criticality: High
-Dispatcher | Assigns deliveries, updates route boards, handles exceptions | SOP: Medium | Criticality: High
-Payroll Coordinator | Prepares payroll, verifies attendance, resolves deductions | SOP: High | Criticality: Medium
-Recruiter | Screens candidates, schedules interviews, updates ATS | SOP: Medium | Criticality: Medium
-Admin Assistant | Handles inbox triage, document prep, meeting notes | SOP: High | Criticality: Low
-Inventory Analyst | Reconciles counts, flags variances, creates reports | SOP: Medium | Criticality: Medium</textarea>
-          </div>
+            <div class="pt-2 flex flex-wrap gap-3">
+              <button type="submit" class="rounded-md bg-primary text-black px-4 py-2 font-semibold hover:bg-primary/90">Predict Outcomes</button>
+              <button type="button" id="copySummary" class="rounded-md border border-borderc px-4 py-2 hover:border-primary hover:text-primary">Copy Executive Summary</button>
+            </div>
+          </form>
 
-          <div class="toolbar">
-            <button class="btn btn-primary" onclick="runAnalysis()">Generate report</button>
-            <button class="btn btn-secondary" onclick="loadSampleData()">Reset sample</button>
-          </div>
+          <div class="p-6 md:p-8 bg-panel2/60 border-t lg:border-t-0 lg:border-l border-borderc" id="resultsPanel">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="font-['Space_Grotesk'] text-2xl font-bold">Prediction Output</h3>
+              <span id="confidenceBadge" class="text-xs px-2 py-1 rounded bg-primary/15 text-primary font-['JetBrains_Mono']">Confidence: --</span>
+            </div>
 
-          <div class="note">
-            Use this kind of system for workforce planning and process resilience. Decisions
-            affecting people should include human review, legal checks, and fairness review.
-          </div>
-        </div>
+            <div class="rounded-xl border border-borderc p-4 mb-5 bg-panel">
+              <p class="text-sm text-textSoft mb-2">Continuity risk score</p>
+              <div class="relative h-3 bg-panel2 rounded-full overflow-hidden risk-meter" id="riskMeter" style="--risk-width:0%"></div>
+              <div class="mt-2 flex justify-between text-xs text-textSoft">
+                <span>Low</span><span>Moderate</span><span>High</span>
+              </div>
+              <p id="riskLabel" class="mt-3 text-lg font-semibold">Run the model to view risk.</p>
+            </div>
 
-        <div class="stack">
-          <div class="card panel reveal" id="coverage">
-            <div class="section-title">
-              <div>
-                <h3>Coverage Snapshot</h3>
-                <p>Live summary based on the current inputs and sample role assumptions.</p>
+            <div class="grid sm:grid-cols-2 gap-4 mb-5">
+              <div class="rounded-xl border border-borderc bg-panel p-4">
+                <p class="text-xs text-textSoft mb-1">Predicted successor ramp time</p>
+                <p id="rampTime" class="text-2xl font-bold text-primary">--</p>
+              </div>
+              <div class="rounded-xl border border-borderc bg-panel p-4">
+                <p class="text-xs text-textSoft mb-1">Expected continuity exposure</p>
+                <p id="exposure" class="text-2xl font-bold text-warning">--</p>
               </div>
             </div>
 
-            <div class="recommendation">
-              <h4>Process Standardization</h4>
-              <p id="standardizationText">
-                Strongest gains are likely in repetitive admin and reporting duties where SOPs
-                already exist and exceptions are limited.
-              </p>
-              <div class="bar"><span id="bar1" style="width: 74%;"></span></div>
+            <div class="rounded-xl border border-borderc bg-panel p-4 mb-5">
+              <p class="text-xs text-textSoft mb-2">Top model drivers</p>
+              <ul id="drivers" class="space-y-2 text-sm text-textMain list-disc list-inside">
+                <li>Awaiting assessment input.</li>
+              </ul>
             </div>
 
-            <div class="recommendation">
-              <h4>Automation Readiness</h4>
-              <p id="automationText">
-                Automate scheduling support, reporting prep, ATS updates, and inbox triage
-                before touching high-judgment operational work.
-              </p>
-              <div class="bar"><span id="bar2" style="width: 38%;"></span></div>
-            </div>
-
-            <div class="recommendation">
-              <h4>Replacement Risk</h4>
-              <p id="riskText">
-                Roles with low SOP maturity and high exception handling should not be treated as
-                near-term replacement candidates.
-              </p>
-              <div class="bar"><span id="bar3" style="width: 26%; background: linear-gradient(90deg, var(--warn), #ffd692);"></span></div>
-            </div>
-          </div>
-
-          <div class="card panel reveal" id="recommendations">
-            <div class="section-title">
-              <div>
-                <h3>Recommendations</h3>
-                <p>Suggested actions ranked by continuity and operational safety.</p>
-              </div>
-            </div>
-
-            <div id="recommendationList" class="stack">
-              <div class="recommendation">
-                <h4>Automate low-risk administrative duties</h4>
-                <p>
-                  Move inbox sorting, interview scheduling, reporting assembly, and template
-                  document prep into workflow tools first.
-                </p>
-              </div>
-              <div class="recommendation">
-                <h4>Convert tribal knowledge into SOPs</h4>
-                <p>
-                  High-risk operational roles should be documented before any reassignment or
-                  staffing change is considered.
-                </p>
-              </div>
-              <div class="recommendation">
-                <h4>Reassign, don't abruptly remove</h4>
-                <p>
-                  Build coverage maps so critical duties can shift gradually to managers,
-                  shared-service teams, or software with fallback ownership.
-                </p>
-              </div>
+            <div class="rounded-xl border border-borderc bg-panel p-4">
+              <p class="text-xs text-textSoft mb-2">90-day research-informed action plan</p>
+              <ol id="actionPlan" class="space-y-2 text-sm list-decimal list-inside text-textMain">
+                <li>Model output will appear after you run the predictor.</li>
+              </ol>
             </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="card panel reveal" style="margin-top: 20px;">
-        <div class="section-title">
-          <div>
-            <h3>Role Continuity Matrix</h3>
-            <p>
-              Example output showing which roles are suitable for automation support,
-              reassignment, or full human retention.
-            </p>
+    <section id="methodology" class="max-w-7xl mx-auto px-5 md:px-8 pb-24">
+      <div class="rounded-2xl border border-borderc bg-panel p-6 md:p-8">
+        <h2 class="font-['Space_Grotesk'] text-2xl font-bold mb-3">How this prediction works</h2>
+        <p class="text-textSoft mb-4">
+          The embedded model uses weighted scoring with transparent feature contributions. It is not a black box: each prediction exposes its top drivers and a recommended mitigation sequence. 
+          You can tune weights in the JavaScript block to match your own internal research findings.
+        </p>
+        <div class="grid md:grid-cols-3 gap-4 text-sm">
+          <div class="rounded-lg border border-borderc bg-panel2 p-4">
+            <p class="font-semibold text-primary mb-1">Feature Engineering</p>
+            <p class="text-textSoft">Converts team size, coverage, concentration, attrition, bench strength, transfer cadence, and incidents into normalized risk vectors.</p>
+          </div>
+          <div class="rounded-lg border border-borderc bg-panel2 p-4">
+            <p class="font-semibold text-primary mb-1">Confidence Estimation</p>
+            <p class="text-textSoft">Confidence increases when inputs are internally consistent and complete; drops when values indicate ambiguity or volatility.</p>
+          </div>
+          <div class="rounded-lg border border-borderc bg-panel2 p-4">
+            <p class="font-semibold text-primary mb-1">Actionability Layer</p>
+            <p class="text-textSoft">Maps prediction classes to a 30/60/90-day plan for documentation, successor ramping, and incident prevention workflows.</p>
           </div>
         </div>
+      </div>
+    </section>
+  </main>
 
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Role</th>
-                <th>Primary Duties</th>
-                <th>SOP Level</th>
-                <th>Automation Fit</th>
-                <th>Continuity Action</th>
-                <th>Risk</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody">
-              <tr>
-                <td>Admin Assistant</td>
-                <td>Inbox triage, document prep, meeting notes</td>
-                <td><span class="tag green">High</span></td>
-                <td><span class="tag green">High</span></td>
-                <td>Automate + reassign oversight</td>
-                <td><span class="tag green">Low</span></td>
-              </tr>
-              <tr>
-                <td>Recruiter</td>
-                <td>Screening, scheduling, ATS updates</td>
-                <td><span class="tag yellow">Medium</span></td>
-                <td><span class="tag green">High</span></td>
-                <td>Hybrid support with human approval</td>
-                <td><span class="tag yellow">Medium</span></td>
-              </tr>
-              <tr>
-                <td>Dispatcher</td>
-                <td>Route assignment, exception handling</td>
-                <td><span class="tag yellow">Medium</span></td>
-                <td><span class="tag yellow">Medium</span></td>
-                <td>Decision support only</td>
-                <td><span class="tag red">High</span></td>
-              </tr>
-              <tr>
-                <td>Operations Manager</td>
-                <td>KPI review, escalations, judgment calls</td>
-                <td><span class="tag green">High</span></td>
-                <td><span class="tag yellow">Low</span></td>
-                <td>Retain human owner</td>
-                <td><span class="tag red">High</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="footer">
-          Demo concept only. For production, connect document parsing, role-based permissions,
-          audit logs, and a proper ML or rules engine for SOP-to-duty scoring.
-        </div>
-      </section>
+  <footer class="border-t border-borderc/70 bg-panel py-10">
+    <div class="max-w-7xl mx-auto px-5 md:px-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <p class="text-sm text-textSoft">© 2026 RetireRamp OS — Predictive Continuity Intelligence.</p>
+      <div class="flex gap-4 text-sm">
+        <a class="text-textSoft hover:text-primary" href="#platform">Platform</a>
+        <a class="text-textSoft hover:text-primary" href="#predictor">Predictor</a>
+        <a class="text-textSoft hover:text-primary" href="#methodology">Methodology</a>
+      </div>
     </div>
+  </footer>
 
-    <script>
-      const revealItems = document.querySelectorAll(".reveal");
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("show");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.15 }
-      );
-      revealItems.forEach((item) => observer.observe(item));
+  <script>
+    const weights = {
+      teamSize: 0.08,
+      docCoverage: 0.22,
+      roleConcentration: 0.18,
+      attrition: 0.16,
+      benchStrength: 0.17,
+      transferCadence: 0.10,
+      incidents: 0.09
+    };
 
-      function loadSampleData() {
-        document.getElementById("company").value = "Northstar Logistics";
-        document.getElementById("industry").value = "Logistics";
-        document.getElementById("employeeCount").value = 185;
-        document.getElementById("sopMaturity").value = "Medium";
-        document.getElementById("duties").value =
-`Operations Manager | Oversees dispatch, reviews KPIs, escalates failures | SOP: High | Criticality: High
-Dispatcher | Assigns deliveries, updates route boards, handles exceptions | SOP: Medium | Criticality: High
-Payroll Coordinator | Prepares payroll, verifies attendance, resolves deductions | SOP: High | Criticality: Medium
-Recruiter | Screens candidates, schedules interviews, updates ATS | SOP: Medium | Criticality: Medium
-Admin Assistant | Handles inbox triage, document prep, meeting notes | SOP: High | Criticality: Low
-Inventory Analyst | Reconciles counts, flags variances, creates reports | SOP: Medium | Criticality: Medium`;
-        runAnalysis();
+    const roleFactor = { low: 0.2, medium: 0.55, high: 1 };
+    const benchFactor = { strong: 0.2, moderate: 0.6, weak: 1 };
+    const cadenceFactor = { weekly: 0.2, monthly: 0.55, 'ad-hoc': 1 };
+
+    const byId = (id) => document.getElementById(id);
+    const docCoverageInput = byId('docCoverage');
+    const docCoverageVal = byId('docCoverageVal');
+
+    docCoverageInput.addEventListener('input', () => {
+      docCoverageVal.textContent = docCoverageInput.value;
+    });
+
+    function normalizeNumber(v, min, max) {
+      return Math.max(0, Math.min(1, (v - min) / (max - min)));
+    }
+
+    function computeRisk(input) {
+      const normalized = {
+        teamSize: normalizeNumber(input.teamSize, 1, 300),
+        docCoverage: 1 - normalizeNumber(input.docCoverage, 0, 100),
+        roleConcentration: roleFactor[input.roleConcentration],
+        attrition: normalizeNumber(input.attrition, 0, 40),
+        benchStrength: benchFactor[input.benchStrength],
+        transferCadence: cadenceFactor[input.transferCadence],
+        incidents: normalizeNumber(input.incidents, 0, 12)
+      };
+
+      const contributions = Object.entries(weights).map(([k, w]) => ({
+        key: k,
+        value: normalized[k] * w
+      }));
+
+      const rawScore = contributions.reduce((sum, c) => sum + c.value, 0);
+      const score = Math.round(rawScore * 100);
+
+      const riskClass = score < 35 ? 'Low risk' : score < 65 ? 'Moderate risk' : 'High risk';
+      const rampDays = Math.round(25 + score * 0.95);
+      const exposure = score < 35 ? 'Contained' : score < 65 ? 'Manageable' : 'Elevated';
+      const consistency = 1 - Math.abs(normalized.docCoverage - normalized.transferCadence) * 0.25;
+      const confidence = Math.max(52, Math.min(96, Math.round((0.72 + consistency * 0.28) * 100 - score * 0.08)));
+
+      contributions.sort((a, b) => b.value - a.value);
+      return { score, riskClass, rampDays, exposure, confidence, contributions };
+    }
+
+    function labelForDriver(key) {
+      return {
+        teamSize: 'Large impacted team scope',
+        docCoverage: 'Low documented process coverage',
+        roleConcentration: 'Knowledge concentrated in key roles',
+        attrition: 'Elevated key-role attrition',
+        benchStrength: 'Limited successor bench depth',
+        transferCadence: 'Insufficient transfer cadence',
+        incidents: 'Operational incidents tied to handoff gaps'
+      }[key] || key;
+    }
+
+    function actionPlanFor(score) {
+      if (score < 35) {
+        return [
+          '30 days: Lock in current playbooks and record tacit decision logs for critical workflows.',
+          '60 days: Run one tabletop succession simulation to validate successor readiness.',
+          '90 days: Automate monthly knowledge transfer health checks and maintain low-risk posture.'
+        ];
       }
-
-      function runAnalysis() {
-        const raw = document.getElementById("duties").value.trim();
-        const lines = raw.split("\n").filter(Boolean);
-
-        let highRisk = 0;
-        let automatable = 0;
-        let sopHighOrMedium = 0;
-        let rows = "";
-
-        lines.forEach((line) => {
-          const parts = line.split("|").map((p) => p.trim());
-          const role = parts[0] || "Unknown Role";
-          const duties = parts[1] || "No duties listed";
-          const sop = (parts[2] || "SOP: Medium").replace("SOP:", "").trim();
-          const criticality = (parts[3] || "Criticality: Medium").replace("Criticality:", "").trim();
-
-          const isAdminLike =
-            /admin|assistant|coordinator|recruit|payroll|analyst/i.test(role + " " + duties);
-          const isJudgmentHeavy =
-            /manager|exception|escalat|oversee|review|judgment|dispatch/i.test(role + " " + duties);
-
-          let automationFit = "Low";
-          let action = "Retain human owner";
-          let risk = "High";
-
-          if ((sop === "High" || sop === "Medium") && isAdminLike && criticality !== "High") {
-            automationFit = "High";
-            action = "Automate + reassign oversight";
-            risk = "Low";
-            automatable++;
-          } else if (sop === "Medium" && !isJudgmentHeavy) {
-            automationFit = "Medium";
-            action = "Hybrid support with human approval";
-            risk = "Medium";
-            automatable++;
-          } else if (sop === "High" && criticality === "Medium") {
-            automationFit = "Medium";
-            action = "Reassign with SOP guardrails";
-            risk = "Medium";
-          }
-
-          if (sop === "High" || sop === "Medium") sopHighOrMedium++;
-          if (risk === "High") highRisk++;
-
-          rows += `
-            <tr>
-              <td>${role}</td>
-              <td>${duties}</td>
-              <td><span class="tag ${tagClassFromLevel(sop)}">${sop}</span></td>
-              <td><span class="tag ${tagClassFromLevel(automationFit)}">${automationFit}</span></td>
-              <td>${action}</td>
-              <td><span class="tag ${tagClassFromLevel(risk)}">${risk}</span></td>
-            </tr>
-          `;
-        });
-
-        const totalRoles = lines.length || 1;
-        const sopCoverage = Math.round((sopHighOrMedium / totalRoles) * 100);
-        const automationRate = Math.round((automatable / totalRoles) * 100);
-        const riskRate = Math.round((highRisk / totalRoles) * 100);
-
-        document.getElementById("rolesCount").textContent = totalRoles;
-        document.getElementById("sopCoverage").textContent = sopCoverage + "%";
-        document.getElementById("autoCoverage").textContent = automationRate + "%";
-        document.getElementById("riskCount").textContent = highRisk;
-
-        document.getElementById("bar1").style.width = sopCoverage + "%";
-        document.getElementById("bar2").style.width = automationRate + "%";
-        document.getElementById("bar3").style.width = riskRate + "%";
-
-        document.getElementById("standardizationText").textContent =
-          sopCoverage >= 70
-            ? "Documentation quality is solid enough to standardize more cross-role duties."
-            : "Before major staffing shifts, SOP quality needs improvement across core workflows.";
-
-        document.getElementById("automationText").textContent =
-          automationRate >= 45
-            ? "A meaningful share of work appears suitable for automation support or handoff."
-            : "Automation opportunities exist, but most roles still need structured human oversight.";
-
-        document.getElementById("riskText").textContent =
-          riskRate >= 40
-            ? "Too many roles are still high risk for abrupt replacement. Focus on SOP hardening first."
-            : "Replacement risk is concentrated in a smaller set of judgment-heavy or exception-heavy roles.";
-
-        document.getElementById("tableBody").innerHTML = rows;
-
-        const recs = [];
-        if (sopCoverage < 70) {
-          recs.push({
-            title: "Raise SOP maturity before workforce changes",
-            text: "Document exception handling, approvals, and fallback paths so role continuity does not depend on tribal knowledge."
-          });
-        }
-        if (automationRate > 25) {
-          recs.push({
-            title: "Start with repetitive, rules-based work",
-            text: "Prioritize scheduling, data entry, triage, reporting prep, and document assembly before high-judgment functions."
-          });
-        }
-        if (highRisk > 0) {
-          recs.push({
-            title: "Protect high-risk roles with human-in-the-loop review",
-            text: "Dispatch, escalations, judgment calls, and incident handling should keep named human owners even if software assists."
-          });
-        }
-        recs.push({
-          title: "Design reassignment plans, not sudden removal",
-          text: "Use staged handoffs, shadow periods, and measurable service levels before shifting duties away from any role."
-        });
-
-        document.getElementById("recommendationList").innerHTML = recs
-          .map(
-            (rec) => `
-              <div class="recommendation">
-                <h4>${rec.title}</h4>
-                <p>${rec.text}</p>
-              </div>
-            `
-          )
-          .join("");
+      if (score < 65) {
+        return [
+          '30 days: Prioritize top 3 fragile roles and create structured handoff briefs with owner sign-off.',
+          '60 days: Assign successor shadowing cycles and measure decision quality in parallel operations.',
+          '90 days: Deploy incident-prevention SOPs and move transfer cadence to weekly for critical roles.'
+        ];
       }
+      return [
+        '30 days: Activate continuity task force, freeze undocumented critical changes, and start daily transfer standups.',
+        '60 days: Stand up redundancy for all high-dependency roles and execute two stress simulations.',
+        '90 days: Institutionalize succession governance with mandatory knowledge capture and escalation triggers.'
+      ];
+    }
 
-      function tagClassFromLevel(level) {
-        const v = String(level).toLowerCase();
-        if (v.includes("high") && !v.includes("risk")) return "green";
-        if (v.includes("medium")) return "yellow";
-        if (v.includes("low") && !v.includes("risk")) return "yellow";
-        if (v.includes("high")) return "red";
-        if (v.includes("low")) return "green";
-        return "yellow";
+    function renderResult(model, input) {
+      byId('riskMeter').style.setProperty('--risk-width', `${model.score}%`);
+      byId('riskLabel').textContent = `${model.score}/100 — ${model.riskClass}`;
+      byId('rampTime').textContent = `${model.rampDays} days`;
+      byId('exposure').textContent = model.exposure;
+      byId('confidenceBadge').textContent = `Confidence: ${model.confidence}%`;
+
+      const drivers = byId('drivers');
+      drivers.innerHTML = '';
+      model.contributions.slice(0, 3).forEach((c) => {
+        const li = document.createElement('li');
+        li.textContent = `${labelForDriver(c.key)} (${Math.round(c.value * 100)} impact pts)`;
+        drivers.appendChild(li);
+      });
+
+      const plan = byId('actionPlan');
+      plan.innerHTML = '';
+      actionPlanFor(model.score).forEach((step) => {
+        const li = document.createElement('li');
+        li.textContent = step;
+        plan.appendChild(li);
+      });
+
+      const summary = `Continuity Predictor Summary\nRisk Score: ${model.score}/100 (${model.riskClass})\nConfidence: ${model.confidence}%\nPredicted Ramp Time: ${model.rampDays} days\nExposure: ${model.exposure}\nTop Drivers: ${model.contributions.slice(0, 3).map(c => labelForDriver(c.key)).join(', ')}\nInput Snapshot: ${JSON.stringify(input)}`;
+      byId('copySummary').dataset.summary = summary;
+    }
+
+    byId('predictForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const input = {
+        teamSize: Number(byId('teamSize').value || 0),
+        docCoverage: Number(byId('docCoverage').value || 0),
+        roleConcentration: byId('roleConcentration').value,
+        attrition: Number(byId('attrition').value || 0),
+        benchStrength: byId('benchStrength').value,
+        transferCadence: byId('transferCadence').value,
+        incidents: Number(byId('incidents').value || 0)
+      };
+
+      const model = computeRisk(input);
+      renderResult(model, input);
+    });
+
+    byId('copySummary').addEventListener('click', async () => {
+      const text = byId('copySummary').dataset.summary;
+      if (!text) {
+        alert('Run a prediction first, then copy summary.');
+        return;
       }
+      try {
+        await navigator.clipboard.writeText(text);
+        byId('copySummary').textContent = 'Copied ✓';
+        setTimeout(() => { byId('copySummary').textContent = 'Copy Executive Summary'; }, 1200);
+      } catch {
+        alert('Clipboard copy failed in this browser.');
+      }
+    });
 
-      runAnalysis();
-    </script>
-  </body>
+    // Initial render with defaults.
+    byId('predictForm').dispatchEvent(new Event('submit'));
+  </script>
+</body>
 </html>
