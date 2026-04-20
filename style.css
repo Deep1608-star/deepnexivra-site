@@ -45,35 +45,6 @@ textarea {
   font: inherit;
 }
 
-.cursor-glow {
-  position: fixed;
-  width: 420px;
-  height: 420px;
-  left: 0;
-  top: 0;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(125, 255, 207, 0.12), rgba(116, 216, 255, 0.06) 35%, transparent 68%);
-  transform: translate(-50%, -50%);
-  z-index: 0;
-  filter: blur(10px);
-  opacity: 0.8;
-}
-
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.04;
-  background-image:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9) 0.6px, transparent 0.8px),
-    radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8) 0.5px, transparent 0.7px),
-    radial-gradient(circle at 40% 70%, rgba(255,255,255,0.8) 0.55px, transparent 0.8px);
-  background-size: 180px 180px, 220px 220px, 260px 260px;
-  mix-blend-mode: soft-light;
-}
-
 .site-bg {
   position: fixed;
   inset: 0;
@@ -109,15 +80,8 @@ textarea {
   z-index: 100;
   min-height: var(--nav-height);
   border-bottom: 1px solid rgba(255,255,255,0.04);
-  background: rgba(4, 7, 15, 0.45);
+  background: rgba(4, 7, 15, 0.65);
   backdrop-filter: blur(18px);
-  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
-}
-
-.header.scrolled {
-  background: rgba(6, 10, 20, 0.78);
-  border-color: rgba(255,255,255,0.08);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.22);
 }
 
 .nav {
@@ -158,30 +122,8 @@ textarea {
 }
 
 .nav-links a {
-  position: relative;
   color: var(--muted);
   font-size: 0.95rem;
-  transition: color var(--transition);
-}
-
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -8px;
-  width: 0;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  transition: width var(--transition);
-}
-
-.nav-links a:hover {
-  color: var(--text);
-}
-
-.nav-links a:hover::after {
-  width: 100%;
 }
 
 .menu-toggle {
@@ -270,11 +212,7 @@ textarea {
   padding: 0 22px;
   border-radius: 999px;
   font-weight: 700;
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition), color var(--transition);
-}
-
-.btn:hover {
-  transform: translateY(-3px);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
 
 .btn-primary {
@@ -394,20 +332,12 @@ textarea {
   border-radius: 14px;
   outline: none;
   padding: 14px 16px;
-  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
   display: block;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: rgba(255,255,255,0.42);
-}
-
-.form-group input:focus,
-.form-group textarea:focus {
-  border-color: rgba(125,255,207,0.55);
-  box-shadow: 0 0 0 4px rgba(125,255,207,0.08);
-  background: rgba(255,255,255,0.05);
 }
 
 .form-group textarea {
@@ -554,20 +484,6 @@ textarea {
   color: var(--muted);
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(36px) scale(0.985);
-  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.delay-1 { transition-delay: 120ms; }
-.delay-2 { transition-delay: 220ms; }
-
 @media (max-width: 1100px) {
   .hero-layout,
   .capability-layout {
@@ -581,10 +497,6 @@ textarea {
 }
 
 @media (max-width: 780px) {
-  .cursor-glow {
-    display: none;
-  }
-
   .nav-links {
     position: absolute;
     top: calc(var(--nav-height) - 4px);
