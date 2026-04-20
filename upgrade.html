@@ -1,117 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upgrade to Pro | Deep Nexivra</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upgrade to Pro</title>
+
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AcQW8-oTG-BH7FwDXscEnai2PF5pO1U3D2B9VK6MeEzU_0xlHoGckUoT7IggIbIGhfjq4XzX47g7p9lR&currency=USD"></script>
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #0a0f1c;
+      background: radial-gradient(circle at center, #0f2027, #203a43, #0f2027);
       color: white;
-      text-align: center;
-      padding: 50px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
 
-    .box {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 30px;
+    .card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
       border-radius: 20px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
     }
 
     h1 {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      font-size: 28px;
     }
 
     p {
-      color: #c7d2ea;
-      line-height: 1.6;
+      opacity: 0.8;
+      margin-bottom: 25px;
     }
 
     #paypal-button-container {
-      margin-top: 24px;
+      margin-top: 20px;
     }
 
-    .note {
-      margin-top: 18px;
-      font-size: 14px;
-      color: #92a0be;
+    .price {
+      margin-top: 20px;
+      font-size: 16px;
+      opacity: 0.7;
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
+
+  <div class="card">
     <h1>Upgrade to Pro</h1>
-    <p>Unlock full execution roadmap, monetization strategy, first customer plan, and premium analysis.</p>
+    <p>Unlock full execution roadmap, monetization strategy, and premium AI insights.</p>
+
     <div id="paypal-button-container"></div>
-    <div class="note">Price: $9 USD</div>
+
+    <div class="price">Price: $9 USD</div>
   </div>
 
   <script>
-    async function loadPayPal() {
-      const configRes = await fetch("/api/paypal-config");
-      const config = await configRes.json();
+    paypal.Buttons({
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: '9.00'
+            }
+          }]
+        });
+      },
 
-      if (!config.clientId) {
-        document.getElementById("paypal-button-container").innerHTML = "Missing PayPal client ID.";
-        return;
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+          // Save unlock locally
+          localStorage.setItem("premiumUser", "true");
+
+          // Redirect after payment
+          window.location.href = "/success.html";
+        });
+      },
+
+      onError: function(err) {
+        console.error(err);
+        alert("Payment failed. Please try again.");
       }
 
-      const script = document.createElement("script");
-      script.src = `https://www.paypal.com/sdk/js?client-id=${config.clientId}&currency=USD&intent=capture`;
-      script.onload = renderButtons;
-      document.head.appendChild(script);
-    }
-
-    function renderButtons() {
-      paypal.Buttons({
-        async createOrder() {
-          const res = await fetch("/api/paypal-create-order", {
-            method: "POST"
-          });
-          const data = await res.json();
-
-          if (!data.ok || !data.id) {
-            throw new Error(data.message || "Unable to create PayPal order");
-          }
-
-          return data.id;
-        },
-
-        async onApprove(data) {
-          const res = await fetch("/api/paypal-capture-order", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              orderID: data.orderID
-            })
-          });
-
-          const capture = await res.json();
-
-          if (!capture.ok) {
-            alert(capture.message || "Payment capture failed");
-            return;
-          }
-
-          localStorage.setItem("isPaidUser", "true");
-          window.location.href = "/success.html";
-        },
-
-        onError(err) {
-          alert("PayPal error. Please try again.");
-          console.error(err);
-        }
-      }).render("#paypal-button-container");
-    }
-
-    loadPayPal();
+    }).render('#paypal-button-container');
   </script>
+
 </body>
 </html>
