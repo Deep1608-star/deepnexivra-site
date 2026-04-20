@@ -28,7 +28,18 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are an execution intelligence analyst.
+You are an advanced execution intelligence system.
+
+Analyze the business idea with REAL-WORLD execution logic.
+
+Consider:
+- Location impact
+- Market demand
+- Competition
+- Labor needs
+- Time to launch
+- Costs
+- ROI potential
 
 Return ONLY valid JSON:
 
@@ -36,8 +47,11 @@ Return ONLY valid JSON:
   "marketSummary": "",
   "executionDifficulty": "",
   "riskLevel": "",
-  "basicSteps": [],
+  "timeToLaunch": "",
+  "laborNeeds": "",
   "estimatedCostRange": "",
+  "roiPotential": "",
+  "basicSteps": [],
   "verdict": ""
 }
 `
