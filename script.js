@@ -27,6 +27,17 @@ function renderList(items) {
   return (items || []).map(item => `<li>${item}</li>`).join("");
 }
 
+// 🔥 Fallback decision logic (VERY IMPORTANT)
+function deriveDecision(score) {
+  if (score >= 75) return "START";
+  if (score >= 50) return "CAUTION";
+  return "DO_NOT_START";
+}
+
+function deriveConfidence(score) {
+  return Math.max(55, Math.min(95, score));
+}
+
 function getDecisionConfig(decision) {
   switch (decision) {
     case "START":
@@ -98,37 +109,35 @@ if (analyzeBtn && ideaInput && analysisResult) {
 
       if (!res.ok || !data.ok) {
         analysisResult.innerHTML = `
-          <h3 style="color:white; margin-bottom:12px;">Error</h3>
+          <h3 style="color:white;">Error</h3>
           <p>${data.message || "Something went wrong."}</p>
-          ${data.raw ? `<pre style="white-space:pre-wrap; margin-top:12px;">${data.raw}</pre>` : ""}
         `;
         return;
       }
 
       const result = data.result || {};
-      const score = Number(result.viabilityScore || 0);
-      const confidence = Number(result.confidence || 0);
-      const decisionConfig = getDecisionConfig(result.decision);
+      const score = Number(result.viabilityScore || 50);
+
+      // 🔥 FALLBACK SAFE VALUES
+      const decision = result.decision || deriveDecision(score);
+      const confidence = result.confidence || deriveConfidence(score);
+
+      const config = getDecisionConfig(decision);
 
       analysisResult.innerHTML = `
         <h3 style="color:white; margin-bottom:14px;">Execution Analysis</h3>
 
-        <div style="
-          display:flex;
-          gap:12px;
-          flex-wrap:wrap;
-          margin-bottom:18px;
-        ">
+        <!-- DECISION BADGE -->
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
           <div style="
             padding:10px 14px;
             border-radius:999px;
-            background:${decisionConfig.bg};
-            border:1px solid ${decisionConfig.border};
-            color:${decisionConfig.text};
+            background:${config.bg};
+            border:1px solid ${config.border};
+            color:${config.text};
             font-weight:800;
-            letter-spacing:0.04em;
           ">
-            ${decisionConfig.label}
+            ${config.label}
           </div>
 
           <div style="
@@ -143,6 +152,7 @@ if (analyzeBtn && ideaInput && analysisResult) {
           </div>
         </div>
 
+        <!-- SUMMARY -->
         <div style="
           padding:16px;
           border:1px solid rgba(125,255,207,0.25);
@@ -150,56 +160,37 @@ if (analyzeBtn && ideaInput && analysisResult) {
           background:rgba(125,255,207,0.05);
           margin-bottom:18px;
         ">
-          <div style="font-size:13px; color:#7dffcf; margin-bottom:6px; font-weight:600;">
+          <div style="color:#7dffcf; font-weight:600; margin-bottom:6px;">
             AI DECISION SUMMARY
           </div>
-          <div style="font-size:15px; line-height:1.6;">
-            ${result.verdict || "No summary available"}
-          </div>
+          ${result.verdict || "No summary available"}
         </div>
 
-        <div style="display:grid; gap:12px; margin-bottom:18px;">
-          <div style="
-            padding:14px 16px;
-            border:1px solid rgba(255,255,255,0.08);
-            border-radius:14px;
-            background:rgba(255,255,255,0.03);
-          ">
-            <div style="font-size:13px; color:#9aa8c7; margin-bottom:6px;">
-              Viability Score
-            </div>
-            <div style="font-size:28px; font-weight:800; color:white;">
-              ${score}/100
-            </div>
-            <div style="color:#7dffcf; font-weight:600;">
-              ${getScoreLabel(score)}
-            </div>
-          </div>
+        <!-- SCORE -->
+        <div style="margin-bottom:18px;">
+          <div style="font-size:28px; font-weight:800;">${score}/100</div>
+          <div style="color:#7dffcf;">${getScoreLabel(score)}</div>
         </div>
 
         <p><b>Business Summary:</b> ${result.businessSummary || "N/A"}</p>
         <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
         <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
         <p><b>Risk:</b> ${result.riskLevel || "N/A"}</p>
-        <p><b>Time to Launch:</b> ${result.timeToLaunch || "N/A"}</p>
-        <p><b>Labor Needed:</b> ${result.laborNeeds || "N/A"}</p>
+        <p><b>Time:</b> ${result.timeToLaunch || "N/A"}</p>
+        <p><b>Labor:</b> ${result.laborNeeds || "N/A"}</p>
         <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
-        <p><b>ROI Potential:</b> ${result.roiPotential || "N/A"}</p>
+        <p><b>ROI:</b> ${result.roiPotential || "N/A"}</p>
 
-        <h4 style="margin-top:18px; color:white;">First 30-Day Plan</h4>
-        <ul style="padding-left:20px; margin-top:8px;">
-          ${renderList(result.first30DayPlan)}
-        </ul>
+        <h4 style="margin-top:18px;">First 30-Day Plan</h4>
+        <ul>${renderList(result.first30DayPlan)}</ul>
 
-        <h4 style="margin-top:18px; color:white;">Execution Steps</h4>
-        <ul style="padding-left:20px; margin-top:8px;">
-          ${renderList(result.basicSteps)}
-        </ul>
+        <h4 style="margin-top:18px;">Execution Steps</h4>
+        <ul>${renderList(result.basicSteps)}</ul>
       `;
     } catch (err) {
       analysisResult.innerHTML = `
-        <h3 style="color:white; margin-bottom:12px;">Error</h3>
-        <p>${err.message || "Something went wrong"}</p>
+        <h3 style="color:white;">Error</h3>
+        <p>${err.message}</p>
       `;
     }
   });
