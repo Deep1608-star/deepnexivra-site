@@ -1,120 +1,65 @@
-const header = document.querySelector(".header");
-const revealElements = document.querySelectorAll(".reveal");
-const navLinks = document.getElementById("navLinks");
-const menuToggle = document.getElementById("menuToggle");
-const cursorGlow = document.querySelector(".cursor-glow");
-const magneticButtons = document.querySelectorAll(".magnetic");
-
-const ideaInput = document.getElementById("ideaInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
+const ideaInput = document.getElementById("ideaInput");
 const analysisResult = document.getElementById("analysisResult");
 
-if (cursorGlow) {
-  window.addEventListener("mousemove", (e) => {
-    cursorGlow.style.left = `${e.clientX}px`;
-    cursorGlow.style.top = `${e.clientY}px`;
-  });
-}
+analyzeBtn.addEventListener("click", async () => {
+  const idea = ideaInput.value.trim();
+  const location = document.getElementById("locationInput").value;
+  const budget = document.getElementById("budgetInput").value;
+  const timeline = document.getElementById("timelineInput").value;
 
-window.addEventListener("scroll", () => {
-  if (header) {
-    if (window.scrollY > 20) {
-      header.classList.add("scrolled");
-    } else {
-      header.classList.remove("scrolled");
-    }
+  if (!idea) {
+    analysisResult.innerHTML = "Please enter a business idea";
+    return;
   }
-});
 
-if (menuToggle && navLinks) {
-  menuToggle.addEventListener("click", () => {
-    navLinks.classList.toggle("open");
-  });
-}
+  analysisResult.innerHTML = "Analyzing...";
 
-document.querySelectorAll(".nav-links a").forEach((link) => {
-  link.addEventListener("click", () => {
-    if (navLinks) navLinks.classList.remove("open");
-  });
-});
-
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        revealObserver.unobserve(entry.target);
-      }
+  try {
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idea,
+        location,
+        budget,
+        timeline
+      })
     });
-  },
-  { threshold: 0.12 }
-);
 
-revealElements.forEach((el) => revealObserver.observe(el));
+    const data = await res.json();
 
-magneticButtons.forEach((button) => {
-  button.addEventListener("mousemove", (e) => {
-    const rect = button.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    button.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
-  });
-
-  button.addEventListener("mouseleave", () => {
-    button.style.transform = "translate(0, 0)";
-  });
-});
-
-if (analyzeBtn && ideaInput && analysisResult) {
-  analyzeBtn.addEventListener("click", async () => {
-    const idea = ideaInput.value.trim();
-
-    if (!idea) {
-      analysisResult.style.display = "block";
-      analysisResult.innerHTML = "Please enter a business idea first.";
+    if (!data.ok) {
+      analysisResult.innerHTML = "Error analyzing idea";
       return;
     }
 
-    analysisResult.style.display = "block";
-    analysisResult.innerHTML = "Analyzing...";
+    const result = data.result;
 
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ idea })
-      });
+    analysisResult.innerHTML = `
+      <h3 style="color:white;">Execution Analysis</h3>
 
-      const data = await res.json();
+      <p><b>Market:</b> ${result.marketSummary}</p>
+      <p><b>Difficulty:</b> ${result.executionDifficulty}</p>
+      <p><b>Risk:</b> ${result.riskLevel}</p>
 
-      if (!data.ok) {
-        analysisResult.innerHTML = data.message || "Error analyzing idea";
-        return;
-      }
+      <p><b>Time to Launch:</b> ${result.timeToLaunch}</p>
+      <p><b>Labor Needed:</b> ${result.laborNeeds}</p>
 
-      const result = data.result;
+      <p><b>Cost:</b> ${result.estimatedCostRange}</p>
+      <p><b>ROI Potential:</b> ${result.roiPotential}</p>
 
-      analysisResult.innerHTML = `
-        <h3 style="color:white; margin-bottom:12px;">Execution Analysis</h3>
+      <p><b>Verdict:</b> ${result.verdict}</p>
 
-        <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
-        <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
-        <p><b>Risk:</b> ${result.riskLevel || "N/A"}</p>
-        <p><b>Time to Launch:</b> ${result.timeToLaunch || "N/A"}</p>
-        <p><b>Labor Needed:</b> ${result.laborNeeds || "N/A"}</p>
-        <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
-        <p><b>ROI Potential:</b> ${result.roiPotential || "N/A"}</p>
-        <p><b>Verdict:</b> ${result.verdict || "N/A"}</p>
+      <h4>Execution Steps:</h4>
+      <ul>
+        ${(result.basicSteps || []).map(step => `<li>${step}</li>`).join("")}
+      </ul>
+    `;
 
-        <h4 style="margin-top:12px;">Execution Steps:</h4>
-        <ul style="padding-left:20px;">
-          ${(result.basicSteps || []).map(step => `<li>${step}</li>`).join("")}
-        </ul>
-      `;
-    } catch (err) {
-      analysisResult.innerHTML = "Something went wrong";
-    }
-  });
-}
+  } catch (err) {
+    analysisResult.innerHTML = "Something went wrong";
+  }
+});
