@@ -1,202 +1,102 @@
-const navLinks = document.getElementById("navLinks");
-const menuToggle = document.getElementById("menuToggle");
-
 const ideaInput = document.getElementById("ideaInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
 const analysisResult = document.getElementById("analysisResult");
 
-if (menuToggle && navLinks) {
-  menuToggle.addEventListener("click", () => {
-    navLinks.classList.toggle("open");
-  });
-}
-
-document.querySelectorAll(".nav-links a").forEach((link) => {
-  link.addEventListener("click", () => {
-    if (navLinks) navLinks.classList.remove("open");
-  });
-});
-
-function getScoreLabel(score) {
-  if (score >= 75) return "Strong";
-  if (score >= 50) return "Moderate";
-  return "Weak";
-}
+const isPaidUser = false; // 🔥 CHANGE TO TRUE AFTER STRIPE
 
 function renderList(items) {
-  return (items || []).map(item => `<li>${item}</li>`).join("");
+  return (items || []).map(i => `<li>${i}</li>`).join("");
 }
 
-function deriveDecision(score) {
-  if (score >= 75) return "START";
-  if (score >= 50) return "CAUTION";
-  return "DO_NOT_START";
-}
-
-function deriveConfidence(score) {
-  return Math.max(55, Math.min(95, score));
-}
-
-function getDecisionConfig(decision) {
-  switch (decision) {
-    case "START":
-      return {
-        label: "START",
-        bg: "rgba(125,255,207,0.10)",
-        border: "rgba(125,255,207,0.35)",
-        text: "#7dffcf"
-      };
-    case "CAUTION":
-      return {
-        label: "CAUTION",
-        bg: "rgba(255,200,87,0.10)",
-        border: "rgba(255,200,87,0.35)",
-        text: "#ffd166"
-      };
-    case "DO_NOT_START":
-      return {
-        label: "DO NOT START",
-        bg: "rgba(255,107,107,0.10)",
-        border: "rgba(255,107,107,0.35)",
-        text: "#ff7b7b"
-      };
-    default:
-      return {
-        label: "UNDECIDED",
-        bg: "rgba(255,255,255,0.06)",
-        border: "rgba(255,255,255,0.18)",
-        text: "#ffffff"
-      };
-  }
-}
-
-if (analyzeBtn && ideaInput && analysisResult) {
+if (analyzeBtn) {
   analyzeBtn.addEventListener("click", async () => {
-    const locationInput = document.getElementById("locationInput");
-    const budgetInput = document.getElementById("budgetInput");
-    const timelineInput = document.getElementById("timelineInput");
-
     const idea = ideaInput.value.trim();
-    const location = locationInput ? locationInput.value.trim() : "";
-    const budget = budgetInput ? budgetInput.value.trim() : "";
-    const timeline = timelineInput ? timelineInput.value.trim() : "";
+    const location = document.getElementById("locationInput").value;
+    const budget = document.getElementById("budgetInput").value;
+    const timeline = document.getElementById("timelineInput").value;
 
     if (!idea) {
-      analysisResult.style.display = "block";
-      analysisResult.innerHTML = "Please enter a business idea first.";
+      analysisResult.innerHTML = "Enter idea first";
       return;
     }
 
-    analysisResult.style.display = "block";
     analysisResult.innerHTML = "Analyzing...";
 
-    try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          idea,
-          location,
-          budget,
-          timeline
-        })
-      });
+    const res = await fetch("/api/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idea,
+        location,
+        budget,
+        timeline,
+        isPaid: isPaidUser
+      })
+    });
 
-      const data = await res.json();
+    const data = await res.json();
+    const r = data.result || {};
 
-      if (!res.ok || !data.ok) {
-        analysisResult.innerHTML = `
-          <h3 style="color:white;">Error</h3>
-          <p>${data.message || "Something went wrong."}</p>
-        `;
-        return;
-      }
+    analysisResult.innerHTML = `
+      <h2>Execution Analysis</h2>
 
-      const result = data.result || {};
-      const score = Number(result.viabilityScore || 50);
-      const decision = result.decision || deriveDecision(score);
-      const confidence = result.confidence || deriveConfidence(score);
-      const config = getDecisionConfig(decision);
+      <h3>${r.decision || ""} (${r.confidence || ""}%)</h3>
 
-      analysisResult.innerHTML = `
-        <h3 style="color:white; margin-bottom:14px;">Execution Analysis</h3>
+      <p><b>Score:</b> ${r.viabilityScore}</p>
+      <p>${r.verdict}</p>
 
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
-          <div style="
-            padding:10px 14px;
-            border-radius:999px;
-            background:${config.bg};
-            border:1px solid ${config.border};
-            color:${config.text};
-            font-weight:800;
-          ">
-            ${config.label}
-          </div>
+      <p><b>Business:</b> ${r.businessSummary}</p>
+      <p><b>Market:</b> ${r.marketSummary}</p>
 
-          <div style="
-            padding:10px 14px;
-            border-radius:999px;
-            background:rgba(255,255,255,0.04);
-            border:1px solid rgba(255,255,255,0.08);
-            color:white;
-            font-weight:700;
-          ">
-            Confidence: ${confidence}%
-          </div>
-        </div>
+      <p><b>Difficulty:</b> ${r.executionDifficulty}</p>
+      <p><b>Risk:</b> ${r.riskLevel}</p>
 
+      <p><b>Time:</b> ${r.timeToLaunch}</p>
+      <p><b>Cost:</b> ${r.estimatedCostRange}</p>
+      <p><b>ROI:</b> ${r.roiPotential}</p>
+
+      ${r.pricingStrategy ? `
+        <h3>Pricing Strategy</h3>
+        <p>${r.pricingStrategy}</p>
+
+        <h3>Revenue Model</h3>
+        <p>${r.revenueModel}</p>
+
+        <h3>First Customers</h3>
+        <ul>${renderList(r.firstCustomerPlan)}</ul>
+
+        <h3>Monetization Steps</h3>
+        <ul>${renderList(r.monetizationSteps)}</ul>
+
+        <h3>30 Day Plan</h3>
+        <ul>${renderList(r.first30DayPlan)}</ul>
+
+        <h3>Execution</h3>
+        <ul>${renderList(r.basicSteps)}</ul>
+      ` : `
         <div style="
-          padding:16px;
-          border:1px solid rgba(125,255,207,0.25);
-          border-radius:16px;
-          background:rgba(125,255,207,0.05);
-          margin-bottom:18px;
+          margin-top:20px;
+          padding:20px;
+          border-radius:12px;
+          background:#111;
+          text-align:center;
         ">
-          <div style="color:#7dffcf; font-weight:600; margin-bottom:6px;">
-            AI DECISION SUMMARY
-          </div>
-          ${result.verdict || "No summary available"}
+          <h3>Unlock Full Plan</h3>
+          <p>Get monetization + execution roadmap</p>
+
+          <button onclick="window.location.href='/upgrade.html'" style="
+            padding:12px 20px;
+            background:#7dffcf;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+          ">
+            Upgrade for $9
+          </button>
         </div>
-
-        <div style="margin-bottom:18px;">
-          <div style="font-size:28px; font-weight:800;">${score}/100</div>
-          <div style="color:#7dffcf;">${getScoreLabel(score)}</div>
-        </div>
-
-        <p><b>Business Summary:</b> ${result.businessSummary || "N/A"}</p>
-        <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
-        <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
-        <p><b>Risk:</b> ${result.riskLevel || "N/A"}</p>
-        <p><b>Time:</b> ${result.timeToLaunch || "N/A"}</p>
-        <p><b>Labor:</b> ${result.laborNeeds || "N/A"}</p>
-        <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
-        <p><b>ROI:</b> ${result.roiPotential || "N/A"}</p>
-
-        <h4 style="margin-top:18px;">Pricing Strategy</h4>
-        <p>${result.pricingStrategy || "N/A"}</p>
-
-        <h4 style="margin-top:18px;">Revenue Model</h4>
-        <p>${result.revenueModel || "N/A"}</p>
-
-        <h4 style="margin-top:18px;">First Customer Plan</h4>
-        <ul>${renderList(result.firstCustomerPlan)}</ul>
-
-        <h4 style="margin-top:18px;">Monetization Steps</h4>
-        <ul>${renderList(result.monetizationSteps)}</ul>
-
-        <h4 style="margin-top:18px;">First 30-Day Plan</h4>
-        <ul>${renderList(result.first30DayPlan)}</ul>
-
-        <h4 style="margin-top:18px;">Execution Steps</h4>
-        <ul>${renderList(result.basicSteps)}</ul>
-      `;
-    } catch (err) {
-      analysisResult.innerHTML = `
-        <h3 style="color:white;">Error</h3>
-        <p>${err.message}</p>
-      `;
-    }
+      `}
+    `;
   });
 }
