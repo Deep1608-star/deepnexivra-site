@@ -63,8 +63,12 @@ if (analyzeBtn && ideaInput && analysisResult) {
 
       const data = await res.json();
 
-      if (!data.ok) {
-        analysisResult.innerHTML = data.message || "Error analyzing idea";
+      if (!res.ok || !data.ok) {
+        analysisResult.innerHTML = `
+          <h3 style="color:white; margin-bottom:12px;">Error</h3>
+          <p>${data.message || "Something went wrong."}</p>
+          ${data.raw ? `<pre style="white-space:pre-wrap; margin-top:12px;">${data.raw}</pre>` : ""}
+        `;
         return;
       }
 
@@ -103,7 +107,10 @@ if (analyzeBtn && ideaInput && analysisResult) {
         </ul>
       `;
     } catch (err) {
-      analysisResult.innerHTML = "Something went wrong";
+      analysisResult.innerHTML = `
+        <h3 style="color:white; margin-bottom:12px;">Error</h3>
+        <p>${err.message || "Something went wrong"}</p>
+      `;
     }
   });
 }
