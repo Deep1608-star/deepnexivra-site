@@ -1,76 +1,121 @@
-// ===== SUPABASE CONFIG =====
-const SUPABASE_URL = "https://oggwnbbfuaemkrpxvctd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZ3duYmJmdWFlbWtycHh2Y3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NDMzNjcsImV4cCI6MjA5MjExOTM2N30.p1lKczMqndxcvpqgqI_DcB3SEeWP1n-FmX8xh_BWZrE";
+const ideaInput = document.getElementById("ideaInput");
+const analyzeBtn = document.getElementById("analyzeBtn");
+const analysisResult = document.getElementById("analysisResult");
+const navLinks = document.getElementById("navLinks");
+const menuToggle = document.getElementById("menuToggle");
 
-// Load Supabase
-const script = document.createElement("script");
-script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js";
-document.head.appendChild(script);
+const isPaidUser = localStorage.getItem("isPaidUser") === "true";
 
-let supabase;
-
-script.onload = () => {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-};
-
-// ===== SIMPLE LOGIN =====
-async function loginUser(email) {
-  let { data, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("email", email)
-    .single();
-
-  if (!data) {
-    let res = await supabase.from("users").insert([{ email: email }]).select().single();
-    data = res.data;
-  }
-
-  localStorage.setItem("user", JSON.stringify(data));
-  return data;
-}
-
-// ===== SAVE REPORT =====
-async function saveReport(reportData) {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) return;
-
-  await supabase.from("reports").insert([{
-    user_id: user.id,
-    idea: reportData.idea,
-    location: reportData.location,
-    budget: reportData.budget,
-    timeline: reportData.timeline,
-    result: reportData.result
-  }]);
-}
-
-// ===== MODIFY YOUR ANALYZE BUTTON =====
-async function analyzeIdea() {
-  const idea = document.querySelector("textarea").value;
-  const location = document.querySelectorAll("input")[0].value;
-  const budget = document.querySelectorAll("input")[1].value;
-  const timeline = document.querySelectorAll("input")[2].value;
-
-  // LOGIN (simple)
-  let email = prompt("Enter your email:");
-  const user = await loginUser(email);
-
-  // FAKE RESULT (replace later with AI if needed)
-  let result = `
-  Business Idea: ${idea}
-  Market: Growing demand
-  ROI: High potential
-  `;
-
-  // SAVE TO DATABASE
-  await saveReport({
-    idea,
-    location,
-    budget,
-    timeline,
-    result
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("open");
   });
+}
 
-  alert("Analysis saved to your account!");
+document.querySelectorAll(".nav-links a").forEach((link) => {
+  link.addEventListener("click", () => {
+    if (navLinks) navLinks.classList.remove("open");
+  });
+});
+
+function renderList(items) {
+  return (items || []).map(i => `<li>${i}</li>`).join("");
+}
+
+if (analyzeBtn) {
+  analyzeBtn.addEventListener("click", async () => {
+    const idea = ideaInput.value.trim();
+    const location = document.getElementById("locationInput").value;
+    const budget = document.getElementById("budgetInput").value;
+    const timeline = document.getElementById("timelineInput").value;
+
+    if (!idea) {
+      analysisResult.style.display = "block";
+      analysisResult.innerHTML = "Enter idea first";
+      return;
+    }
+
+    analysisResult.style.display = "block";
+    analysisResult.innerHTML = "Analyzing...";
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          idea,
+          location,
+          budget,
+          timeline,
+          isPaid: isPaidUser
+        })
+      });
+
+      const data = await res.json();
+      const r = data.result || {};
+
+      analysisResult.innerHTML = `
+        <h2>Execution Analysis</h2>
+
+        <h3>${r.decision || ""} ${r.confidence ? `(${r.confidence}%)` : ""}</h3>
+
+        <p><b>Score:</b> ${r.viabilityScore || "N/A"}</p>
+        <p>${r.verdict || ""}</p>
+
+        <p><b>Business:</b> ${r.businessSummary || "N/A"}</p>
+        <p><b>Market:</b> ${r.marketSummary || "N/A"}</p>
+        <p><b>Difficulty:</b> ${r.executionDifficulty || "N/A"}</p>
+        <p><b>Risk:</b> ${r.riskLevel || "N/A"}</p>
+        <p><b>Time:</b> ${r.timeToLaunch || "N/A"}</p>
+        <p><b>Labor:</b> ${r.laborNeeds || "N/A"}</p>
+        <p><b>Cost:</b> ${r.estimatedCostRange || "N/A"}</p>
+        <p><b>ROI:</b> ${r.roiPotential || "N/A"}</p>
+
+        ${r.pricingStrategy ? `
+          <h3>Pricing Strategy</h3>
+          <p>${r.pricingStrategy}</p>
+
+          <h3>Revenue Model</h3>
+          <p>${r.revenueModel}</p>
+
+          <h3>First Customers</h3>
+          <ul>${renderList(r.firstCustomerPlan)}</ul>
+
+          <h3>Monetization Steps</h3>
+          <ul>${renderList(r.monetizationSteps)}</ul>
+
+          <h3>30 Day Plan</h3>
+          <ul>${renderList(r.first30DayPlan)}</ul>
+
+          <h3>Execution</h3>
+          <ul>${renderList(r.basicSteps)}</ul>
+        ` : `
+          <div style="
+            margin-top:20px;
+            padding:20px;
+            border-radius:12px;
+            background:#111;
+            text-align:center;
+          ">
+            <h3>Unlock Full Plan</h3>
+            <p>Get monetization + execution roadmap</p>
+
+            <button onclick="window.location.href='/upgrade.html'" style="
+              padding:12px 20px;
+              background:#7dffcf;
+              border:none;
+              border-radius:8px;
+              cursor:pointer;
+            ">
+              Upgrade with PayPal
+            </button>
+          </div>
+        `}
+      `;
+    } catch (err) {
+      analysisResult.innerHTML = "Something went wrong";
+    }
+  });
 }
