@@ -17,6 +17,16 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
   });
 });
 
+function getScoreLabel(score) {
+  if (score >= 75) return "Strong";
+  if (score >= 50) return "Moderate";
+  return "Weak";
+}
+
+function renderList(items) {
+  return (items || []).map(item => `<li>${item}</li>`).join("");
+}
+
 if (analyzeBtn && ideaInput && analysisResult) {
   analyzeBtn.addEventListener("click", async () => {
     const locationInput = document.getElementById("locationInput");
@@ -59,9 +69,20 @@ if (analyzeBtn && ideaInput && analysisResult) {
       }
 
       const result = data.result || {};
+      const score = Number(result.viabilityScore || 0);
 
       analysisResult.innerHTML = `
-        <h3 style="color:white; margin-bottom:12px;">Execution Analysis</h3>
+        <h3 style="color:white; margin-bottom:14px;">Execution Analysis</h3>
+
+        <div style="display:grid; gap:12px; margin-bottom:18px;">
+          <div style="padding:14px 16px; border:1px solid rgba(255,255,255,0.08); border-radius:14px; background:rgba(255,255,255,0.03);">
+            <div style="font-size:13px; color:#9aa8c7; margin-bottom:6px;">Viability Score</div>
+            <div style="font-size:28px; font-weight:800; color:white;">${score}/100</div>
+            <div style="color:#7dffcf; font-weight:600;">${getScoreLabel(score)}</div>
+          </div>
+        </div>
+
+        <p><b>Business Summary:</b> ${result.businessSummary || "N/A"}</p>
         <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
         <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
         <p><b>Risk:</b> ${result.riskLevel || "N/A"}</p>
@@ -70,9 +91,15 @@ if (analyzeBtn && ideaInput && analysisResult) {
         <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
         <p><b>ROI Potential:</b> ${result.roiPotential || "N/A"}</p>
         <p><b>Verdict:</b> ${result.verdict || "N/A"}</p>
-        <h4 style="margin-top:12px;">Execution Steps:</h4>
-        <ul style="padding-left:20px;">
-          ${(result.basicSteps || []).map(step => `<li>${step}</li>`).join("")}
+
+        <h4 style="margin-top:18px; color:white;">First 30-Day Plan</h4>
+        <ul style="padding-left:20px; margin-top:8px;">
+          ${renderList(result.first30DayPlan)}
+        </ul>
+
+        <h4 style="margin-top:18px; color:white;">Execution Steps</h4>
+        <ul style="padding-left:20px; margin-top:8px;">
+          ${renderList(result.basicSteps)}
         </ul>
       `;
     } catch (err) {
