@@ -2,45 +2,244 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Deep Nexivra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep Nexivra | Execution Intelligence</title>
+  <meta
+    name="description"
+    content="Deep Nexivra is an execution intelligence platform for operators, founders, and modern businesses."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <div class="cursor-glow"></div>
+  <div class="noise-overlay"></div>
+  <div class="site-bg"></div>
+  <div class="grid-overlay"></div>
 
-<header class="header">
-  <div class="container nav">
-    <div class="brand">
-      <span>Deep Nexivra</span>
+  <header class="header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span>Deep Nexivra</span>
+      </div>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#analyzer">Analyzer</a>
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#contact">Contact</a>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+      </button>
     </div>
-  </div>
-</header>
+  </header>
 
-<section style="padding: 120px 20px;">
-  <div class="container">
+  <main>
+    <section class="hero" id="analyzer">
+      <div class="container hero-layout">
+        <div class="hero-copy reveal">
+          <div class="eyebrow">Execution Intelligence Platform</div>
+          <h1>
+            Turn business ideas into
+            <span>actionable execution plans.</span>
+          </h1>
+          <p class="hero-text">
+            Deep Nexivra helps founders and operators evaluate opportunities,
+            estimate execution requirements, and move from idea to launch with
+            structured, practical intelligence.
+          </p>
 
-    <h1 style="color:white; margin-bottom:20px;">
-      Execution Intelligence Platform
-    </h1>
+          <div class="hero-actions">
+            <a href="#analyzer-panel" class="btn btn-primary magnetic">Try Analyzer</a>
+            <a href="#platform" class="btn btn-secondary magnetic">Explore Platform</a>
+          </div>
 
-    <div class="analyze-box">
+          <div class="hero-metrics">
+            <div class="metric-card">
+              <h3>01</h3>
+              <p>Market-aware analysis</p>
+            </div>
+            <div class="metric-card">
+              <h3>02</h3>
+              <p>Execution planning logic</p>
+            </div>
+            <div class="metric-card">
+              <h3>03</h3>
+              <p>Cost and risk visibility</p>
+            </div>
+          </div>
+        </div>
 
-      <textarea id="ideaInput" placeholder="Describe your business idea..."></textarea>
+        <div class="hero-visual reveal delay-1">
+          <div class="dashboard-shell" id="analyzer-panel">
+            <div class="dashboard-topbar">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
 
-      <input id="locationInput" placeholder="Location (e.g. Toronto)" />
-      <input id="budgetInput" placeholder="Budget (e.g. $10,000)" />
-      <input id="timelineInput" placeholder="Timeline (e.g. 3 months)" />
+            <div class="analyzer-panel">
+              <div class="panel-header analyzer-header">
+                <p>Business Idea Analyzer</p>
+                <span>Live AI</span>
+              </div>
 
-      <button id="analyzeBtn">Analyze Idea</button>
+              <div class="form-grid">
+                <div class="form-group form-group-full">
+                  <label for="ideaInput">Business idea</label>
+                  <textarea
+                    id="ideaInput"
+                    placeholder="Example: Start a mobile car detailing business in Mississauga"
+                  ></textarea>
+                </div>
 
-      <div id="analysisResult"></div>
+                <div class="form-group">
+                  <label for="locationInput">Location</label>
+                  <input id="locationInput" placeholder="e.g. Toronto" />
+                </div>
 
+                <div class="form-group">
+                  <label for="budgetInput">Budget</label>
+                  <input id="budgetInput" placeholder="e.g. $10,000" />
+                </div>
+
+                <div class="form-group form-group-full">
+                  <label for="timelineInput">Timeline</label>
+                  <input id="timelineInput" placeholder="e.g. 3 months" />
+                </div>
+              </div>
+
+              <div class="analyzer-actions">
+                <button id="analyzeBtn" class="btn btn-primary magnetic" type="button">
+                  Analyze Idea
+                </button>
+              </div>
+
+              <div id="analysisResult" class="analysis-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="platform">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Platform</div>
+          <h2>A control layer for business execution decisions.</h2>
+          <p>
+            Evaluate opportunities, surface risks, and convert raw ideas into
+            structured action paths with stronger operational clarity.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal">
+            <div class="feature-index">01</div>
+            <h3>Idea Validation</h3>
+            <p>
+              Stress-test business concepts against execution realities instead
+              of relying on vague assumptions.
+            </p>
+          </article>
+
+          <article class="feature-card reveal delay-1">
+            <div class="feature-index">02</div>
+            <h3>Execution Planning</h3>
+            <p>
+              Break ideas into launch requirements, operating needs, cost
+              ranges, and practical next steps.
+            </p>
+          </article>
+
+          <article class="feature-card reveal delay-2">
+            <div class="feature-index">03</div>
+            <h3>Strategic Visibility</h3>
+            <p>
+              Give founders and operators a clearer picture of timing, labor,
+              risk, and potential return.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-section" id="capabilities">
+      <div class="container capability-layout">
+        <div class="capability-copy reveal">
+          <div class="eyebrow">Capabilities</div>
+          <h2>Built for founders, operators, and execution-heavy teams.</h2>
+          <p>
+            Deep Nexivra is designed to evolve from an idea analyzer into a
+            full decision and execution platform.
+          </p>
+        </div>
+
+        <div class="capability-stack">
+          <div class="stack-card reveal">
+            <h3>Opportunity Assessment</h3>
+            <p>Evaluate viability, friction points, and launch complexity.</p>
+          </div>
+          <div class="stack-card reveal delay-1">
+            <h3>Resource Planning</h3>
+            <p>Estimate labor, costs, timing, and operating requirements.</p>
+          </div>
+          <div class="stack-card reveal delay-2">
+            <h3>Execution Roadmapping</h3>
+            <p>Convert business intent into practical action steps.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section" id="contact">
+      <div class="container">
+        <div class="cta-box reveal">
+          <div>
+            <div class="eyebrow">Deep Nexivra</div>
+            <h2>Building the future execution intelligence layer.</h2>
+            <p>
+              The current product validates ideas and structures decisions.
+              The long-term platform will help users execute with more
+              precision, visibility, and system intelligence.
+            </p>
+          </div>
+          <a href="mailto:hello@deepnexivra.com" class="btn btn-primary magnetic">
+            Contact Now
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <div>
+        <h3>Deep Nexivra</h3>
+        <p>Execution intelligence for modern business systems.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#analyzer">Analyzer</a>
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+      </div>
     </div>
+  </footer>
 
-  </div>
-</section>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
