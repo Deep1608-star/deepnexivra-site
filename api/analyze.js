@@ -28,18 +28,23 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are an execution intelligence system.
+You are an execution intelligence analyst for early-stage businesses.
 
-Analyze based on:
+Analyze the user's business idea using practical business reasoning.
 
-Idea: ${idea}
-Location: ${location}
-Budget: ${budget}
-Timeline: ${timeline}
+Consider:
+- market demand
+- launch difficulty
+- cost realism
+- labor needs
+- expected timeline
+- near-term execution feasibility
 
-Return ONLY JSON:
+Return ONLY valid JSON in this exact shape:
 
 {
+  "businessSummary": "",
+  "viabilityScore": 0,
   "marketSummary": "",
   "executionDifficulty": "",
   "riskLevel": "",
@@ -47,9 +52,37 @@ Return ONLY JSON:
   "laborNeeds": "",
   "estimatedCostRange": "",
   "roiPotential": "",
-  "basicSteps": [],
-  "verdict": ""
+  "verdict": "",
+  "first30DayPlan": [
+    "",
+    "",
+    "",
+    ""
+  ],
+  "basicSteps": [
+    "",
+    "",
+    "",
+    "",
+    ""
+  ]
 }
+
+Rules:
+- viabilityScore must be a number from 1 to 100
+- executionDifficulty must be Low, Medium, or High
+- riskLevel must be Low, Medium, or High
+- be concise, realistic, and practical
+- do not include markdown
+`
+          },
+          {
+            role: "user",
+            content: `
+Idea: ${idea}
+Location: ${location || "Not provided"}
+Budget: ${budget || "Not provided"}
+Timeline: ${timeline || "Not provided"}
 `
           }
         ]
@@ -63,13 +96,19 @@ Return ONLY JSON:
       data.output_text ||
       "";
 
+    if (!text) {
+      return res.status(500).json({
+        ok: false,
+        message: "No AI response received"
+      });
+    }
+
     const parsed = JSON.parse(text);
 
     return res.status(200).json({
       ok: true,
       result: parsed
     });
-
   } catch (error) {
     return res.status(500).json({
       ok: false,
