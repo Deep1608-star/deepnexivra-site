@@ -27,7 +27,6 @@ function renderList(items) {
   return (items || []).map(item => `<li>${item}</li>`).join("");
 }
 
-// 🔥 Fallback decision logic (VERY IMPORTANT)
 function deriveDecision(score) {
   if (score >= 75) return "START";
   if (score >= 50) return "CAUTION";
@@ -117,17 +116,13 @@ if (analyzeBtn && ideaInput && analysisResult) {
 
       const result = data.result || {};
       const score = Number(result.viabilityScore || 50);
-
-      // 🔥 FALLBACK SAFE VALUES
       const decision = result.decision || deriveDecision(score);
       const confidence = result.confidence || deriveConfidence(score);
-
       const config = getDecisionConfig(decision);
 
       analysisResult.innerHTML = `
         <h3 style="color:white; margin-bottom:14px;">Execution Analysis</h3>
 
-        <!-- DECISION BADGE -->
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;">
           <div style="
             padding:10px 14px;
@@ -152,7 +147,6 @@ if (analyzeBtn && ideaInput && analysisResult) {
           </div>
         </div>
 
-        <!-- SUMMARY -->
         <div style="
           padding:16px;
           border:1px solid rgba(125,255,207,0.25);
@@ -166,7 +160,6 @@ if (analyzeBtn && ideaInput && analysisResult) {
           ${result.verdict || "No summary available"}
         </div>
 
-        <!-- SCORE -->
         <div style="margin-bottom:18px;">
           <div style="font-size:28px; font-weight:800;">${score}/100</div>
           <div style="color:#7dffcf;">${getScoreLabel(score)}</div>
@@ -180,6 +173,18 @@ if (analyzeBtn && ideaInput && analysisResult) {
         <p><b>Labor:</b> ${result.laborNeeds || "N/A"}</p>
         <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
         <p><b>ROI:</b> ${result.roiPotential || "N/A"}</p>
+
+        <h4 style="margin-top:18px;">Pricing Strategy</h4>
+        <p>${result.pricingStrategy || "N/A"}</p>
+
+        <h4 style="margin-top:18px;">Revenue Model</h4>
+        <p>${result.revenueModel || "N/A"}</p>
+
+        <h4 style="margin-top:18px;">First Customer Plan</h4>
+        <ul>${renderList(result.firstCustomerPlan)}</ul>
+
+        <h4 style="margin-top:18px;">Monetization Steps</h4>
+        <ul>${renderList(result.monetizationSteps)}</ul>
 
         <h4 style="margin-top:18px;">First 30-Day Plan</h4>
         <ul>${renderList(result.first30DayPlan)}</ul>
