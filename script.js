@@ -140,14 +140,16 @@ if (analyzeBtn) {
       const result = data.result;
 
       analysisResult.innerHTML = `
-        <h3 style="margin-bottom: 12px; color: white;">Analysis Result</h3>
-        <p><strong>Idea:</strong> ${result.originalIdea}</p>
-        <p><strong>Stage:</strong> ${result.stage}</p>
-        <p><strong>Market Type:</strong> ${result.marketType}</p>
-        <p><strong>Execution Difficulty:</strong> ${result.executionDifficulty}</p>
-        <p><strong>Estimated Risk:</strong> ${result.estimatedRisk}</p>
-        <p><strong>Next Step:</strong> ${result.nextStep}</p>
-      `;
+  <h3 style="color:white;">Analysis Result</h3>
+  <p><b>Market:</b> ${result.marketSummary}</p>
+  <p><b>Difficulty:</b> ${result.executionDifficulty}</p>
+  <p><b>Risk:</b> ${result.riskLevel}</p>
+  <p><b>Cost:</b> ${result.estimatedCostRange}</p>
+  <p><b>Verdict:</b> ${result.verdict}</p>
+  <ul>
+    ${(result.basicSteps || []).map(s => `<li>${s}</li>`).join("")}
+  </ul>
+`;
     } catch (error) {
       analysisResult.innerHTML = "Request failed. Please try again.";
     }
