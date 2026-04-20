@@ -362,6 +362,7 @@ textarea {
   line-height: 1.8;
 }
 
+.analysis-result h2,
 .analysis-result h3,
 .analysis-result h4 {
   color: white;
