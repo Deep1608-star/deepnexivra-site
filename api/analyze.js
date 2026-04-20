@@ -32,48 +32,25 @@ You are an execution intelligence analyst for early-stage businesses.
 
 Analyze the user's business idea using practical business reasoning.
 
-Consider:
-- market demand
-- launch difficulty
-- cost realism
-- labor needs
-- expected timeline
-- near-term execution feasibility
-
 Return ONLY valid JSON in this exact shape:
 
 {
-  "businessSummary": "",
+  "businessSummary": "string",
   "viabilityScore": 0,
-  "marketSummary": "",
-  "executionDifficulty": "",
-  "riskLevel": "",
-  "timeToLaunch": "",
-  "laborNeeds": "",
-  "estimatedCostRange": "",
-  "roiPotential": "",
-  "verdict": "",
-  "first30DayPlan": [
-    "",
-    "",
-    "",
-    ""
-  ],
-  "basicSteps": [
-    "",
-    "",
-    "",
-    "",
-    ""
-  ]
+  "marketSummary": "string",
+  "executionDifficulty": "Low, Medium, or High",
+  "riskLevel": "Low, Medium, or High",
+  "timeToLaunch": "string",
+  "laborNeeds": "string",
+  "estimatedCostRange": "string",
+  "roiPotential": "string",
+  "verdict": "string",
+  "first30DayPlan": ["string", "string", "string", "string"],
+  "basicSteps": ["string", "string", "string", "string", "string"]
 }
 
-Rules:
-- viabilityScore must be a number from 1 to 100
-- executionDifficulty must be Low, Medium, or High
-- riskLevel must be Low, Medium, or High
-- be concise, realistic, and practical
-- do not include markdown
+Do not include markdown fences.
+Do not include any text before or after the JSON.
 `
           },
           {
@@ -91,6 +68,14 @@ Timeline: ${timeline || "Not provided"}
 
     const data = await response.json();
 
+    if (!response.ok) {
+      return res.status(500).json({
+        ok: false,
+        message: data.error?.message || "OpenAI request failed",
+        debug: data
+      });
+    }
+
     const text =
       data.output?.[0]?.content?.[0]?.text ||
       data.output_text ||
@@ -99,11 +84,22 @@ Timeline: ${timeline || "Not provided"}
     if (!text) {
       return res.status(500).json({
         ok: false,
-        message: "No AI response received"
+        message: "No AI response text received",
+        debug: data
       });
     }
 
-    const parsed = JSON.parse(text);
+    let parsed;
+
+    try {
+      parsed = JSON.parse(text);
+    } catch (parseError) {
+      return res.status(500).json({
+        ok: false,
+        message: "AI returned invalid JSON",
+        raw: text
+      });
+    }
 
     return res.status(200).json({
       ok: true,
@@ -112,7 +108,7 @@ Timeline: ${timeline || "Not provided"}
   } catch (error) {
     return res.status(500).json({
       ok: false,
-      message: "AI request failed"
+      message: error.message || "Server request failed"
     });
   }
 }
