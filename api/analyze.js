@@ -47,6 +47,10 @@ Return ONLY valid JSON in this exact shape:
   "estimatedCostRange": "string",
   "roiPotential": "string",
   "verdict": "string",
+  "pricingStrategy": "string",
+  "revenueModel": "string",
+  "firstCustomerPlan": ["string", "string", "string", "string"],
+  "monetizationSteps": ["string", "string", "string", "string"],
   "first30DayPlan": ["string", "string", "string", "string"],
   "basicSteps": ["string", "string", "string", "string", "string"]
 }
@@ -57,7 +61,11 @@ Rules:
 - viabilityScore must be a number from 1 to 100
 - executionDifficulty must be exactly Low, Medium, or High
 - riskLevel must be exactly Low, Medium, or High
-- be concise, practical, and realistic
+- be concise, practical, realistic, and money-oriented
+- pricingStrategy should explain how to price the service/product
+- revenueModel should explain how the business makes money
+- firstCustomerPlan should focus on how to get initial customers
+- monetizationSteps should focus on turning the idea into revenue quickly
 - do not include markdown
 - do not include any text before or after the JSON
 `
