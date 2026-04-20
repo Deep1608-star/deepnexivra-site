@@ -6,7 +6,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const { idea } = req.body || {};
+  const { idea, location, budget, timeline } = req.body || {};
 
   if (!idea || !idea.trim()) {
     return res.status(400).json({
@@ -28,20 +28,16 @@ export default async function handler(req, res) {
           {
             role: "system",
             content: `
-You are an advanced execution intelligence system.
+You are an execution intelligence system.
 
-Analyze the business idea with REAL-WORLD execution logic.
+Analyze based on:
 
-Consider:
-- Location impact
-- Market demand
-- Competition
-- Labor needs
-- Time to launch
-- Costs
-- ROI potential
+Idea: ${idea}
+Location: ${location}
+Budget: ${budget}
+Timeline: ${timeline}
 
-Return ONLY valid JSON:
+Return ONLY JSON:
 
 {
   "marketSummary": "",
@@ -55,10 +51,6 @@ Return ONLY valid JSON:
   "verdict": ""
 }
 `
-          },
-          {
-            role: "user",
-            content: idea
           }
         ]
       })
