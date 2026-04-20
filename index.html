@@ -1,170 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Deep Nexivra</title>
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: radial-gradient(circle at center, #0f2027, #203a43, #0f2027);
-  color: white;
-}
-
-.container {
-  padding: 20px;
-  max-width: 500px;
-  margin: auto;
-}
-
-.card {
-  background: rgba(255,255,255,0.05);
-  padding: 20px;
-  border-radius: 15px;
-  margin-top: 20px;
-}
-
-input, textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: none;
-}
-
-button {
-  padding: 12px;
-  width: 100%;
-  border: none;
-  border-radius: 10px;
-  background: #00ffcc;
-  font-weight: bold;
-}
-
-.result {
-  margin-top: 20px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deep Nexivra | Execution Intelligence</title>
+  <meta
+    name="description"
+    content="Deep Nexivra helps turn business ideas into actionable execution plans."
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <div class="site-bg"></div>
+  <div class="grid-overlay"></div>
 
-<!-- LOGIN -->
-<div style="position:fixed;top:10px;right:10px;">
-  <input id="emailInput" placeholder="Enter email" />
-  <button onclick="loginUser(document.getElementById('emailInput').value)">Login</button>
-</div>
-
-<div class="container">
-
-  <h2>Business Idea Analyzer</h2>
-
-  <div class="card">
-    <textarea id="idea" placeholder="Business idea"></textarea>
-    <input id="location" placeholder="Location">
-    <input id="budget" placeholder="Budget">
-    <input id="timeline" placeholder="Timeline">
-
-    <button onclick="analyzeIdea()">Analyze Idea</button>
-  </div>
-
-  <div class="result" id="result"></div>
-
-</div>
-
-<script>
-/* =============================
-   SUPABASE CONFIG
-============================= */
-const SUPABASE_URL = "PASTE_YOUR_URL";
-const SUPABASE_KEY = "PASTE_YOUR_ANON_KEY";
-const supabaseClient = supabase.createClient(https://supabase.com/dashboard/project/oggwnbbfuaemkrpxvctd, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZ3duYmJmdWFlbWtycHh2Y3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY1NDMzNjcsImV4cCI6MjA5MjExOTM2N30.p1lKczMqndxcvpqgqI_DcB3SEeWP1n-FmX8xh_BWZrE);
-
-/* =============================
-   LOGIN
-============================= */
-async function loginUser(email) {
-  const { data, error } = await supabaseClient
-    .from('users')
-    .upsert([{ email: email }])
-    .select();
-
-  if (error) {
-    alert("Login failed");
-    return;
-  }
-
-  localStorage.setItem("userEmail", email);
-  alert("Logged in");
-}
-
-/* =============================
-   ANALYZE IDEA
-============================= */
-async function analyzeIdea() {
-
-  const idea = document.getElementById("idea").value;
-  const location = document.getElementById("location").value;
-  const budget = document.getElementById("budget").value;
-  const timeline = document.getElementById("timeline").value;
-
-  const isPremium = localStorage.getItem("premiumUser") === "true";
-
-  let basicResult = `
-    <div class="card">
-      <h3>Execution Analysis</h3>
-      <p><b>Idea:</b> ${idea}</p>
-      <p><b>Market:</b> Growing demand in ${location}</p>
-      <p><b>Difficulty:</b> Medium</p>
-      <p><b>Estimated Cost:</b> ${budget}</p>
-    </div>
-  `;
-
-  let premiumResult = `
-    <div class="card">
-      <h3>Premium Insights</h3>
-      <p><b>Pricing Strategy:</b> Tiered pricing model</p>
-      <p><b>Revenue Model:</b> Recurring customers</p>
-      <p><b>Customer Plan:</b> Local marketing + referrals</p>
-      <p><b>Execution Plan:</b> Launch in ${timeline}</p>
-    </div>
-  `;
-
-  if (!isPremium) {
-    basicResult += `
-      <div class="card">
-        <p>🔒 Unlock full plan</p>
-        <button onclick="window.location.href='/upgrade.html'">Upgrade</button>
+  <header class="header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-mark">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span>Deep Nexivra</span>
       </div>
-    `;
-  } else {
-    basicResult += premiumResult;
-  }
 
-  document.getElementById("result").innerHTML = basicResult;
+      <nav class="nav-links" id="navLinks">
+        <a href="#analyzer">Analyzer</a>
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#contact">Contact</a>
+      </nav>
 
-  /* =============================
-     SAVE REPORT
-  ============================= */
-  const email = localStorage.getItem("userEmail");
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
 
-  if (email) {
-    await supabaseClient.from("reports").insert([{
-      idea,
-      location,
-      budget,
-      timeline,
-      result: basicResult
-    }]);
-  }
+  <main>
+    <section class="hero" id="analyzer">
+      <div class="container hero-layout">
+        <div class="hero-copy">
+          <div class="eyebrow">Execution Intelligence Platform</div>
+          <h1>
+            Turn business ideas into
+            <span>actionable execution plans.</span>
+          </h1>
+          <p class="hero-text">
+            Deep Nexivra helps founders and operators evaluate opportunities,
+            estimate execution requirements, and move from idea to launch with
+            structured, practical intelligence.
+          </p>
 
-}
-</script>
+          <div class="hero-actions">
+            <a href="#analyzer-panel" class="btn btn-primary">Try Analyzer</a>
+            <a href="#platform" class="btn btn-secondary">Explore Platform</a>
+          </div>
 
+          <div class="hero-metrics">
+            <div class="metric-card">
+              <h3>01</h3>
+              <p>Market-aware analysis</p>
+            </div>
+            <div class="metric-card">
+              <h3>02</h3>
+              <p>Execution planning logic</p>
+            </div>
+            <div class="metric-card">
+              <h3>03</h3>
+              <p>Cost and risk visibility</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="dashboard-shell" id="analyzer-panel">
+            <div class="dashboard-topbar">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <div class="analyzer-panel">
+              <div class="panel-header">
+                <p>Business Idea Analyzer</p>
+                <span>Live AI</span>
+              </div>
+
+              <div class="form-stack">
+                <div class="form-group">
+                  <label for="ideaInput">Business idea</label>
+                  <textarea
+                    id="ideaInput"
+                    placeholder="Example: Start a mobile car detailing business in Mississauga"
+                  ></textarea>
+                </div>
+
+                <div class="form-group">
+                  <label for="locationInput">Location</label>
+                  <input id="locationInput" type="text" placeholder="e.g. Toronto" />
+                </div>
+
+                <div class="form-group">
+                  <label for="budgetInput">Budget</label>
+                  <input id="budgetInput" type="text" placeholder="e.g. $10,000" />
+                </div>
+
+                <div class="form-group">
+                  <label for="timelineInput">Timeline</label>
+                  <input id="timelineInput" type="text" placeholder="e.g. 3 months" />
+                </div>
+              </div>
+
+              <div class="analyzer-actions">
+                <button id="analyzeBtn" class="btn btn-primary" type="button">
+                  Analyze Idea
+                </button>
+              </div>
+
+              <div id="analysisResult" class="analysis-result"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="platform">
+      <div class="container">
+        <div class="section-heading">
+          <div class="eyebrow">Platform</div>
+          <h2>A control layer for business execution decisions.</h2>
+          <p>
+            Evaluate opportunities, surface risks, and convert raw ideas into
+            structured action paths with stronger operational clarity.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-index">01</div>
+            <h3>Idea Validation</h3>
+            <p>
+              Stress-test business concepts against execution realities instead
+              of relying on vague assumptions.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-index">02</div>
+            <h3>Execution Planning</h3>
+            <p>
+              Break ideas into launch requirements, operating needs, cost
+              ranges, and practical next steps.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-index">03</div>
+            <h3>Strategic Visibility</h3>
+            <p>
+              Give founders and operators a clearer picture of timing, labor,
+              risk, and potential return.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt-section" id="capabilities">
+      <div class="container capability-layout">
+        <div class="capability-copy">
+          <div class="eyebrow">Capabilities</div>
+          <h2>Built for founders, operators, and execution-heavy teams.</h2>
+          <p>
+            Deep Nexivra is designed to evolve from an idea analyzer into a
+            full decision and execution platform.
+          </p>
+        </div>
+
+        <div class="capability-stack">
+          <div class="stack-card">
+            <h3>Opportunity Assessment</h3>
+            <p>Evaluate viability, friction points, and launch complexity.</p>
+          </div>
+          <div class="stack-card">
+            <h3>Resource Planning</h3>
+            <p>Estimate labor, costs, timing, and operating requirements.</p>
+          </div>
+          <div class="stack-card">
+            <h3>Execution Roadmapping</h3>
+            <p>Convert business intent into practical action steps.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta-section" id="contact">
+      <div class="container">
+        <div class="cta-box">
+          <div>
+            <div class="eyebrow">Deep Nexivra</div>
+            <h2>Building the future execution intelligence layer.</h2>
+            <p>
+              The current product validates ideas and structures decisions.
+              The long-term platform will help users execute with more
+              precision, visibility, and system intelligence.
+            </p>
+          </div>
+          <a href="mailto:hello@deepnexivra.com" class="btn btn-primary">
+            Contact Now
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <div>
+        <h3>Deep Nexivra</h3>
+        <p>Execution intelligence for modern business systems.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#analyzer">Analyzer</a>
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
