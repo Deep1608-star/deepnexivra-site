@@ -5,6 +5,7 @@ const ideaInput = document.getElementById("ideaInput");
 const analyzeBtn = document.getElementById("analyzeBtn");
 const analysisResult = document.getElementById("analysisResult");
 
+// Mobile menu
 if (menuToggle && navLinks) {
   menuToggle.addEventListener("click", () => {
     navLinks.classList.toggle("open");
@@ -17,16 +18,19 @@ document.querySelectorAll(".nav-links a").forEach((link) => {
   });
 });
 
+// Score label logic
 function getScoreLabel(score) {
   if (score >= 75) return "Strong";
   if (score >= 50) return "Moderate";
   return "Weak";
 }
 
+// List renderer
 function renderList(items) {
   return (items || []).map(item => `<li>${item}</li>`).join("");
 }
 
+// Main Analyzer Logic
 if (analyzeBtn && ideaInput && analysisResult) {
   analyzeBtn.addEventListener("click", async () => {
     const locationInput = document.getElementById("locationInput");
@@ -75,17 +79,47 @@ if (analyzeBtn && ideaInput && analysisResult) {
       const result = data.result || {};
       const score = Number(result.viabilityScore || 0);
 
+      // FINAL OUTPUT UI (UPGRADED)
       analysisResult.innerHTML = `
         <h3 style="color:white; margin-bottom:14px;">Execution Analysis</h3>
 
-        <div style="display:grid; gap:12px; margin-bottom:18px;">
-          <div style="padding:14px 16px; border:1px solid rgba(255,255,255,0.08); border-radius:14px; background:rgba(255,255,255,0.03);">
-            <div style="font-size:13px; color:#9aa8c7; margin-bottom:6px;">Viability Score</div>
-            <div style="font-size:28px; font-weight:800; color:white;">${score}/100</div>
-            <div style="color:#7dffcf; font-weight:600;">${getScoreLabel(score)}</div>
+        <!-- AI DECISION SUMMARY -->
+        <div style="
+          padding:16px;
+          border:1px solid rgba(125,255,207,0.25);
+          border-radius:16px;
+          background:rgba(125,255,207,0.05);
+          margin-bottom:18px;
+        ">
+          <div style="font-size:13px; color:#7dffcf; margin-bottom:6px; font-weight:600;">
+            AI DECISION SUMMARY
+          </div>
+          <div style="font-size:15px; line-height:1.6;">
+            ${result.verdict || "No summary available"}
           </div>
         </div>
 
+        <!-- SCORE -->
+        <div style="display:grid; gap:12px; margin-bottom:18px;">
+          <div style="
+            padding:14px 16px;
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:14px;
+            background:rgba(255,255,255,0.03);
+          ">
+            <div style="font-size:13px; color:#9aa8c7; margin-bottom:6px;">
+              Viability Score
+            </div>
+            <div style="font-size:28px; font-weight:800; color:white;">
+              ${score}/100
+            </div>
+            <div style="color:#7dffcf; font-weight:600;">
+              ${getScoreLabel(score)}
+            </div>
+          </div>
+        </div>
+
+        <!-- DETAILS -->
         <p><b>Business Summary:</b> ${result.businessSummary || "N/A"}</p>
         <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
         <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
@@ -94,13 +128,14 @@ if (analyzeBtn && ideaInput && analysisResult) {
         <p><b>Labor Needed:</b> ${result.laborNeeds || "N/A"}</p>
         <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
         <p><b>ROI Potential:</b> ${result.roiPotential || "N/A"}</p>
-        <p><b>Verdict:</b> ${result.verdict || "N/A"}</p>
 
+        <!-- 30 DAY PLAN -->
         <h4 style="margin-top:18px; color:white;">First 30-Day Plan</h4>
         <ul style="padding-left:20px; margin-top:8px;">
           ${renderList(result.first30DayPlan)}
         </ul>
 
+        <!-- EXECUTION STEPS -->
         <h4 style="margin-top:18px; color:white;">Execution Steps</h4>
         <ul style="padding-left:20px; margin-top:8px;">
           ${renderList(result.basicSteps)}
