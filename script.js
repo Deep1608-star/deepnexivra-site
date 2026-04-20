@@ -33,17 +33,17 @@ analyzeBtn.addEventListener("click", async () => {
     analysisResult.innerHTML = `
       <h3 style="color:white;">Execution Analysis</h3>
 
-      <p><b>Market:</b> ${result.marketSummary}</p>
-      <p><b>Difficulty:</b> ${result.executionDifficulty}</p>
-      <p><b>Risk:</b> ${result.riskLevel}</p>
+      <p><b>Market:</b> ${result.marketSummary || "N/A"}</p>
+      <p><b>Difficulty:</b> ${result.executionDifficulty || "N/A"}</p>
+      <p><b>Risk:</b> ${result.riskLevel || "N/A"}</p>
 
-      <p><b>Time to Launch:</b> ${result.timeToLaunch}</p>
-      <p><b>Labor Needed:</b> ${result.laborNeeds}</p>
+      <p><b>Time to Launch:</b> ${result.timeToLaunch || "N/A"}</p>
+      <p><b>Labor Needed:</b> ${result.laborNeeds || "N/A"}</p>
 
-      <p><b>Cost:</b> ${result.estimatedCostRange}</p>
-      <p><b>ROI Potential:</b> ${result.roiPotential}</p>
+      <p><b>Cost:</b> ${result.estimatedCostRange || "N/A"}</p>
+      <p><b>ROI Potential:</b> ${result.roiPotential || "N/A"}</p>
 
-      <p><b>Verdict:</b> ${result.verdict}</p>
+      <p><b>Verdict:</b> ${result.verdict || "N/A"}</p>
 
       <h4 style="margin-top:10px;">Execution Steps:</h4>
       <ul>
