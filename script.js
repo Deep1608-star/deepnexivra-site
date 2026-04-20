@@ -22,6 +22,26 @@ function renderList(items) {
   return (items || []).map(i => `<li>${i}</li>`).join("");
 }
 
+async function saveReport(idea, location, budget, timeline, resultHtml) {
+  try {
+    await fetch("/api/save-report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        idea,
+        location,
+        budget,
+        timeline,
+        result: resultHtml
+      })
+    });
+  } catch (error) {
+    console.error("Save report failed:", error);
+  }
+}
+
 if (analyzeBtn) {
   analyzeBtn.addEventListener("click", async () => {
     const idea = ideaInput.value.trim();
@@ -56,7 +76,7 @@ if (analyzeBtn) {
       const data = await res.json();
       const r = data.result || {};
 
-      analysisResult.innerHTML = `
+      const resultHtml = `
         <h2>Execution Analysis</h2>
 
         <h3>${r.decision || ""} ${r.confidence ? `(${r.confidence}%)` : ""}</h3>
@@ -114,6 +134,10 @@ if (analyzeBtn) {
           </div>
         `}
       `;
+
+      analysisResult.innerHTML = resultHtml;
+
+      await saveReport(idea, location, budget, timeline, resultHtml);
     } catch (err) {
       analysisResult.innerHTML = "Something went wrong";
     }
