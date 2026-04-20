@@ -35,11 +35,13 @@ Analyze the user's business idea using practical business reasoning.
 Return ONLY valid JSON in this exact shape:
 
 {
+  "decision": "START or CAUTION or DO_NOT_START",
+  "confidence": 0,
   "businessSummary": "string",
   "viabilityScore": 0,
   "marketSummary": "string",
-  "executionDifficulty": "Low, Medium, or High",
-  "riskLevel": "Low, Medium, or High",
+  "executionDifficulty": "Low or Medium or High",
+  "riskLevel": "Low or Medium or High",
   "timeToLaunch": "string",
   "laborNeeds": "string",
   "estimatedCostRange": "string",
@@ -49,8 +51,15 @@ Return ONLY valid JSON in this exact shape:
   "basicSteps": ["string", "string", "string", "string", "string"]
 }
 
-Do not include markdown fences.
-Do not include any text before or after the JSON.
+Rules:
+- decision must be exactly START, CAUTION, or DO_NOT_START
+- confidence must be a number from 1 to 100
+- viabilityScore must be a number from 1 to 100
+- executionDifficulty must be exactly Low, Medium, or High
+- riskLevel must be exactly Low, Medium, or High
+- be concise, practical, and realistic
+- do not include markdown
+- do not include any text before or after the JSON
 `
           },
           {
