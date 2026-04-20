@@ -1,12 +1,10 @@
 :root {
-  --bg: #04070f;
-  --panel: rgba(12, 18, 34, 0.58);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.14);
   --text: #edf4ff;
   --muted: #9aa8c7;
   --accent: #7dffcf;
   --accent-2: #74d8ff;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
   --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   --shadow-soft: 0 20px 50px rgba(0, 0, 0, 0.28);
   --radius-sm: 16px;
@@ -354,10 +352,6 @@ textarea {
   gap: 18px;
 }
 
-.analyzer-header {
-  margin-bottom: 4px;
-}
-
 .panel-header {
   display: flex;
   align-items: center;
@@ -375,21 +369,14 @@ textarea {
   font-weight: 700;
 }
 
-.form-grid {
+.form-stack {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
-  min-width: 0;
-}
-
-.form-group-full {
-  grid-column: 1 / -1;
 }
 
 .form-group label {
@@ -424,7 +411,7 @@ textarea {
 }
 
 .form-group textarea {
-  min-height: 140px;
+  min-height: 150px;
   resize: vertical;
 }
 
@@ -631,13 +618,8 @@ textarea {
   }
 
   .hero-metrics,
-  .feature-grid,
-  .form-grid {
+  .feature-grid {
     grid-template-columns: 1fr;
-  }
-
-  .form-group-full {
-    grid-column: auto;
   }
 
   .dashboard-shell {
