@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#07111f" />
+  <meta name="theme-color" content="#f7f9fc" />
   <title>Deep Nexivra | Career Intelligence OS</title>
   <meta name="description" content="A private AI career intelligence workspace for evidence-based resume tailoring, job matching, ATS checks, application tracking, and interview preparation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -31,6 +31,9 @@
         </button>
         <button class="nav-item" data-view="resume">
           <span class="nav-icon">▤</span><span>Resume Studio</span>
+        </button>
+        <button class="nav-item" data-view="guides">
+          <span class="nav-icon">◫</span><span>Resume Guides</span>
         </button>
         <button class="nav-item" data-view="tailor">
           <span class="nav-icon">✎</span><span>Tailor Studio</span>
@@ -71,6 +74,12 @@
           <p class="kicker">PERSONAL CAREER OPERATING SYSTEM</p>
           <h1 id="viewTitle">Command Center</h1>
         </div>
+        <nav class="top-quick-nav" aria-label="Quick navigation">
+          <button class="jump-btn top-link" data-target="resume">Resume Studio</button>
+          <button class="jump-btn top-link" data-target="match">Job Scan</button>
+          <button class="jump-btn top-link" data-target="tailor">Tailor Resume</button>
+          <button class="jump-btn top-link top-link-featured" data-target="guides">Resume Guides</button>
+        </nav>
         <div class="top-actions">
           <span class="model-pill"><span></span> Evidence-first AI</span>
           <button class="ghost-btn" id="clearLocalData">Reset local data</button>
@@ -100,6 +109,41 @@
               </div>
             </div>
           </div>
+
+
+          <section class="dashboard-launch" aria-label="Quick start">
+            <div class="dashboard-section-heading">
+              <div><span class="eyebrow">Start here</span><h3>What do you want to do?</h3></div>
+              <p>Jump straight into the task instead of navigating the whole system.</p>
+            </div>
+            <div class="quick-action-grid">
+              <button class="quick-action-card jump-btn" data-target="resume">
+                <span class="quick-icon">01</span><strong>Import my resume</strong><small>Build your Career Graph from PDF, DOCX, or TXT.</small>
+              </button>
+              <button class="quick-action-card jump-btn" data-target="match">
+                <span class="quick-icon">02</span><strong>Scan a target job</strong><small>Compare requirements against your verified experience.</small>
+              </button>
+              <button class="quick-action-card jump-btn" data-target="tailor">
+                <span class="quick-icon">03</span><strong>Tailor my resume</strong><small>Create an evidence-grounded application version.</small>
+              </button>
+              <button class="quick-action-card jump-btn" data-target="package">
+                <span class="quick-icon">04</span><strong>Build application package</strong><small>Cover letter, recruiter outreach, and application answers.</small>
+              </button>
+            </div>
+          </section>
+
+          <section class="dashboard-guides">
+            <div class="dashboard-section-heading">
+              <div><span class="eyebrow">Resume guides</span><h3>Advice for the situation you are actually in</h3></div>
+              <button class="text-btn jump-btn" data-target="guides">See all guides →</button>
+            </div>
+            <div class="guide-preview-grid">
+              <button class="guide-preview-card jump-btn" data-target="guides"><span>🎓</span><strong>Student & New Grad</strong><small>Turn coursework, projects, and limited experience into proof.</small></button>
+              <button class="guide-preview-card jump-btn" data-target="guides"><span>🧭</span><strong>Career Change</strong><small>Translate transferable evidence without overstating direct experience.</small></button>
+              <button class="guide-preview-card jump-btn" data-target="guides"><span>🩺</span><strong>Healthcare & Lab</strong><small>Prioritize safety, workflow, quality, systems, and measurable scope.</small></button>
+              <button class="guide-preview-card jump-btn" data-target="guides"><span>📈</span><strong>Executive</strong><small>Lead with strategic scope, ownership, scale, and business outcomes.</small></button>
+            </div>
+          </section>
 
           <div class="metric-grid">
             <article class="metric-card"><span>Master resume</span><strong id="resumeStatus">Not loaded</strong><small>Reusable source of truth</small></article>
@@ -154,6 +198,135 @@
               </div>
             </div>
             <div class="cloud-status-line" id="cloudStatusLine">Local-only mode remains available even when cloud sync is not configured.</div>
+          </article>
+        </section>
+
+
+        <section class="view" id="view-guides">
+          <div class="guide-hero">
+            <div>
+              <span class="eyebrow">Deep Nexivra Resume Library</span>
+              <h2>Resume guides built around your career situation.</h2>
+              <p>Use these as decision guides, then take the advice straight into Resume Studio, Match Lab, or Tailor Studio. Keep every claim evidence-based.</p>
+            </div>
+            <div class="guide-hero-actions">
+              <button class="primary-btn jump-btn" data-target="resume">Open Resume Studio</button>
+              <button class="secondary-btn jump-btn" data-target="match">Scan a job</button>
+            </div>
+          </div>
+
+          <div class="guide-grid">
+            <article class="guide-card">
+              <div class="guide-card-icon">🎓</div>
+              <span class="guide-label">Early career</span>
+              <h3>Student & New Graduate</h3>
+              <p>Build credibility when your professional history is still short.</p>
+              <div class="guide-chips"><span>Projects</span><span>Coursework</span><span>Internships</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Relevant projects, placements, part-time work, volunteering, tools, coursework, and concrete outcomes.</p>
+                <strong>Avoid</strong><p>Generic “hard worker” statements, unsupported proficiency claims, and filling space with unrelated duties.</p>
+                <strong>Best structure</strong><p>Target headline → concise summary → skills/tools → education/projects → experience, ordered by what proves the target role best.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">🧭</div>
+              <span class="guide-label">Transition</span>
+              <h3>Career Change</h3>
+              <p>Show why your previous experience transfers without pretending it was the same job.</p>
+              <div class="guide-chips"><span>Transferable skills</span><span>Target language</span><span>Evidence</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Responsibilities and outcomes that map directly to the new role: coordination, analysis, operations, stakeholder work, quality, leadership, or systems.</p>
+                <strong>Avoid</strong><p>Changing historical job titles or inserting tools and responsibilities you never used.</p>
+                <strong>Best structure</strong><p>Target-facing summary → transferable capabilities → strongest aligned achievements → supporting experience and education.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">🪖</div>
+              <span class="guide-label">Translation</span>
+              <h3>Military to Civilian</h3>
+              <p>Translate service scope into language a civilian recruiter can understand.</p>
+              <div class="guide-chips"><span>Leadership</span><span>Operations</span><span>Scale</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Team size, equipment or budget responsibility, logistics, safety, training, planning, readiness, and measurable mission outcomes.</p>
+                <strong>Avoid</strong><p>Unexplained acronyms and rank-specific terminology when a plain civilian equivalent communicates the function better.</p>
+                <strong>Best structure</strong><p>Civilian target headline → capability summary → translated achievements → service history → certifications/clearances when relevant.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">🩺</div>
+              <span class="guide-label">Clinical & technical</span>
+              <h3>Healthcare & Laboratory</h3>
+              <p>Make quality, patient impact, workflow, instrumentation, and compliance easy to see.</p>
+              <div class="guide-chips"><span>Quality</span><span>Workflow</span><span>Compliance</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Specimen or patient workflow, instruments/systems, SOP adherence, safety, quality checks, turnaround, volumes, issue resolution, and cross-functional coordination.</p>
+                <strong>Avoid</strong><p>Claiming regulated scope, licensing, procedures, or independent authority beyond what you actually performed.</p>
+                <strong>Best structure</strong><p>Credential/status where relevant → lab specialization → tools/processes → evidence-rich experience → education/certifications.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">⚙️</div>
+              <span class="guide-label">Technical</span>
+              <h3>Engineering & Technical</h3>
+              <p>Connect technical decisions to reliability, cost, throughput, quality, or delivery.</p>
+              <div class="guide-chips"><span>Systems</span><span>Projects</span><span>Metrics</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Tools, methods, systems, design or process decisions, project scope, constraints, quantified improvements, and technical ownership.</p>
+                <strong>Avoid</strong><p>Long tool lists with no evidence showing where or how you used them.</p>
+                <strong>Best structure</strong><p>Technical summary → skills/tools → selected projects/achievements → experience → education and credentials.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">📈</div>
+              <span class="guide-label">Senior leadership</span>
+              <h3>Executive & Senior Leadership</h3>
+              <p>Shift the resume from task history to enterprise scope, ownership, and outcomes.</p>
+              <div class="guide-chips"><span>Strategy</span><span>Scale</span><span>Leadership</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Business scope, P&amp;L or budget where supported, team size, transformation, growth, risk, operating model, stakeholder influence, and strategic outcomes.</p>
+                <strong>Avoid</strong><p>Dense duty lists and vague leadership adjectives that do not show scale or impact.</p>
+                <strong>Best structure</strong><p>Executive profile → selected leadership outcomes → core expertise → reverse-chronological experience with strategic bullets.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">🧩</div>
+              <span class="guide-label">Business execution</span>
+              <h3>Project & Operations</h3>
+              <p>Show how you coordinate work, improve processes, and deliver outcomes across teams.</p>
+              <div class="guide-chips"><span>Delivery</span><span>Process</span><span>Stakeholders</span></div>
+              <details><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Projects, timelines, workflow improvements, reporting, capacity, risk/issues, stakeholder coordination, tools, and measurable delivery results.</p>
+                <strong>Avoid</strong><p>Using “managed” when you only assisted; accurately distinguish ownership, coordination, and support.</p>
+                <strong>Best structure</strong><p>Targeted summary → project/operations skills → relevant achievements → experience → certifications and tools.</p>
+              </div></details>
+            </article>
+
+            <article class="guide-card">
+              <div class="guide-card-icon">✓</div>
+              <span class="guide-label">All careers</span>
+              <h3>ATS-Safe Resume</h3>
+              <p>Keep the document readable for both parsing systems and human reviewers.</p>
+              <div class="guide-chips"><span>Simple structure</span><span>Keywords</span><span>Truth-first</span></div>
+              <details open><summary>Open guide</summary><div class="guide-body">
+                <strong>Prioritize</strong><p>Standard headings, readable chronology, relevant terminology from the job posting, plain text structure, and evidence-backed bullets.</p>
+                <strong>Avoid</strong><p>Keyword stuffing, decorative graphics as information, complex tables, unsupported skills, and hiding important content in headers/footers.</p>
+                <strong>Deep Nexivra rule</strong><p>A missing requirement should stay a visible gap unless your Career Graph contains real evidence that supports it.</p>
+              </div></details>
+            </article>
+          </div>
+
+          <article class="guide-cta panel">
+            <div><span class="eyebrow">Put the guide into practice</span><h3>Use your real evidence, not a generic template.</h3><p>Import your resume once, scan the target role, then let Tailor Studio adapt only the claims your Career Graph can support.</p></div>
+            <div class="row-actions">
+              <button class="secondary-btn jump-btn" data-target="resume">Import resume</button>
+              <button class="primary-btn jump-btn" data-target="tailor">Open Tailor Studio</button>
+            </div>
           </article>
         </section>
 

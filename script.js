@@ -62,6 +62,7 @@ function switchView(name) {
     command: "Command Center",
     match: "Match Lab",
     resume: "Resume Studio",
+    guides: "Resume Guides",
     tailor: "Tailor Studio",
     evidence: "Evidence Vault",
     graph: "Career Graph",
