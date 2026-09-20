@@ -47,6 +47,9 @@
         <button class="nav-item" data-view="interview">
           <span class="nav-icon">✦</span><span>Interview Lab</span>
         </button>
+        <button class="nav-item" data-view="package">
+          <span class="nav-icon">▣</span><span>Application Package</span>
+        </button>
       </nav>
 
       <div class="sidebar-note">
@@ -308,14 +311,36 @@
                   <span class="eyebrow">Live ATS-safe preview</span>
                   <h3 id="tailorDocumentTitle">Tailored Resume</h3>
                 </div>
-                <div class="row-actions export-actions">
-                  <button class="secondary-btn" id="exportDocx">Export DOCX</button>
-                  <button class="secondary-btn" id="exportPdf">Export PDF</button>
+                <div class="tailor-toolbar-actions">
+                  <div class="template-controls">
+                    <label for="resumeTemplate">Template</label>
+                    <select id="resumeTemplate">
+                      <option value="classic">Classic ATS</option>
+                      <option value="modern">Modern ATS</option>
+                      <option value="compact">Compact ATS</option>
+                    </select>
+                    <label class="one-page-toggle"><input type="checkbox" id="onePageMode" /> One-page mode</label>
+                  </div>
+                  <div class="row-actions export-actions">
+                    <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
+                    <button class="secondary-btn" id="saveResumeVersion">Save version</button>
+                    <button class="secondary-btn" id="exportDocx">Export DOCX</button>
+                    <button class="secondary-btn" id="exportPdf">Export PDF</button>
+                  </div>
                 </div>
               </article>
 
               <article class="resume-paper" id="tailoredResumePreview">
                 <div class="resume-paper-empty">Generate a tailored resume to see the document preview.</div>
+              </article>
+
+              <article class="panel integrity-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Integrity Gate</span><h3>Manual-edit validation</h3></div>
+                  <span class="tag" id="integrityStatusTag">Generated draft</span>
+                </div>
+                <div id="integritySummary" class="integrity-summary">Generated content is evidence-grounded. Manual edits must be revalidated before export.</div>
+                <div id="integrityFindings"></div>
               </article>
 
               <article class="panel evidence-audit-panel">
@@ -327,6 +352,14 @@
               </article>
             </section>
           </div>
+
+          <article class="panel version-library-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Version history</span><h3>Saved application resumes</h3></div>
+              <span class="tag" id="versionCountTag">0 versions</span>
+            </div>
+            <div id="resumeVersionList" class="empty-state">Save an approved resume version to preserve exactly what you used for an application.</div>
+          </article>
         </section>
 
         <section class="view" id="view-evidence">
@@ -387,6 +420,78 @@
         <section class="view" id="view-applications">
           <div class="section-intro"><div><span class="eyebrow">Pipeline</span><h2>Application Tracker</h2><p>Every saved scan can become an application record with the exact readiness score used at the time.</p></div></div>
           <div class="kanban" id="applicationBoard"></div>
+        </section>
+
+        <section class="view" id="view-package">
+          <div class="section-intro">
+            <div><span class="eyebrow">Application Package Generator</span><h2>One evidence set. Every application asset.</h2><p>Generate a cover letter, recruiter message, common application answers, and answers to your own application questions from the same validated Career Graph and target job.</p></div>
+            <button class="primary-btn" id="generateApplicationPackage">Generate package</button>
+          </div>
+
+          <div class="package-status-grid">
+            <article class="metric-card"><span>Target role</span><strong id="packageTargetRole">No target</strong><small>Latest Match Lab job</small></article>
+            <article class="metric-card"><span>Resume version</span><strong id="packageResumeStatus">Not ready</strong><small>Uses approved tailored resume</small></article>
+            <article class="metric-card"><span>Evidence links</span><strong id="packageEvidenceCount">0</strong><small>Grounded source records</small></article>
+            <article class="metric-card"><span>Package status</span><strong id="packageStatus">Not generated</strong><small>Cover letter + answers</small></article>
+          </div>
+
+          <div class="two-col package-input-grid">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Optional questions</span><h3>Paste application questions</h3></div>
+              </div>
+              <div class="field">
+                <textarea id="customApplicationQuestions" placeholder="Example:
+Why are you interested in this position?
+Describe your experience coordinating cross-functional work.
+What salary are you expecting?"></textarea>
+                <small>One question per line. Unsupported facts will not be invented.</small>
+              </div>
+            </article>
+
+            <article class="panel package-guardrail">
+              <span class="eyebrow">Same evidence policy</span>
+              <h3>Application answers inherit resume integrity.</h3>
+              <p>Deep Nexivra can reframe verified evidence for a cover letter or answer, but it cannot create missing experience, certifications, salary history, legal status, or other facts that are not in your verified data.</p>
+            </article>
+          </div>
+
+          <div id="applicationPackageWorkspace" class="package-workspace hidden">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Cover letter</span><h3>Evidence-grounded letter</h3></div>
+                <button class="text-btn copy-package-btn" data-copy-target="packageCoverLetter">Copy</button>
+              </div>
+              <textarea id="packageCoverLetter" class="package-textarea"></textarea>
+            </article>
+
+            <div class="two-col">
+              <article class="panel">
+                <div class="panel-heading"><h3>Recruiter message</h3><button class="text-btn copy-package-btn" data-copy-target="packageRecruiterMessage">Copy</button></div>
+                <textarea id="packageRecruiterMessage" class="package-small-textarea"></textarea>
+              </article>
+              <article class="panel">
+                <div class="panel-heading"><h3>Why this role?</h3><button class="text-btn copy-package-btn" data-copy-target="packageWhyRole">Copy</button></div>
+                <textarea id="packageWhyRole" class="package-small-textarea"></textarea>
+              </article>
+            </div>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Application answers</span><h3>Common + custom questions</h3></div>
+                <span class="tag" id="packageAnswerTag">0 answers</span>
+              </div>
+              <div id="packageAnswers"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Evidence audit</span><h3>Sources used across the package</h3></div>
+                <span class="tag" id="packageAuditTag">0 sources</span>
+              </div>
+              <div id="packageEvidenceAudit" class="empty-state">Generate a package to see its evidence trail.</div>
+            </article>
+          </div>
         </section>
 
         <section class="view" id="view-interview">
