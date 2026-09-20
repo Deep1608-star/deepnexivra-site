@@ -995,21 +995,47 @@ async function requestTailoredResume() {
   if (!scan) throw new Error("Run a Match Lab scan first");
   if (!graph) throw new Error("Build your Career Graph first");
 
-  const response = await fetch("/api/tailor-resume", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      careerGraph: graph,
-      masterResume: state.masterResume,
-      jobDescription: scan.jobSnapshot || "",
-      jobAnalysis: scan.result || {}
-    })
-  });
-  const data = await response.json();
-  if (!response.ok || !data?.ok || !data?.result) {
-    throw new Error(data?.message || "Tailored resume generation failed");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 190000);
+
+  try {
+    const response = await fetch("/api/tailor-resume", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        careerGraph: graph,
+        masterResume: state.masterResume,
+        jobDescription: scan.jobSnapshot || "",
+        jobAnalysis: scan.result || {}
+      })
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch (_) {
+      throw new Error("Tailor Studio returned an unreadable server response. Please try again.");
+    }
+
+    if (!response.ok || !data?.ok || !data?.result) {
+      throw new Error(data?.message || "Tailored resume generation failed");
+    }
+
+    const draft = hydrateTailoredState(data.result, scan);
+    draft.fallbackUsed = !!data.fallback;
+    return draft;
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("Tailor Studio took too long. Please try again; Deep Nexivra now uses a faster path and evidence-safe fallback.");
+    }
+    if (/load failed|failed to fetch|network/i.test(String(error?.message || error))) {
+      throw new Error("The tailoring request was interrupted. Please tap Generate tailored resume again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-  return hydrateTailoredState(data.result, scan);
 }
 
 function skillSelectedCount() {
@@ -2160,7 +2186,7 @@ $("generateTailoredResume").addEventListener("click", async () => {
     recordTailorState("Generated tailored resume");
     persist();
     renderDashboard();
-    toast("Tailored resume generated");
+    toast(state.tailoredResume?.fallbackUsed ? "Tailored resume created in evidence-safe fallback mode" : "Tailored resume generated");
   } catch (error) {
     console.error(error);
     toast(error.message || "Tailored resume generation failed");
