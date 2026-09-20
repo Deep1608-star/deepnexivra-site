@@ -29,6 +29,7 @@ export default async function handler(req, res) {
     "Do not pretend to know an employer's internal ATS score. ATS Readability is Deep Nexivra's own text-level assessment.",
     "Identify 8-14 high-value requirements when the posting supports that many.",
     "Treat keyword presence as insufficient by itself for direct evidence.",
+    "Use the Career Graph to find stronger source-backed relationships across roles, tools, achievements, education, and projects, but never treat graph structure as permission to add a claim that is not supported by candidate evidence.",
     "In evidence, paraphrase the actual supporting candidate fact.",
     "Return 10-18 high-value role terms, tools, competencies, certifications, or domain phrases.",
     "present=true only when candidate material genuinely contains or clearly supports the concept.",
@@ -42,6 +43,18 @@ export default async function handler(req, res) {
     "Keep all dashboard strings concise."
   ].join("\n");
 
+  const graphText = careerGraph
+    ? JSON.stringify({
+        profile: careerGraph.profile || {},
+        experience: careerGraph.experience || [],
+        education: careerGraph.education || [],
+        certifications: careerGraph.certifications || [],
+        projects: careerGraph.projects || [],
+        skills: careerGraph.skills || [],
+        evidenceRecords: (careerGraph.evidenceRecords || []).slice(0, 60)
+      }).slice(0, 30000)
+    : "No structured Career Graph supplied.";
+
   const input = [
     "TARGET JOB DESCRIPTION:",
     jobDescription,
@@ -50,7 +63,10 @@ export default async function handler(req, res) {
     resume,
     "",
     "VERIFIED EVIDENCE VAULT:",
-    vaultText || "No additional verified evidence supplied."
+    vaultText || "No additional verified evidence supplied.",
+    "",
+    "STRUCTURED CAREER GRAPH:",
+    graphText
   ].join("\n");
 
   const stringArray = {
