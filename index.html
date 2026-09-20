@@ -499,7 +499,11 @@ What salary are you expecting?"></textarea>
             <article class="panel">
               <div class="panel-heading">
                 <div><span class="eyebrow">Cover letter</span><h3>Evidence-grounded letter</h3></div>
-                <button class="text-btn copy-package-btn" data-copy-target="packageCoverLetter">Copy</button>
+                <div class="row-actions package-export-actions">
+                  <button class="text-btn copy-package-btn" data-copy-target="packageCoverLetter">Copy</button>
+                  <button class="text-btn" id="exportCoverLetterDocx">DOCX</button>
+                  <button class="text-btn" id="exportCoverLetterPdf">PDF</button>
+                </div>
               </div>
               <textarea id="packageCoverLetter" class="package-textarea"></textarea>
             </article>
