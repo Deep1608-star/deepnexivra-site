@@ -418,8 +418,7 @@ function renderEvidence() {
     btn.textContent = "Remove";
     btn.addEventListener("click", () => {
       state.evidence = state.evidence.filter(x => x.id !== item.id);
-      persist(); renderDashboard();
-refreshCloudStatus(); toast("Evidence removed");
+      persist(); renderDashboard(); toast("Evidence removed");
     });
     div.append(strong,small,btn);
     list.appendChild(div);
@@ -1728,6 +1727,9 @@ async function getCloudClient() {
     const response = await fetch("/api/cloud-config");
     const data = await response.json();
     state.cloudConfig = data;
+    if ($("agentSearchProviderTag")) {
+      $("agentSearchProviderTag").textContent = data.jobDiscoveryEnabled ? "Live discovery ready" : "Provider not configured";
+    }
   }
   if (!state.cloudConfig?.enabled) throw new Error("Cloud sync is not configured on this deployment");
   const module = await import(SUPABASE_ESM_URL);
@@ -1751,6 +1753,15 @@ async function refreshCloudStatus() {
   } catch (error) {
     tag.textContent = "Local-only";
     line.textContent = error.message + ". Local mode continues to work normally.";
+    try {
+      if (!state.cloudConfig) {
+        const response = await fetch("/api/cloud-config");
+        state.cloudConfig = await response.json();
+      }
+      if ($("agentSearchProviderTag")) {
+        $("agentSearchProviderTag").textContent = state.cloudConfig?.jobDiscoveryEnabled ? "Live discovery ready" : "Provider not configured";
+      }
+    } catch (_) {}
   }
 }
 
@@ -1918,15 +1929,55 @@ function renderCareerAgent() {
         $("jobInput").value = job.jobDescription || "";
         $("jobChars").textContent = (job.jobDescription || "").length;
         switchView("match");
-        toast("Job loaded into Match Lab");
+        toast(job.source === "Adzuna discovery" ? "Discovery snippet loaded; use Deep import for a fuller posting when possible" : "Job loaded into Match Lab");
       });
+
+      if (job.sourceUrl) {
+        const deepImport = document.createElement("button");
+        deepImport.textContent = "Deep import";
+        deepImport.addEventListener("click", async () => {
+          deepImport.disabled = true;
+          const oldText = deepImport.textContent;
+          deepImport.textContent = "Importing...";
+          try {
+            const response = await fetch("/api/job-intake", {
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({url:job.sourceUrl,careerGraph:ensureCareerGraphIds()})
+            });
+            const data = await response.json();
+            if (!response.ok || !data?.ok || !data?.result) throw new Error(data?.message || "Deep import failed");
+            const result = data.result;
+            Object.assign(job,result,{
+              source:job.source || "Deep import",
+              sourceUrl:result.sourceUrl || job.sourceUrl,
+              createdAt:job.createdAt
+            });
+            persist(); renderCareerAgent();
+            toast("Full job import complete");
+          } catch (error) {
+            toast(error.message || "Deep import failed");
+          } finally {
+            deepImport.disabled = false;
+            deepImport.textContent = oldText;
+          }
+        });
+        actions.appendChild(deepImport);
+
+        const open = document.createElement("button");
+        open.textContent = "Open listing";
+        open.addEventListener("click", () => window.open(job.sourceUrl,"_blank","noopener,noreferrer"));
+        actions.appendChild(open);
+      }
+
       const remove = document.createElement("button");
       remove.textContent = "Remove";
       remove.addEventListener("click", () => {
         state.careerAgentJobs = state.careerAgentJobs.filter(x => x.id !== job.id);
         persist(); renderCareerAgent();
       });
-      actions.append(target,remove);
+      actions.prepend(target);
+      actions.append(remove);
       card.append(head,p,scores,actions);
       list.appendChild(card);
     });
@@ -2266,6 +2317,55 @@ $("cloudPull").addEventListener("click", async () => {
   } catch (error) { toast(error.message || "Cloud restore failed"); }
 });
 
+$("agentSearchJobs").addEventListener("click", async () => {
+  const btn = $("agentSearchJobs");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Searching & triaging...";
+  try {
+    if (!state.careerGraph) throw new Error("Build your Career Graph first");
+    const keywords = $("agentSearchKeywords").value.trim();
+    const location = $("agentSearchLocation").value.trim();
+    const country = $("agentSearchCountry").value.trim().toLowerCase() || "ca";
+    if (!keywords) throw new Error("Enter a target role or keywords");
+
+    const response = await fetch("/api/job-search", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        keywords,
+        location,
+        country,
+        careerGraph:ensureCareerGraphIds()
+      })
+    });
+    const data = await response.json();
+    if (!response.ok || !data?.ok) throw new Error(data?.message || "Job discovery failed");
+    const incoming = data.result?.jobs || [];
+    const existing = new Set(state.careerAgentJobs.map(job => job.externalId || job.sourceUrl || normalize((job.title || "") + "|" + (job.company || ""))));
+    let added = 0;
+    incoming.forEach(job => {
+      const key = job.externalId || job.sourceUrl || normalize((job.title || "") + "|" + (job.company || ""));
+      if (existing.has(key)) return;
+      existing.add(key);
+      state.careerAgentJobs.push(Object.assign({
+        id:crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() + "-" + added,
+        createdAt:new Date().toISOString()
+      },job));
+      added++;
+    });
+    state.careerAgentJobs.sort((a,b) => (b.scores?.readiness || 0) - (a.scores?.readiness || 0));
+    state.careerAgentJobs = state.careerAgentJobs.slice(0,50);
+    persist(); renderCareerAgent();
+    toast(added ? (added + " new jobs added") : "No new jobs found");
+  } catch (error) {
+    toast(error.message || "Job discovery failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
 $("agentAnalyzeJob").addEventListener("click", async () => {
   const btn = $("agentAnalyzeJob");
   const old = btn.textContent;
@@ -2480,3 +2580,4 @@ $("clearLocalData").addEventListener("click", () => {
 });
 
 renderDashboard();
+refreshCloudStatus();
