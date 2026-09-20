@@ -935,11 +935,12 @@ function approvedResumePayload() {
       .filter(b => b.accepted !== false && String(b.editedText || b.text || "").trim())
       .map(b => ({
         text: String(b.editedText || b.text || "").trim(),
-        confidence: Number(b.confidence) || 0
+        confidence: Number(b.confidence) || 0,
+        priority: Number(b.priority) || 0
       }));
 
     if (draft.onePageMode) {
-      bullets = bullets.sort((a,b) => b.confidence - a.confidence).slice(0,3);
+      bullets = bullets.sort((a,b) => (b.priority - a.priority) || (b.confidence - a.confidence)).slice(0,3);
     }
 
     if (!bullets.length) return;
@@ -1186,7 +1187,7 @@ function renderTailorEditor() {
       top.className = "bullet-topline";
       const confidence = document.createElement("span");
       confidence.className = (bullet.confidence || 0) >= 75 ? "grounding-good" : "grounding-warn";
-      confidence.textContent = "Evidence confidence " + Math.round(bullet.confidence || 0) + "%";
+      confidence.textContent = "Evidence " + Math.round(bullet.confidence || 0) + "% · Job priority " + Math.round(bullet.priority || 0) + "%";
       const actions = document.createElement("div");
       actions.className = "bullet-actions";
       const accept = document.createElement("button");
