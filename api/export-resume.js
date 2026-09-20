@@ -21,12 +21,16 @@ function filenameBase(resume) {
 
 async function makeDocx(resume) {
   const docx = await import("docx");
+  const template = resume.template || "classic";
+  const compact = !!resume.onePageMode || template === "compact";
+  const modern = template === "modern";
   const {
     Document, Packer, Paragraph, TextRun, AlignmentType, BorderStyle
   } = docx;
 
   const children = [];
   const baseFont = "Arial";
+  const defaultBodySize = compact ? 18 : 20;
 
   function p(text, options) {
     const opts = options || {};
@@ -41,7 +45,7 @@ async function makeDocx(resume) {
         new TextRun({
           text: clean(text),
           font: baseFont,
-          size: opts.size || 20,
+          size: opts.size || defaultBodySize,
           bold: !!opts.bold,
           allCaps: !!opts.allCaps
         })
@@ -62,9 +66,9 @@ async function makeDocx(resume) {
 
   const profile = resume.profile || {};
   children.push(p(profile.fullName || "Candidate", {
-    size: 30,
+    size: compact ? 28 : 30,
     bold: true,
-    alignment: AlignmentType.CENTER,
+    alignment: modern ? AlignmentType.LEFT : AlignmentType.CENTER,
     after: 50
   }));
 
@@ -75,17 +79,17 @@ async function makeDocx(resume) {
     ...safeArray(profile.links, 4)
   ].map(clean).filter(Boolean).join(" | ");
 
-  if (contact) children.push(p(contact, { size: 18, alignment: AlignmentType.CENTER, after: 130 }));
+  if (contact) children.push(p(contact, { size: compact ? 16 : 18, alignment: modern ? AlignmentType.LEFT : AlignmentType.CENTER, after: compact ? 90 : 130 }));
 
   if (clean(resume.summary)) {
     section("Professional Summary");
-    children.push(p(resume.summary, { size: 19, line: 250, after: 80 }));
+    children.push(p(resume.summary, { size: compact ? 17 : 19, line: compact ? 225 : 250, after: compact ? 55 : 80 }));
   }
 
   const skills = safeArray(resume.skills, 30).map(clean).filter(Boolean);
   if (skills.length) {
     section("Core Skills");
-    children.push(p(skills.join(" | "), { size: 18, line: 240, after: 90 }));
+    children.push(p(skills.join(" | "), { size: compact ? 16 : 18, line: compact ? 220 : 240, after: compact ? 55 : 90 }));
   }
 
   section("Professional Experience");
@@ -93,10 +97,10 @@ async function makeDocx(resume) {
     const titleLine = [clean(exp.title), clean(exp.employer)].filter(Boolean).join(" — ");
     const dates = [clean(exp.startDate), exp.isCurrent ? "Present" : clean(exp.endDate)].filter(Boolean).join(" – ");
     const headerText = dates ? titleLine + " | " + dates : titleLine;
-    children.push(p(headerText, { size: 20, bold: true, before: 100, after: 20 }));
-    if (clean(exp.location)) children.push(p(exp.location, { size: 18, after: 45 }));
+    children.push(p(headerText, { size: compact ? 18 : 20, bold: true, before: compact ? 70 : 100, after: 20 }));
+    if (clean(exp.location)) children.push(p(exp.location, { size: compact ? 16 : 18, after: compact ? 30 : 45 }));
     safeArray(exp.bullets, 10).forEach(function(bullet) {
-      if (clean(bullet)) children.push(p(bullet, { size: 19, bullet: true, line: 245, after: 35 }));
+      if (clean(bullet)) children.push(p(bullet, { size: compact ? 17 : 19, bullet: true, line: compact ? 220 : 245, after: compact ? 22 : 35 }));
     });
   });
 
@@ -128,10 +132,10 @@ async function makeDocx(resume) {
       properties: {
         page: {
           margin: {
-            top: 720,
-            right: 720,
-            bottom: 720,
-            left: 720
+            top: compact ? 540 : 720,
+            right: compact ? 540 : 720,
+            bottom: compact ? 540 : 720,
+            left: compact ? 540 : 720
           }
         }
       },
@@ -144,11 +148,14 @@ async function makeDocx(resume) {
 
 async function makePdf(resume) {
   const { jsPDF } = await import("jspdf");
+  const template = resume.template || "classic";
+  const compact = !!resume.onePageMode || template === "compact";
+  const modern = template === "modern";
   const doc = new jsPDF({ unit: "pt", format: "letter", orientation: "portrait" });
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const margin = 48;
+  const margin = compact ? 40 : 48;
   const contentWidth = pageWidth - margin * 2;
   let y = 50;
 
@@ -187,7 +194,7 @@ async function makePdf(resume) {
   }
 
   const profile = resume.profile || {};
-  drawLines(profile.fullName || "Candidate", { fontSize: 16, bold: true, align: "center", lineHeight: 18, after: 3 });
+  drawLines(profile.fullName || "Candidate", { fontSize: compact ? 15 : 16, bold: true, align: modern ? "left" : "center", lineHeight: 18, after: 3 });
 
   const contact = [
     profile.location,
@@ -195,17 +202,17 @@ async function makePdf(resume) {
     profile.email,
     ...safeArray(profile.links, 4)
   ].map(clean).filter(Boolean).join(" | ");
-  if (contact) drawLines(contact, { fontSize: 8.5, align: "center", lineHeight: 10, after: 10 });
+  if (contact) drawLines(contact, { fontSize: compact ? 8 : 8.5, align: modern ? "left" : "center", lineHeight: compact ? 9.5 : 10, after: compact ? 7 : 10 });
 
   if (clean(resume.summary)) {
     section("Professional Summary");
-    drawLines(resume.summary, { fontSize: 9.5, lineHeight: 12.5, after: 3 });
+    drawLines(resume.summary, { fontSize: compact ? 8.8 : 9.5, lineHeight: compact ? 11.3 : 12.5, after: 3 });
   }
 
   const skills = safeArray(resume.skills, 30).map(clean).filter(Boolean);
   if (skills.length) {
     section("Core Skills");
-    drawLines(skills.join(" | "), { fontSize: 9, lineHeight: 11.5, after: 3 });
+    drawLines(skills.join(" | "), { fontSize: compact ? 8.3 : 9, lineHeight: compact ? 10.5 : 11.5, after: 3 });
   }
 
   section("Professional Experience");
@@ -213,17 +220,17 @@ async function makePdf(resume) {
     ensureSpace(55);
     const titleLine = [clean(exp.title), clean(exp.employer)].filter(Boolean).join(" — ");
     const dates = [clean(exp.startDate), exp.isCurrent ? "Present" : clean(exp.endDate)].filter(Boolean).join(" – ");
-    drawLines(dates ? titleLine + " | " + dates : titleLine, { fontSize: 9.7, bold: true, lineHeight: 12, after: 1 });
-    if (clean(exp.location)) drawLines(exp.location, { fontSize: 8.5, lineHeight: 10.5, after: 2 });
+    drawLines(dates ? titleLine + " | " + dates : titleLine, { fontSize: compact ? 9 : 9.7, bold: true, lineHeight: compact ? 11 : 12, after: 1 });
+    if (clean(exp.location)) drawLines(exp.location, { fontSize: compact ? 8 : 8.5, lineHeight: compact ? 9.5 : 10.5, after: 2 });
 
     safeArray(exp.bullets, 10).forEach(function(bullet) {
       const text = "• " + clean(bullet);
       const lines = doc.splitTextToSize(text, contentWidth - 10);
       ensureSpace(lines.length * 11.5 + 3);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
+      doc.setFontSize(compact ? 8.3 : 9);
       doc.text(lines, margin + 8, y);
-      y += lines.length * 11.5 + 3;
+      y += lines.length * (compact ? 10.4 : 11.5) + (compact ? 2 : 3);
     });
     y += 3;
   });
