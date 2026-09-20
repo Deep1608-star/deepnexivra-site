@@ -118,3 +118,7 @@ background-size:auto,36px 36px,36px 36px}
 @media(max-width:1250px){.tailor-workspace{grid-template-columns:1fr}.tailor-controls{position:relative;top:auto;max-height:none}.resume-paper{max-width:900px}.tailor-status-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.tailor-status-grid{grid-template-columns:1fr 1fr}.tailor-toolbar{align-items:flex-start;flex-direction:column}.resume-paper{padding:34px 28px;min-height:900px}.section-actions{width:100%}.section-actions button{flex:1}}
 @media(max-width:500px){.tailor-status-grid{grid-template-columns:1fr}.resume-paper{padding:26px 20px}.resume-job-head{display:block}.resume-job-head span{display:block;margin-top:3px}.export-actions{width:100%}.export-actions button{flex:1}}
+
+.bullet-source-box{margin-top:8px;border-top:1px solid var(--line);padding-top:8px;color:var(--muted);font-size:.61rem;line-height:1.5}
+.bullet-source-box strong{display:block;color:var(--accent2);font-size:.59rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.bullet-source-box div+div{margin-top:4px}
