@@ -32,6 +32,9 @@
         <button class="nav-item" data-view="resume">
           <span class="nav-icon">▤</span><span>Resume Studio</span>
         </button>
+        <button class="nav-item" data-view="tailor">
+          <span class="nav-icon">✎</span><span>Tailor Studio</span>
+        </button>
         <button class="nav-item" data-view="evidence">
           <span class="nav-icon">◇</span><span>Evidence Vault</span>
         </button>
@@ -170,7 +173,10 @@
 
             <div class="panel result-summary">
               <div><span class="eyebrow">Analysis</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p></div>
-              <button class="primary-btn" id="saveApplication">Save application</button>
+              <div class="row-actions result-actions">
+                <button class="secondary-btn jump-btn" data-target="tailor">Build tailored resume</button>
+                <button class="primary-btn" id="saveApplication">Save application</button>
+              </div>
             </div>
 
             <div class="analysis-grid">
@@ -244,6 +250,83 @@
               <button class="secondary-btn jump-btn" data-target="match">Open Match Lab</button>
             </div>
           </article>
+        </section>
+
+        <section class="view" id="view-tailor">
+          <div class="section-intro">
+            <div><span class="eyebrow">Resume Studio Pro</span><h2>Evidence-grounded Tailoring</h2><p>Generate a job-specific resume from your Career Graph. Every proposed bullet must cite verified evidence before it can appear in the document.</p></div>
+            <div class="row-actions section-actions">
+              <button class="secondary-btn jump-btn" data-target="match">Change target job</button>
+              <button class="primary-btn" id="generateTailoredResume">Generate tailored resume</button>
+            </div>
+          </div>
+
+          <div class="tailor-status-grid">
+            <article class="metric-card"><span>Target role</span><strong id="tailorTargetRole">No scan selected</strong><small>Uses your latest Match Lab scan</small></article>
+            <article class="metric-card"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Required for grounded generation</small></article>
+            <article class="metric-card"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>
+            <article class="metric-card"><span>Grounding</span><strong id="tailorGrounding">—</strong><small>Evidence-linked output</small></article>
+          </div>
+
+          <div id="tailorEmpty" class="panel tailor-empty">
+            <span class="eyebrow">Ready when your data is ready</span>
+            <h3>Run a job scan and build your Career Graph first.</h3>
+            <p>Deep Nexivra needs both the target job and your source-backed career evidence before it will generate a tailored resume.</p>
+            <div class="row-actions">
+              <button class="secondary-btn jump-btn" data-target="resume">Import resume</button>
+              <button class="primary-btn jump-btn" data-target="match">Analyze target job</button>
+            </div>
+          </div>
+
+          <div id="tailorWorkspace" class="tailor-workspace hidden">
+            <aside class="panel tailor-controls">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Document controls</span><h3>Application version</h3></div>
+                <span class="tag" id="tailorVersionTag">Draft</span>
+              </div>
+
+              <div class="field">
+                <label for="tailorSummary">Professional summary</label>
+                <textarea id="tailorSummary" class="summary-editor" placeholder="Generated summary"></textarea>
+                <small>Editable. Keep changes truthful and supported by your Career Graph.</small>
+              </div>
+
+              <div class="tailor-subsection">
+                <div class="panel-heading compact-heading"><h3>Core skills</h3><span class="tag" id="tailorSkillTag">0 selected</span></div>
+                <div id="tailorSkills" class="skill-toggle-list"></div>
+              </div>
+
+              <div class="tailor-subsection">
+                <div class="panel-heading compact-heading"><h3>Bullet review</h3><span class="tag">Accept · edit · reject</span></div>
+                <div id="tailorBulletEditor"></div>
+              </div>
+            </aside>
+
+            <section class="tailor-output-column">
+              <article class="panel tailor-toolbar">
+                <div>
+                  <span class="eyebrow">Live ATS-safe preview</span>
+                  <h3 id="tailorDocumentTitle">Tailored Resume</h3>
+                </div>
+                <div class="row-actions export-actions">
+                  <button class="secondary-btn" id="exportDocx">Export DOCX</button>
+                  <button class="secondary-btn" id="exportPdf">Export PDF</button>
+                </div>
+              </article>
+
+              <article class="resume-paper" id="tailoredResumePreview">
+                <div class="resume-paper-empty">Generate a tailored resume to see the document preview.</div>
+              </article>
+
+              <article class="panel evidence-audit-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Evidence audit</span><h3>Why each change is allowed</h3></div>
+                  <span class="tag" id="auditTag">0 grounded bullets</span>
+                </div>
+                <div id="tailorEvidenceAudit" class="empty-state">Evidence links will appear after generation.</div>
+              </article>
+            </section>
+          </div>
         </section>
 
         <section class="view" id="view-evidence">
