@@ -3,241 +3,597 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deep Nexivra | Execution Intelligence</title>
-  <meta
-    name="description"
-    content="Deep Nexivra helps turn business ideas into actionable execution plans."
-  />
+  <meta name="theme-color" content="#07111f" />
+  <title>Deep Nexivra | Career Intelligence OS</title>
+  <meta name="description" content="A private AI career intelligence workspace for evidence-based resume tailoring, job matching, ATS checks, application tracking, and interview preparation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="site-bg"></div>
-  <div class="grid-overlay"></div>
-
-  <header class="header">
-    <div class="container nav">
-      <div class="brand">
-        <div class="brand-mark">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+        <div>
+          <strong>Deep Nexivra</strong>
+          <small>Career Intelligence OS</small>
         </div>
-        <span>Deep Nexivra</span>
       </div>
 
-      <nav class="nav-links" id="navLinks">
-        <a href="#analyzer">Analyzer</a>
-        <a href="#platform">Platform</a>
-        <a href="#capabilities">Capabilities</a>
-        <a href="#contact">Contact</a>
+      <nav class="side-nav" aria-label="Workspace navigation">
+        <button class="nav-item active" data-view="command">
+          <span class="nav-icon">⌂</span><span>Command Center</span>
+        </button>
+        <button class="nav-item" data-view="match">
+          <span class="nav-icon">◎</span><span>Match Lab</span>
+        </button>
+        <button class="nav-item" data-view="resume">
+          <span class="nav-icon">▤</span><span>Resume Studio</span>
+        </button>
+        <button class="nav-item" data-view="tailor">
+          <span class="nav-icon">✎</span><span>Tailor Studio</span>
+        </button>
+        <button class="nav-item" data-view="evidence">
+          <span class="nav-icon">◇</span><span>Evidence Vault</span>
+        </button>
+        <button class="nav-item" data-view="graph">
+          <span class="nav-icon">⌘</span><span>Career Graph</span>
+        </button>
+        <button class="nav-item" data-view="applications">
+          <span class="nav-icon">▦</span><span>Applications</span>
+        </button>
+        <button class="nav-item" data-view="interview">
+          <span class="nav-icon">✦</span><span>Interview Lab</span>
+        </button>
+        <button class="nav-item" data-view="package">
+          <span class="nav-icon">▣</span><span>Application Package</span>
+        </button>
+        <button class="nav-item" data-view="agent">
+          <span class="nav-icon">⌁</span><span>Career Agent</span>
+        </button>
       </nav>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-      </button>
+      <div class="sidebar-note">
+        <span class="status-dot"></span>
+        <div>
+          <strong>Private workspace</strong>
+          <small>Your saved career data stays in this browser in v1.</small>
+        </div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+        <div>
+          <p class="kicker">PERSONAL CAREER OPERATING SYSTEM</p>
+          <h1 id="viewTitle">Command Center</h1>
+        </div>
+        <div class="top-actions">
+          <span class="model-pill"><span></span> Evidence-first AI</span>
+          <button class="ghost-btn" id="clearLocalData">Reset local data</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section class="view active" id="view-command">
+          <div class="hero-panel">
+            <div class="hero-copy">
+              <span class="eyebrow">Career intelligence, not keyword stuffing</span>
+              <h2>Know exactly why you match a role — and what to improve before you apply.</h2>
+              <p>Deep Nexivra maps job requirements to evidence from your real experience, separates ATS readability from recruiter quality, and turns each application into an auditable decision.</p>
+              <div class="hero-actions">
+                <button class="primary-btn jump-btn" data-target="match">Analyze a job</button>
+                <button class="secondary-btn jump-btn" data-target="resume">Load master resume</button>
+              </div>
+            </div>
+            <div class="hero-score">
+              <div class="radar-orb">
+                <span id="heroReadiness">—</span>
+                <small>READINESS</small>
+              </div>
+              <div class="hero-score-copy">
+                <strong id="heroTarget">No job analyzed yet</strong>
+                <p id="heroSummary">Run your first Match Lab scan to build your application intelligence.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card"><span>Master resume</span><strong id="resumeStatus">Not loaded</strong><small>Reusable source of truth</small></article>
+            <article class="metric-card"><span>Evidence records</span><strong id="evidenceCount">0</strong><small>Verified achievements & skills</small></article>
+            <article class="metric-card"><span>Applications</span><strong id="applicationCount">0</strong><small>Saved through offer</small></article>
+            <article class="metric-card"><span>Scans</span><strong id="scanCount">0</strong><small>Job-specific analyses</small></article>
+          </div>
+
+          <div class="two-col">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">System</span><h3>Five-layer application intelligence</h3></div>
+              </div>
+              <div class="layer-list">
+                <div><span>01</span><strong>Requirement Match</strong><p>What the employer asks for versus what your resume demonstrates.</p></div>
+                <div><span>02</span><strong>Evidence Strength</strong><p>Whether important claims are supported by concrete experience.</p></div>
+                <div><span>03</span><strong>ATS Readability</strong><p>Structural and wording risks that may hurt parsing or retrieval.</p></div>
+                <div><span>04</span><strong>Recruiter Quality</strong><p>Clarity, specificity, impact, seniority alignment, and credibility.</p></div>
+                <div><span>05</span><strong>Application Readiness</strong><p>A synthesis for this specific role, with gaps kept visible.</p></div>
+              </div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Recent intelligence</span><h3>Scan history</h3></div>
+                <button class="text-btn jump-btn" data-target="match">New scan →</button>
+              </div>
+              <div id="historyList" class="empty-state">No scans yet.</div>
+            </article>
+          </div>
+
+          <article class="panel cloud-sync-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Private cloud sync</span><h3>Encrypted cross-device workspace</h3></div>
+              <span class="tag" id="cloudStatusTag">Checking configuration</span>
+            </div>
+            <div class="cloud-sync-grid">
+              <div class="field">
+                <label for="cloudEmail">Account email</label>
+                <input id="cloudEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="cloudPassphrase">Encryption passphrase</label>
+                <input id="cloudPassphrase" type="password" placeholder="Required to encrypt/decrypt cloud workspace" autocomplete="new-password" />
+                <small>Never uploaded. Deep Nexivra derives a browser encryption key from this passphrase.</small>
+              </div>
+              <div class="cloud-actions">
+                <button class="secondary-btn" id="cloudSignIn">Send secure sign-in link</button>
+                <button class="secondary-btn" id="cloudPush">Encrypt & sync</button>
+                <button class="secondary-btn" id="cloudPull">Restore & decrypt</button>
+                <button class="ghost-btn" id="cloudSignOut">Sign out</button>
+              </div>
+            </div>
+            <div class="cloud-status-line" id="cloudStatusLine">Local-only mode remains available even when cloud sync is not configured.</div>
+          </article>
+        </section>
+
+        <section class="view" id="view-match">
+          <div class="section-intro">
+            <div><span class="eyebrow">Deep Match Engine</span><h2>Resume × Job Description</h2><p>The score is Deep Nexivra's analysis model — not a claim about an employer's internal ATS score.</p></div>
+            <button class="secondary-btn" id="loadMasterIntoScan">Use master resume</button>
+          </div>
+
+          <div class="scan-grid">
+            <article class="panel input-panel">
+              <div class="field">
+                <label for="resumeInput">Resume / career evidence</label>
+                <textarea id="resumeInput" placeholder="Paste your resume text here. In the next phase this will support direct PDF/DOCX parsing."></textarea>
+                <small><span id="resumeChars">0</span> characters</small>
+              </div>
+              <div class="field">
+                <label for="jobInput">Target job description</label>
+                <textarea id="jobInput" placeholder="Paste the complete job posting here — responsibilities, qualifications, tools, education, and preferred requirements."></textarea>
+                <small><span id="jobChars">0</span> characters</small>
+              </div>
+              <div class="scan-actions">
+                <button class="primary-btn wide" id="runScan">Run Deep Scan</button>
+                <span id="scanStatus" class="scan-status">Ready</span>
+              </div>
+            </article>
+
+            <aside class="panel methodology">
+              <span class="eyebrow">Guardrails</span>
+              <h3>Truth-preserving optimization</h3>
+              <ul>
+                <li>Never invent experience, metrics, certifications, titles, or tools.</li>
+                <li>Missing requirements stay visible instead of being hidden by keyword insertion.</li>
+                <li>Transferable experience is labeled as transferable, not direct.</li>
+                <li>Every suggested rewrite should be traceable to existing evidence.</li>
+              </ul>
+            </aside>
+          </div>
+
+          <div id="scanResults" class="results hidden">
+            <div class="score-grid">
+              <article class="score-card"><span>Requirement Match</span><strong id="scoreRequirement">0</strong><small>/100</small></article>
+              <article class="score-card"><span>Evidence Strength</span><strong id="scoreEvidence">0</strong><small>/100</small></article>
+              <article class="score-card"><span>ATS Readability</span><strong id="scoreAts">0</strong><small>/100</small></article>
+              <article class="score-card"><span>Recruiter Quality</span><strong id="scoreRecruiter">0</strong><small>/100</small></article>
+              <article class="score-card emphasis"><span>Readiness</span><strong id="scoreReadiness">0</strong><small>/100</small></article>
+            </div>
+
+            <div class="panel result-summary">
+              <div><span class="eyebrow">Analysis</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p></div>
+              <div class="row-actions result-actions">
+                <button class="secondary-btn jump-btn" data-target="tailor">Build tailored resume</button>
+                <button class="primary-btn" id="saveApplication">Save application</button>
+              </div>
+            </div>
+
+            <div class="analysis-grid">
+              <article class="panel"><div class="panel-heading"><h3>Requirement evidence map</h3><span class="tag">Core</span></div><div id="gapTable"></div></article>
+              <article class="panel"><div class="panel-heading"><h3>Priority keywords</h3><span class="tag">Contextual</span></div><div id="keywordList" class="chip-list"></div></article>
+              <article class="panel"><div class="panel-heading"><h3>ATS & structure risks</h3><span class="tag">Parser</span></div><div id="atsIssues"></div></article>
+              <article class="panel"><div class="panel-heading"><h3>Strongest signals</h3><span class="tag">Recruiter</span></div><div id="strengthList"></div></article>
+            </div>
+
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Evidence-safe rewrite lab</span><h3>Suggested improvements</h3></div></div>
+              <div id="rewriteList"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Execution</span><h3>Next actions</h3></div></div>
+              <div id="nextActions"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-resume">
+          <div class="section-intro">
+            <div><span class="eyebrow">Resume Intelligence Engine</span><h2>Master Resume</h2><p>Upload once. Deep Nexivra extracts the text, structures your career history, builds evidence records, and turns the file into the source of truth for future applications.</p></div>
+          </div>
+
+          <div class="resume-import-grid">
+            <article class="panel upload-panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Document ingestion</span><h3>Import PDF, DOCX, or TXT</h3></div>
+                <span class="tag">Private-first</span>
+              </div>
+              <label class="upload-zone" id="resumeDropZone" for="resumeFile">
+                <input id="resumeFile" type="file" accept=".pdf,.docx,.txt,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+                <span class="upload-icon">⇧</span>
+                <strong>Drop your resume here or choose a file</strong>
+                <small>PDF, DOCX, or TXT · text extraction happens in your browser before AI structuring</small>
+              </label>
+              <div id="fileMeta" class="file-meta hidden"></div>
+              <div class="parser-progress hidden" id="parserProgress">
+                <span class="progress-bar"><i id="parserBar"></i></span>
+                <small id="parserStatus">Waiting for a file</small>
+              </div>
+              <div class="row-actions">
+                <button class="primary-btn" id="buildCareerGraph" disabled>Build Career Graph</button>
+                <button class="secondary-btn" id="clearImportedResume" disabled>Clear import</button>
+              </div>
+            </article>
+
+            <article class="panel import-preview">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Extraction preview</span><h3>Parsed resume text</h3></div>
+                <span class="tag" id="parseQualityTag">Not parsed</span>
+              </div>
+              <div id="resumePreview" class="preview-box empty-state">Upload a resume to preview the extracted text before it becomes career evidence.</div>
+            </article>
+          </div>
+
+          <article class="panel resume-source-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Editable source</span><h3>Master resume text</h3></div>
+              <span class="tag" id="masterSourceTag">Manual</span>
+            </div>
+            <div class="field">
+              <textarea id="masterResume" class="large-textarea" placeholder="Paste your complete master resume or career history..."></textarea>
+              <small>You can edit this source manually. Imported document text remains editable before future scans.</small>
+            </div>
+            <div class="row-actions">
+              <button class="primary-btn" id="saveMasterResume">Save master resume</button>
+              <button class="secondary-btn jump-btn" data-target="graph">Open Career Graph</button>
+              <button class="secondary-btn jump-btn" data-target="match">Open Match Lab</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-tailor">
+          <div class="section-intro">
+            <div><span class="eyebrow">Resume Studio Pro</span><h2>Evidence-grounded Tailoring</h2><p>Generate a job-specific resume from your Career Graph. Every proposed bullet must cite verified evidence before it can appear in the document.</p></div>
+            <div class="row-actions section-actions">
+              <button class="secondary-btn jump-btn" data-target="match">Change target job</button>
+              <button class="primary-btn" id="generateTailoredResume">Generate tailored resume</button>
+            </div>
+          </div>
+
+          <div class="tailor-status-grid">
+            <article class="metric-card"><span>Target role</span><strong id="tailorTargetRole">No scan selected</strong><small>Uses your latest Match Lab scan</small></article>
+            <article class="metric-card"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Required for grounded generation</small></article>
+            <article class="metric-card"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>
+            <article class="metric-card"><span>Grounding</span><strong id="tailorGrounding">—</strong><small>Evidence-linked output</small></article>
+          </div>
+
+          <div id="tailorEmpty" class="panel tailor-empty">
+            <span class="eyebrow">Ready when your data is ready</span>
+            <h3>Run a job scan and build your Career Graph first.</h3>
+            <p>Deep Nexivra needs both the target job and your source-backed career evidence before it will generate a tailored resume.</p>
+            <div class="row-actions">
+              <button class="secondary-btn jump-btn" data-target="resume">Import resume</button>
+              <button class="primary-btn jump-btn" data-target="match">Analyze target job</button>
+            </div>
+          </div>
+
+          <div id="tailorWorkspace" class="tailor-workspace hidden">
+            <aside class="panel tailor-controls">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Document controls</span><h3>Application version</h3></div>
+                <span class="tag" id="tailorVersionTag">Draft</span>
+              </div>
+
+              <div class="field">
+                <label for="tailorSummary">Professional summary</label>
+                <textarea id="tailorSummary" class="summary-editor" placeholder="Generated summary"></textarea>
+                <small>Editable. Keep changes truthful and supported by your Career Graph.</small>
+              </div>
+
+              <div class="tailor-subsection">
+                <div class="panel-heading compact-heading"><h3>Core skills</h3><span class="tag" id="tailorSkillTag">0 selected</span></div>
+                <div id="tailorSkills" class="skill-toggle-list"></div>
+              </div>
+
+              <div class="tailor-subsection">
+                <div class="panel-heading compact-heading"><h3>Bullet review</h3><span class="tag">Accept · edit · reject</span></div>
+                <div id="tailorBulletEditor"></div>
+              </div>
+            </aside>
+
+            <section class="tailor-output-column">
+              <article class="panel tailor-toolbar">
+                <div>
+                  <span class="eyebrow">Live ATS-safe preview</span>
+                  <h3 id="tailorDocumentTitle">Tailored Resume</h3>
+                </div>
+                <div class="tailor-toolbar-actions">
+                  <div class="template-controls">
+                    <label for="resumeTemplate">Template</label>
+                    <select id="resumeTemplate">
+                      <option value="classic">Classic ATS</option>
+                      <option value="modern">Modern ATS</option>
+                      <option value="compact">Compact ATS</option>
+                    </select>
+                    <label class="one-page-toggle"><input type="checkbox" id="onePageMode" /> One-page mode</label>
+                    <span class="tag" id="pageFitStatus">Fit not measured</span>
+                  </div>
+                  <div class="row-actions export-actions">
+                    <button class="secondary-btn" id="undoTailor">Undo</button>
+                    <button class="secondary-btn" id="redoTailor">Redo</button>
+                    <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
+                    <button class="secondary-btn" id="saveResumeVersion">Save version</button>
+                    <button class="secondary-btn" id="exportDocx">Export DOCX</button>
+                    <button class="secondary-btn" id="exportPdf">Export PDF</button>
+                  </div>
+                </div>
+              </article>
+
+              <article class="resume-paper" id="tailoredResumePreview">
+                <div class="resume-paper-empty">Generate a tailored resume to see the document preview.</div>
+              </article>
+
+              <article class="panel change-history-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Change history</span><h3>Recent resume edits</h3></div>
+                  <span class="tag" id="historyCountTag">0 changes</span>
+                </div>
+                <div id="tailorChangeHistory" class="empty-state">Resume edits will appear here and can be undone/redone.</div>
+              </article>
+
+              <article class="panel integrity-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Integrity Gate</span><h3>Manual-edit validation</h3></div>
+                  <span class="tag" id="integrityStatusTag">Generated draft</span>
+                </div>
+                <div id="integritySummary" class="integrity-summary">Generated content is evidence-grounded. Manual edits must be revalidated before export.</div>
+                <div id="integrityFindings"></div>
+              </article>
+
+              <article class="panel evidence-audit-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Evidence audit</span><h3>Why each change is allowed</h3></div>
+                  <span class="tag" id="auditTag">0 grounded bullets</span>
+                </div>
+                <div id="tailorEvidenceAudit" class="empty-state">Evidence links will appear after generation.</div>
+              </article>
+            </section>
+          </div>
+
+          <article class="panel version-library-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Version history</span><h3>Saved application resumes</h3></div>
+              <span class="tag" id="versionCountTag">0 versions</span>
+            </div>
+            <div id="resumeVersionList" class="empty-state">Save an approved resume version to preserve exactly what you used for an application.</div>
+          </article>
+        </section>
+
+        <section class="view" id="view-evidence">
+          <div class="section-intro">
+            <div><span class="eyebrow">Career knowledge graph</span><h2>Evidence Vault</h2><p>Store facts the AI is allowed to use: achievements, tools, responsibilities, certifications, projects, and verified metrics.</p></div>
+          </div>
+          <div class="two-col">
+            <article class="panel">
+              <div class="field"><label for="evidenceTitle">Evidence title</label><input id="evidenceTitle" placeholder="e.g. Reduced turnaround delay" /></div>
+              <div class="field"><label for="evidenceCategory">Category</label><select id="evidenceCategory"><option>Achievement</option><option>Responsibility</option><option>Skill</option><option>Tool</option><option>Certification</option><option>Project</option><option>Metric</option></select></div>
+              <div class="field"><label for="evidenceText">Verified detail</label><textarea id="evidenceText" placeholder="Write only what you can support if asked in an interview."></textarea></div>
+              <button class="primary-btn" id="addEvidence">Add evidence</button>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><h3>Verified evidence</h3><span class="tag" id="vaultTag">0 records</span></div>
+              <div id="evidenceList" class="empty-state">Your evidence vault is empty.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-graph">
+          <div class="section-intro">
+            <div><span class="eyebrow">Structured career memory</span><h2>Career Evidence Graph</h2><p>Roles, achievements, skills, tools, education, certifications, and projects are connected to the resume evidence they came from. This becomes the reasoning layer behind every tailored application.</p></div>
+            <button class="secondary-btn jump-btn" data-target="resume">Import / rebuild</button>
+          </div>
+
+          <div class="graph-metrics">
+            <article class="metric-card"><span>Experience roles</span><strong id="graphRoleCount">0</strong><small>Structured positions</small></article>
+            <article class="metric-card"><span>Skills & tools</span><strong id="graphSkillCount">0</strong><small>Reusable capabilities</small></article>
+            <article class="metric-card"><span>Evidence links</span><strong id="graphEvidenceCount">0</strong><small>Source-backed facts</small></article>
+            <article class="metric-card"><span>Graph confidence</span><strong id="graphConfidence">—</strong><small>Parser assessment</small></article>
+          </div>
+
+          <article class="panel graph-visual-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Relationship map</span><h3 id="graphPersonName">No career graph yet</h3></div>
+              <span class="tag" id="graphSourceTag">Awaiting import</span>
+            </div>
+            <div id="careerGraphVisual" class="career-graph empty-state">Import a resume in Resume Studio to build your graph.</div>
+          </article>
+
+          <div class="analysis-grid graph-detail-grid">
+            <article class="panel"><div class="panel-heading"><h3>Experience</h3><span class="tag" id="experienceTag">0 roles</span></div><div id="graphExperience" class="graph-list empty-state">No structured experience yet.</div></article>
+            <article class="panel"><div class="panel-heading"><h3>Skills & tools</h3><span class="tag" id="skillsTag">0 items</span></div><div id="graphSkills" class="chip-list"></div></article>
+            <article class="panel"><div class="panel-heading"><h3>Education & certifications</h3><span class="tag">Credentials</span></div><div id="graphEducation" class="graph-list empty-state">No credentials yet.</div></article>
+            <article class="panel"><div class="panel-heading"><h3>Projects & achievements</h3><span class="tag">Evidence</span></div><div id="graphProjects" class="graph-list empty-state">No projects or achievements yet.</div></article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Traceability</span><h3>Source-backed evidence records</h3></div>
+              <span class="tag" id="graphEvidenceTag">0 records</span>
+            </div>
+            <div id="graphEvidenceList" class="graph-evidence-list empty-state">Evidence created from imported resumes will appear here with its source context.</div>
+          </article>
+        </section>
+
+        <section class="view" id="view-applications">
+          <div class="section-intro"><div><span class="eyebrow">Pipeline</span><h2>Application Tracker</h2><p>Every saved scan can become an application record with the exact readiness score used at the time.</p></div></div>
+          <div class="kanban" id="applicationBoard"></div>
+        </section>
+
+        <section class="view" id="view-package">
+          <div class="section-intro">
+            <div><span class="eyebrow">Application Package Generator</span><h2>One evidence set. Every application asset.</h2><p>Generate a cover letter, recruiter message, common application answers, and answers to your own application questions from the same validated Career Graph and target job.</p></div>
+            <button class="primary-btn" id="generateApplicationPackage">Generate package</button>
+          </div>
+
+          <div class="package-status-grid">
+            <article class="metric-card"><span>Target role</span><strong id="packageTargetRole">No target</strong><small>Latest Match Lab job</small></article>
+            <article class="metric-card"><span>Resume version</span><strong id="packageResumeStatus">Not ready</strong><small>Uses approved tailored resume</small></article>
+            <article class="metric-card"><span>Evidence links</span><strong id="packageEvidenceCount">0</strong><small>Grounded source records</small></article>
+            <article class="metric-card"><span>Package status</span><strong id="packageStatus">Not generated</strong><small>Cover letter + answers</small></article>
+          </div>
+
+          <div class="two-col package-input-grid">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Optional questions</span><h3>Paste application questions</h3></div>
+              </div>
+              <div class="field">
+                <textarea id="customApplicationQuestions" placeholder="Example:
+Why are you interested in this position?
+Describe your experience coordinating cross-functional work.
+What salary are you expecting?"></textarea>
+                <small>One question per line. Unsupported facts will not be invented.</small>
+              </div>
+            </article>
+
+            <article class="panel package-guardrail">
+              <span class="eyebrow">Same evidence policy</span>
+              <h3>Application answers inherit resume integrity.</h3>
+              <p>Deep Nexivra can reframe verified evidence for a cover letter or answer, but it cannot create missing experience, certifications, salary history, legal status, or other facts that are not in your verified data.</p>
+            </article>
+          </div>
+
+          <div id="applicationPackageWorkspace" class="package-workspace hidden">
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Cover letter</span><h3>Evidence-grounded letter</h3></div>
+                <div class="row-actions package-export-actions">
+                  <button class="text-btn copy-package-btn" data-copy-target="packageCoverLetter">Copy</button>
+                  <button class="text-btn" id="exportCoverLetterDocx">DOCX</button>
+                  <button class="text-btn" id="exportCoverLetterPdf">PDF</button>
+                </div>
+              </div>
+              <textarea id="packageCoverLetter" class="package-textarea"></textarea>
+            </article>
+
+            <div class="two-col">
+              <article class="panel">
+                <div class="panel-heading"><h3>Recruiter message</h3><button class="text-btn copy-package-btn" data-copy-target="packageRecruiterMessage">Copy</button></div>
+                <textarea id="packageRecruiterMessage" class="package-small-textarea"></textarea>
+              </article>
+              <article class="panel">
+                <div class="panel-heading"><h3>Why this role?</h3><button class="text-btn copy-package-btn" data-copy-target="packageWhyRole">Copy</button></div>
+                <textarea id="packageWhyRole" class="package-small-textarea"></textarea>
+              </article>
+            </div>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Application answers</span><h3>Common + custom questions</h3></div>
+                <span class="tag" id="packageAnswerTag">0 answers</span>
+              </div>
+              <div id="packageAnswers"></div>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Evidence audit</span><h3>Sources used across the package</h3></div>
+                <span class="tag" id="packageAuditTag">0 sources</span>
+              </div>
+              <div id="packageEvidenceAudit" class="empty-state">Generate a package to see its evidence trail.</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-agent">
+          <div class="section-intro">
+            <div><span class="eyebrow">Career Agent</span><h2>Job Intake & Fit Triage</h2><p>Add job URLs or paste postings. Deep Nexivra imports the role, compares it against your Career Graph, and prioritizes opportunities before you spend time tailoring a resume.</p></div>
+          </div>
+
+          <div class="two-col agent-search-row">
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Live discovery</span><h3>Search job listings</h3></div><span class="tag" id="agentSearchProviderTag">Optional provider</span></div>
+              <div class="field"><label for="agentSearchKeywords">Keywords / target role</label><input id="agentSearchKeywords" placeholder="e.g. Project Coordinator" /></div>
+              <div class="field"><label for="agentSearchLocation">Location</label><input id="agentSearchLocation" placeholder="e.g. Toronto" /></div>
+              <div class="field"><label for="agentSearchCountry">Country code</label><input id="agentSearchCountry" maxlength="2" value="ca" placeholder="ca" /></div>
+              <div class="row-actions"><button class="primary-btn" id="agentSearchJobs">Search & triage jobs</button></div>
+              <small class="agent-provider-note">Uses the configured job-search provider when credentials are available.</small>
+            </article>
+
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Job URL import</span><h3>Add opportunity</h3></div><span class="tag">Beta</span></div>
+              <div class="field"><label for="agentJobUrl">Job posting URL</label><input id="agentJobUrl" type="url" placeholder="https://company.com/jobs/..." /></div>
+              <div class="field"><label for="agentJobText">Or paste job description</label><textarea id="agentJobText" placeholder="Paste the complete job posting if the website blocks automated retrieval."></textarea></div>
+              <div class="row-actions"><button class="primary-btn" id="agentAnalyzeJob">Import & triage</button></div>
+            </article>
+            <article class="panel">
+              <span class="eyebrow">Agent policy</span>
+              <h3>Prioritize before tailoring.</h3>
+              <p>Career Agent evaluates requirement coverage, evidence strength, critical gaps, role adjacency, and repeated missing capabilities. It does not predict whether an employer will hire you.</p>
+            </article>
+          </div>
+
+          <div class="agent-metrics">
+            <article class="metric-card"><span>Opportunities</span><strong id="agentOpportunityCount">0</strong><small>Saved job records</small></article>
+            <article class="metric-card"><span>Strong-fit queue</span><strong id="agentStrongCount">0</strong><small>High evidence coverage</small></article>
+            <article class="metric-card"><span>Recurring gaps</span><strong id="agentGapCount">0</strong><small>Capabilities appearing across jobs</small></article>
+            <article class="metric-card"><span>Next learning action</span><strong id="agentNextSkill">—</strong><small>Most repeated supported gap</small></article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Opportunity queue</span><h3>Career Agent triage</h3></div><span class="tag" id="agentQueueTag">0 jobs</span></div>
+            <div id="agentOpportunityList" class="empty-state">Add a job to start the opportunity queue.</div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Market signal</span><h3>Recurring capability gaps</h3></div><span class="tag">Across saved jobs</span></div>
+            <div id="agentGapList" class="empty-state">Analyze multiple roles to see which missing skills or tools recur most often.</div>
+          </article>
+        </section>
+
+        <section class="view" id="view-interview">
+          <div class="section-intro"><div><span class="eyebrow">Interview intelligence</span><h2>Interview Lab</h2><p>Questions are generated from the exact gaps, responsibilities, and evidence found in your latest job analysis.</p></div></div>
+          <article class="panel">
+            <div id="interviewList" class="empty-state">Run a Match Lab scan first. Interview questions from your latest scan will appear here.</div>
+          </article>
+        </section>
+      </main>
     </div>
-  </header>
+  </div>
 
-  <main>
-    <section class="hero" id="analyzer">
-      <div class="container hero-layout">
-        <div class="hero-copy">
-          <div class="eyebrow">Execution Intelligence Platform</div>
-          <h1>
-            Turn business ideas into
-            <span>actionable execution plans.</span>
-          </h1>
-          <p class="hero-text">
-            Deep Nexivra helps founders and operators evaluate opportunities,
-            estimate execution requirements, and move from idea to launch with
-            structured, practical intelligence.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#analyzer-panel" class="btn btn-primary">Try Analyzer</a>
-            <a href="#platform" class="btn btn-secondary">Explore Platform</a>
-          </div>
-
-          <div class="hero-metrics">
-            <div class="metric-card">
-              <h3>01</h3>
-              <p>Market-aware analysis</p>
-            </div>
-            <div class="metric-card">
-              <h3>02</h3>
-              <p>Execution planning logic</p>
-            </div>
-            <div class="metric-card">
-              <h3>03</h3>
-              <p>Cost and risk visibility</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero-visual">
-          <div class="dashboard-shell" id="analyzer-panel">
-            <div class="dashboard-topbar">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-
-            <div class="analyzer-panel">
-              <div class="panel-header">
-                <p>Business Idea Analyzer</p>
-                <span>Live AI</span>
-              </div>
-
-              <div class="form-stack">
-                <div class="form-group">
-                  <label for="ideaInput">Business idea</label>
-                  <textarea
-                    id="ideaInput"
-                    placeholder="Example: Start a mobile car detailing business in Mississauga"
-                  ></textarea>
-                </div>
-
-                <div class="form-group">
-                  <label for="locationInput">Location</label>
-                  <input id="locationInput" type="text" placeholder="e.g. Toronto" />
-                </div>
-
-                <div class="form-group">
-                  <label for="budgetInput">Budget</label>
-                  <input id="budgetInput" type="text" placeholder="e.g. $10,000" />
-                </div>
-
-                <div class="form-group">
-                  <label for="timelineInput">Timeline</label>
-                  <input id="timelineInput" type="text" placeholder="e.g. 3 months" />
-                </div>
-              </div>
-
-              <div class="analyzer-actions">
-                <button id="analyzeBtn" class="btn btn-primary" type="button">
-                  Analyze Idea
-                </button>
-              </div>
-
-              <div id="analysisResult" class="analysis-result"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="platform">
-      <div class="container">
-        <div class="section-heading">
-          <div class="eyebrow">Platform</div>
-          <h2>A control layer for business execution decisions.</h2>
-          <p>
-            Evaluate opportunities, surface risks, and convert raw ideas into
-            structured action paths with stronger operational clarity.
-          </p>
-        </div>
-
-        <div class="feature-grid">
-          <article class="feature-card">
-            <div class="feature-index">01</div>
-            <h3>Idea Validation</h3>
-            <p>
-              Stress-test business concepts against execution realities instead
-              of relying on vague assumptions.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-index">02</div>
-            <h3>Execution Planning</h3>
-            <p>
-              Break ideas into launch requirements, operating needs, cost
-              ranges, and practical next steps.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-index">03</div>
-            <h3>Strategic Visibility</h3>
-            <p>
-              Give founders and operators a clearer picture of timing, labor,
-              risk, and potential return.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section alt-section" id="capabilities">
-      <div class="container capability-layout">
-        <div class="capability-copy">
-          <div class="eyebrow">Capabilities</div>
-          <h2>Built for founders, operators, and execution-heavy teams.</h2>
-          <p>
-            Deep Nexivra is designed to evolve from an idea analyzer into a
-            full decision and execution platform.
-          </p>
-        </div>
-
-        <div class="capability-stack">
-          <div class="stack-card">
-            <h3>Opportunity Assessment</h3>
-            <p>Evaluate viability, friction points, and launch complexity.</p>
-          </div>
-          <div class="stack-card">
-            <h3>Resource Planning</h3>
-            <p>Estimate labor, costs, timing, and operating requirements.</p>
-          </div>
-          <div class="stack-card">
-            <h3>Execution Roadmapping</h3>
-            <p>Convert business intent into practical action steps.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section cta-section" id="contact">
-      <div class="container">
-        <div class="cta-box">
-          <div>
-            <div class="eyebrow">Deep Nexivra</div>
-            <h2>Building the future execution intelligence layer.</h2>
-            <p>
-              The current product validates ideas and structures decisions.
-              The long-term platform will help users execute with more
-              precision, visibility, and system intelligence.
-            </p>
-          </div>
-          <a href="mailto:hello@deepnexivra.com" class="btn btn-primary">
-            Contact Now
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container footer-row">
-      <div>
-        <h3>Deep Nexivra</h3>
-        <p>Execution intelligence for modern business systems.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#analyzer">Analyzer</a>
-        <a href="#platform">Platform</a>
-        <a href="#capabilities">Capabilities</a>
-      </div>
-    </div>
-  </footer>
-
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="script.js"></script>
 </body>
 </html>

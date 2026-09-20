@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/resume-ingest.js": { "maxDuration": 300 },
+    "api/career-analyze.js": { "maxDuration": 300 },
+    "api/tailor-resume.js": { "maxDuration": 300 },
+    "api/revalidate-resume.js": { "maxDuration": 300 },
+    "api/application-package.js": { "maxDuration": 300 },
+    "api/job-intake.js": { "maxDuration": 300 },
+    "api/job-search.js": { "maxDuration": 300 }
+  }
+}
