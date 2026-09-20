@@ -35,6 +35,9 @@
         <button class="nav-item" data-view="evidence">
           <span class="nav-icon">◇</span><span>Evidence Vault</span>
         </button>
+        <button class="nav-item" data-view="graph">
+          <span class="nav-icon">⌘</span><span>Career Graph</span>
+        </button>
         <button class="nav-item" data-view="applications">
           <span class="nav-icon">▦</span><span>Applications</span>
         </button>
@@ -191,16 +194,53 @@
 
         <section class="view" id="view-resume">
           <div class="section-intro">
-            <div><span class="eyebrow">Source of truth</span><h2>Master Resume</h2><p>Keep one comprehensive version. Tailored versions should be derived from this source, never from invented details.</p></div>
+            <div><span class="eyebrow">Resume Intelligence Engine</span><h2>Master Resume</h2><p>Upload once. Deep Nexivra extracts the text, structures your career history, builds evidence records, and turns the file into the source of truth for future applications.</p></div>
           </div>
-          <article class="panel">
+
+          <div class="resume-import-grid">
+            <article class="panel upload-panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Document ingestion</span><h3>Import PDF, DOCX, or TXT</h3></div>
+                <span class="tag">Private-first</span>
+              </div>
+              <label class="upload-zone" id="resumeDropZone" for="resumeFile">
+                <input id="resumeFile" type="file" accept=".pdf,.docx,.txt,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden />
+                <span class="upload-icon">⇧</span>
+                <strong>Drop your resume here or choose a file</strong>
+                <small>PDF, DOCX, or TXT · text extraction happens in your browser before AI structuring</small>
+              </label>
+              <div id="fileMeta" class="file-meta hidden"></div>
+              <div class="parser-progress hidden" id="parserProgress">
+                <span class="progress-bar"><i id="parserBar"></i></span>
+                <small id="parserStatus">Waiting for a file</small>
+              </div>
+              <div class="row-actions">
+                <button class="primary-btn" id="buildCareerGraph" disabled>Build Career Graph</button>
+                <button class="secondary-btn" id="clearImportedResume" disabled>Clear import</button>
+              </div>
+            </article>
+
+            <article class="panel import-preview">
+              <div class="panel-heading">
+                <div><span class="eyebrow">Extraction preview</span><h3>Parsed resume text</h3></div>
+                <span class="tag" id="parseQualityTag">Not parsed</span>
+              </div>
+              <div id="resumePreview" class="preview-box empty-state">Upload a resume to preview the extracted text before it becomes career evidence.</div>
+            </article>
+          </div>
+
+          <article class="panel resume-source-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Editable source</span><h3>Master resume text</h3></div>
+              <span class="tag" id="masterSourceTag">Manual</span>
+            </div>
             <div class="field">
-              <label for="masterResume">Master resume text</label>
               <textarea id="masterResume" class="large-textarea" placeholder="Paste your complete master resume or career history..."></textarea>
-              <small>Stored locally in this browser in v1.</small>
+              <small>You can edit this source manually. Imported document text remains editable before future scans.</small>
             </div>
             <div class="row-actions">
               <button class="primary-btn" id="saveMasterResume">Save master resume</button>
+              <button class="secondary-btn jump-btn" data-target="graph">Open Career Graph</button>
               <button class="secondary-btn jump-btn" data-target="match">Open Match Lab</button>
             </div>
           </article>
@@ -222,6 +262,43 @@
               <div id="evidenceList" class="empty-state">Your evidence vault is empty.</div>
             </article>
           </div>
+        </section>
+
+        <section class="view" id="view-graph">
+          <div class="section-intro">
+            <div><span class="eyebrow">Structured career memory</span><h2>Career Evidence Graph</h2><p>Roles, achievements, skills, tools, education, certifications, and projects are connected to the resume evidence they came from. This becomes the reasoning layer behind every tailored application.</p></div>
+            <button class="secondary-btn jump-btn" data-target="resume">Import / rebuild</button>
+          </div>
+
+          <div class="graph-metrics">
+            <article class="metric-card"><span>Experience roles</span><strong id="graphRoleCount">0</strong><small>Structured positions</small></article>
+            <article class="metric-card"><span>Skills & tools</span><strong id="graphSkillCount">0</strong><small>Reusable capabilities</small></article>
+            <article class="metric-card"><span>Evidence links</span><strong id="graphEvidenceCount">0</strong><small>Source-backed facts</small></article>
+            <article class="metric-card"><span>Graph confidence</span><strong id="graphConfidence">—</strong><small>Parser assessment</small></article>
+          </div>
+
+          <article class="panel graph-visual-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Relationship map</span><h3 id="graphPersonName">No career graph yet</h3></div>
+              <span class="tag" id="graphSourceTag">Awaiting import</span>
+            </div>
+            <div id="careerGraphVisual" class="career-graph empty-state">Import a resume in Resume Studio to build your graph.</div>
+          </article>
+
+          <div class="analysis-grid graph-detail-grid">
+            <article class="panel"><div class="panel-heading"><h3>Experience</h3><span class="tag" id="experienceTag">0 roles</span></div><div id="graphExperience" class="graph-list empty-state">No structured experience yet.</div></article>
+            <article class="panel"><div class="panel-heading"><h3>Skills & tools</h3><span class="tag" id="skillsTag">0 items</span></div><div id="graphSkills" class="chip-list"></div></article>
+            <article class="panel"><div class="panel-heading"><h3>Education & certifications</h3><span class="tag">Credentials</span></div><div id="graphEducation" class="graph-list empty-state">No credentials yet.</div></article>
+            <article class="panel"><div class="panel-heading"><h3>Projects & achievements</h3><span class="tag">Evidence</span></div><div id="graphProjects" class="graph-list empty-state">No projects or achievements yet.</div></article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Traceability</span><h3>Source-backed evidence records</h3></div>
+              <span class="tag" id="graphEvidenceTag">0 records</span>
+            </div>
+            <div id="graphEvidenceList" class="graph-evidence-list empty-state">Evidence created from imported resumes will appear here with its source context.</div>
+          </article>
         </section>
 
         <section class="view" id="view-applications">
