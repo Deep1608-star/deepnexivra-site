@@ -239,7 +239,12 @@ async function deepAnalyze(resume, job) {
     const response = await fetch("/api/career-analyze", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({resume, jobDescription: job, evidenceVault: vault})
+      body: JSON.stringify({
+        resume,
+        jobDescription: job,
+        evidenceVault: vault,
+        careerGraph: state.careerGraph
+      })
     });
     if (!response.ok) throw new Error("AI endpoint unavailable");
     const data = await response.json();
