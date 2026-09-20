@@ -3,6 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({ ok: false, message: "OPENAI_API_KEY is not configured for this Vercel environment" });
+  }
+
   const body = req.body || {};
   const resumeText = typeof body.resumeText === "string" ? body.resumeText.trim() : "";
   const sourceFile = body.sourceFile && typeof body.sourceFile === "object" ? body.sourceFile : {};
@@ -204,31 +208,59 @@ export default async function handler(req, res) {
   ].join("\n");
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + process.env.OPENAI_API_KEY
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
-        reasoning: { effort: "high" },
-        instructions: instructions,
-        input: sourceDescription,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "deep_nexivra_resume_graph",
-            strict: true,
-            schema: schema
-          }
-        },
-        max_output_tokens: 14000,
-        store: false
-      })
-    });
+    async function callResumeModel(model, effort, timeoutMs) {
+      const controller = new AbortController();
+      const timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+      try {
+        const response = await fetch("https://api.openai.com/v1/responses", {
+          method: "POST",
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + process.env.OPENAI_API_KEY
+          },
+          body: JSON.stringify({
+            model: model,
+            reasoning: { effort: effort },
+            instructions: instructions,
+            input: sourceDescription,
+            text: {
+              format: {
+                type: "json_schema",
+                name: "deep_nexivra_resume_graph",
+                strict: true,
+                schema: schema
+              }
+            },
+            max_output_tokens: 8000,
+            store: false
+          })
+        });
+        const data = await response.json();
+        return { response: response, data: data };
+      } finally {
+        clearTimeout(timer);
+      }
+    }
 
-    const data = await response.json();
+    let attempt;
+    try {
+      attempt = await callResumeModel(
+        process.env.OPENAI_INGEST_MODEL || "gpt-5.6-terra",
+        "medium",
+        90000
+      );
+    } catch (error) {
+      if (error && error.name !== "AbortError") throw error;
+      attempt = await callResumeModel(
+        process.env.OPENAI_INGEST_FALLBACK_MODEL || "gpt-5.6-luna",
+        "low",
+        70000
+      );
+    }
+
+    const response = attempt.response;
+    const data = attempt.data;
 
     if (!response.ok) {
       return res.status(response.status).json({
@@ -274,9 +306,12 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ ok: true, result: result });
   } catch (error) {
-    return res.status(500).json({
+    const timeout = error && error.name === "AbortError";
+    return res.status(timeout ? 504 : 500).json({
       ok: false,
-      message: "Unable to structure this resume into a Career Graph"
+      message: timeout
+        ? "Career Graph generation timed out. Please try again; the faster fallback model will be used automatically."
+        : "Unable to structure this resume into a Career Graph"
     });
   }
 }
