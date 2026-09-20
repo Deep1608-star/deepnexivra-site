@@ -5,6 +5,10 @@ const state = {
   evidence: JSON.parse(localStorage.getItem("dn_evidence") || "[]"),
   scans: JSON.parse(localStorage.getItem("dn_scans") || "[]"),
   applications: JSON.parse(localStorage.getItem("dn_applications") || "[]"),
+  careerGraph: JSON.parse(localStorage.getItem("dn_career_graph") || "null"),
+  resumeSource: JSON.parse(localStorage.getItem("dn_resume_source") || "null"),
+  importedResumeText: "",
+  importedFile: null,
   latest: null
 };
 
@@ -21,6 +25,8 @@ function persist() {
   localStorage.setItem("dn_evidence", JSON.stringify(state.evidence));
   localStorage.setItem("dn_scans", JSON.stringify(state.scans));
   localStorage.setItem("dn_applications", JSON.stringify(state.applications));
+  localStorage.setItem("dn_career_graph", JSON.stringify(state.careerGraph));
+  localStorage.setItem("dn_resume_source", JSON.stringify(state.resumeSource));
 }
 
 function toast(message) {
@@ -43,6 +49,7 @@ function switchView(name) {
     match: "Match Lab",
     resume: "Resume Studio",
     evidence: "Evidence Vault",
+    graph: "Career Graph",
     applications: "Applications",
     interview: "Interview Lab"
   };
@@ -357,6 +364,7 @@ function renderDashboard() {
     });
   }
   renderEvidence();
+  renderCareerGraph();
   renderApplications();
   renderInterview();
 }
@@ -462,9 +470,414 @@ function renderInterview() {
   });
 }
 
+
+const PDFJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.min.mjs";
+const PDFJS_WORKER_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs";
+const MAMMOTH_URL = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.12.3/mammoth.browser.min.js";
+
+function setParserProgress(percent, message) {
+  const wrap = $("parserProgress");
+  if (!wrap) return;
+  wrap.classList.remove("hidden");
+  $("parserBar").style.width = Math.max(0, Math.min(100, percent)) + "%";
+  $("parserStatus").textContent = message;
+}
+
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes)) return "";
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+function cleanExtractedText(text) {
+  return String(text || "")
+    .replace(/\u0000/g, "")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{4,}/g, "\n\n\n")
+    .replace(/[ \t]{3,}/g, "  ")
+    .trim();
+}
+
+async function loadExternalScript(src, globalName) {
+  if (window[globalName]) return window[globalName];
+  const existing = document.querySelector('script[data-deep-lib="' + globalName + '"]');
+  if (existing) {
+    await new Promise((resolve, reject) => {
+      existing.addEventListener("load", resolve, {once:true});
+      existing.addEventListener("error", reject, {once:true});
+    });
+    return window[globalName];
+  }
+  await new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.dataset.deepLib = globalName;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error("Unable to load " + globalName));
+    document.head.appendChild(script);
+  });
+  return window[globalName];
+}
+
+async function extractPdfText(file) {
+  setParserProgress(12, "Loading secure PDF parser");
+  const pdfjs = await import(PDFJS_URL);
+  pdfjs.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  setParserProgress(24, "Reading PDF structure");
+  const doc = await pdfjs.getDocument({data: bytes}).promise;
+  const pages = [];
+
+  for (let pageNo = 1; pageNo <= doc.numPages; pageNo++) {
+    const page = await doc.getPage(pageNo);
+    const content = await page.getTextContent();
+    let pageText = "";
+    for (const item of content.items || []) {
+      if (!item || typeof item.str !== "string") continue;
+      pageText += item.str;
+      pageText += item.hasEOL ? "\n" : " ";
+    }
+    pages.push(pageText.trim());
+    setParserProgress(24 + Math.round((pageNo / doc.numPages) * 46), "Extracting PDF page " + pageNo + " of " + doc.numPages);
+  }
+
+  return cleanExtractedText(pages.join("\n\n"));
+}
+
+async function extractDocxText(file) {
+  setParserProgress(14, "Loading DOCX parser");
+  const mammoth = await loadExternalScript(MAMMOTH_URL, "mammoth");
+  if (!mammoth || typeof mammoth.extractRawText !== "function") throw new Error("DOCX parser unavailable");
+  setParserProgress(32, "Reading Word document");
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({arrayBuffer});
+  setParserProgress(70, "Cleaning extracted Word text");
+  return cleanExtractedText(result.value || "");
+}
+
+async function extractResumeText(file) {
+  const name = (file.name || "").toLowerCase();
+  if (file.size > 10 * 1024 * 1024) throw new Error("File is larger than the 10 MB import limit.");
+  if (name.endsWith(".pdf") || file.type === "application/pdf") return extractPdfText(file);
+  if (name.endsWith(".docx") || /wordprocessingml/.test(file.type || "")) return extractDocxText(file);
+  if (name.endsWith(".txt") || file.type === "text/plain") {
+    setParserProgress(35, "Reading text document");
+    return cleanExtractedText(await file.text());
+  }
+  throw new Error("Unsupported format. Use PDF, DOCX, or TXT.");
+}
+
+function renderImportPreview(text) {
+  const preview = $("resumePreview");
+  const tag = $("parseQualityTag");
+  if (!text) {
+    preview.className = "preview-box empty-state";
+    preview.textContent = "Upload a resume to preview the extracted text before it becomes career evidence.";
+    tag.textContent = "Not parsed";
+    return;
+  }
+  preview.className = "preview-box";
+  preview.textContent = text.length > 18000 ? text.slice(0,18000) + "\n\n[Preview truncated]" : text;
+  if (text.length >= 1800) tag.textContent = "Strong extraction";
+  else if (text.length >= 700) tag.textContent = "Usable extraction";
+  else tag.textContent = "Low-text extraction";
+}
+
+async function handleResumeFile(file) {
+  if (!file) return;
+  state.importedFile = {
+    name: file.name,
+    size: file.size,
+    type: file.type || "",
+    lastModified: file.lastModified || null
+  };
+  const meta = $("fileMeta");
+  meta.classList.remove("hidden");
+  meta.innerHTML = "";
+  const left = document.createElement("div");
+  const strong = document.createElement("strong");
+  strong.textContent = file.name;
+  const small = document.createElement("small");
+  small.textContent = formatBytes(file.size) + " · " + (file.type || "detected by extension");
+  left.append(strong, small);
+  const status = document.createElement("span");
+  status.className = "tag";
+  status.textContent = "Parsing";
+  meta.append(left, status);
+  $("buildCareerGraph").disabled = true;
+  $("clearImportedResume").disabled = false;
+
+  try {
+    const text = await extractResumeText(file);
+    if (text.length < 120) {
+      throw new Error("Very little selectable text was found. This may be a scanned/image-only PDF; OCR is not enabled in this phase.");
+    }
+    state.importedResumeText = text;
+    renderImportPreview(text);
+    setParserProgress(100, "Extraction complete · ready for evidence structuring");
+    status.textContent = "Ready";
+    meta.classList.add("import-success");
+    $("buildCareerGraph").disabled = false;
+    toast("Resume extracted successfully");
+  } catch (error) {
+    console.error(error);
+    state.importedResumeText = "";
+    renderImportPreview("");
+    setParserProgress(100, error.message || "Resume extraction failed");
+    status.textContent = "Needs attention";
+    meta.classList.add("import-warning");
+    toast(error.message || "Resume extraction failed");
+  }
+}
+
+async function ingestCareerGraph(rawText) {
+  const response = await fetch("/api/resume-ingest", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      resumeText: rawText,
+      sourceFile: state.importedFile || null
+    })
+  });
+  const data = await response.json();
+  if (!response.ok || !data?.ok || !data?.result) {
+    throw new Error(data?.message || "Career graph ingestion failed");
+  }
+  return data.result;
+}
+
+function graphUniqueSkillNames(graph) {
+  const names = new Set();
+  (graph?.skills || []).forEach(x => names.add(x.name));
+  (graph?.experience || []).forEach(x => (x.tools || []).forEach(v => names.add(v)));
+  return [...names].filter(Boolean);
+}
+
+function graphEvidenceToVault(graph) {
+  const records = graph?.evidenceRecords || [];
+  const existing = new Set(state.evidence.map(e => normalize((e.category || "") + "|" + (e.title || "") + "|" + (e.text || ""))));
+  let added = 0;
+  records.forEach(rec => {
+    const key = normalize((rec.category || "") + "|" + (rec.title || "") + "|" + (rec.text || ""));
+    if (!key || existing.has(key)) return;
+    existing.add(key);
+    state.evidence.push({
+      id: crypto.randomUUID ? crypto.randomUUID() : (Date.now() + "-" + added),
+      title: rec.title || "Imported evidence",
+      category: rec.category || "Responsibility",
+      text: rec.text || "",
+      sourceSnippet: rec.sourceSnippet || "",
+      employer: rec.employer || "",
+      role: rec.role || "",
+      source: "resume_import",
+      createdAt: new Date().toISOString()
+    });
+    added++;
+  });
+  return added;
+}
+
+function graphRecord(container, title, meta, body) {
+  const div = document.createElement("div");
+  div.className = "graph-record";
+  const strong = document.createElement("strong");
+  strong.textContent = title;
+  div.appendChild(strong);
+  if (meta) {
+    const small = document.createElement("small");
+    small.textContent = meta;
+    div.appendChild(small);
+  }
+  if (body) {
+    const p = document.createElement("p");
+    p.textContent = body;
+    div.appendChild(p);
+  }
+  container.appendChild(div);
+}
+
+function renderCareerGraph() {
+  const graph = state.careerGraph;
+  const roleCount = graph?.experience?.length || 0;
+  const skillNames = graphUniqueSkillNames(graph);
+  const evidenceCount = graph?.evidenceRecords?.length || 0;
+  $("graphRoleCount").textContent = roleCount;
+  $("graphSkillCount").textContent = skillNames.length;
+  $("graphEvidenceCount").textContent = evidenceCount;
+  $("graphConfidence").textContent = graph?.resumeQuality?.parseConfidence != null ? Math.round(graph.resumeQuality.parseConfidence) + "%" : "—";
+  $("experienceTag").textContent = roleCount + (roleCount === 1 ? " role" : " roles");
+  $("skillsTag").textContent = skillNames.length + " items";
+  $("graphEvidenceTag").textContent = evidenceCount + (evidenceCount === 1 ? " record" : " records");
+
+  const sourceName = state.resumeSource?.name || "";
+  $("graphSourceTag").textContent = sourceName || "Awaiting import";
+  $("masterSourceTag").textContent = sourceName ? "Imported · " + sourceName : "Manual";
+
+  const visual = $("careerGraphVisual");
+  const exp = $("graphExperience");
+  const skills = $("graphSkills");
+  const edu = $("graphEducation");
+  const projects = $("graphProjects");
+  const evidence = $("graphEvidenceList");
+
+  [visual, exp, skills, edu, projects, evidence].forEach(el => { if (el) el.innerHTML = ""; });
+
+  if (!graph) {
+    $("graphPersonName").textContent = "No career graph yet";
+    visual.className = "career-graph empty-state";
+    visual.textContent = "Import a resume in Resume Studio to build your graph.";
+    exp.className = "graph-list empty-state"; exp.textContent = "No structured experience yet.";
+    skills.innerHTML = "";
+    edu.className = "graph-list empty-state"; edu.textContent = "No credentials yet.";
+    projects.className = "graph-list empty-state"; projects.textContent = "No projects or achievements yet.";
+    evidence.className = "graph-evidence-list empty-state"; evidence.textContent = "Evidence created from imported resumes will appear here with its source context.";
+    return;
+  }
+
+  const personName = graph.profile?.fullName || "Career Profile";
+  $("graphPersonName").textContent = personName;
+  visual.className = "career-graph";
+  const map = document.createElement("div");
+  map.className = "graph-map";
+  const left = document.createElement("div"); left.className = "graph-column left";
+  const center = document.createElement("div");
+  const right = document.createElement("div"); right.className = "graph-column right";
+
+  (graph.experience || []).slice(0,5).forEach(role => {
+    const node = document.createElement("div"); node.className = "graph-node";
+    const strong = document.createElement("strong"); strong.textContent = role.title || "Role";
+    const small = document.createElement("small"); small.textContent = [role.employer, role.startDate && role.endDate ? role.startDate + " – " + role.endDate : ""].filter(Boolean).join(" · ");
+    node.append(strong,small); left.appendChild(node);
+  });
+
+  const core = document.createElement("div"); core.className = "graph-core";
+  const coreStrong = document.createElement("strong"); coreStrong.textContent = personName;
+  const coreSmall = document.createElement("small"); coreSmall.textContent = graph.profile?.professionalHeadline || roleCount + " structured roles";
+  core.append(coreStrong, coreSmall); center.appendChild(core);
+
+  const rightItems = [
+    ...skillNames.slice(0,4).map(name => ({title:name, meta:"Skill / tool"})),
+    ...(graph.education || []).slice(0,1).map(x => ({title:x.credential || x.field || "Education", meta:x.institution || "Education"})),
+    ...(graph.certifications || []).slice(0,1).map(x => ({title:x.name || "Certification", meta:x.issuer || "Certification"}))
+  ];
+  rightItems.slice(0,6).forEach(item => {
+    const node = document.createElement("div"); node.className = "graph-node";
+    const strong = document.createElement("strong"); strong.textContent = item.title;
+    const small = document.createElement("small"); small.textContent = item.meta;
+    node.append(strong,small); right.appendChild(node);
+  });
+
+  map.append(left,center,right); visual.appendChild(map);
+
+  exp.className = "graph-list";
+  if (!(graph.experience || []).length) { exp.className += " empty-state"; exp.textContent = "No structured experience found."; }
+  (graph.experience || []).forEach(role => {
+    const dates = [role.startDate, role.endDate].filter(Boolean).join(" – ");
+    const meta = [role.employer, role.location, dates].filter(Boolean).join(" · ");
+    graphRecord(exp, role.title || "Role", meta, role.summary || "");
+  });
+
+  skills.innerHTML = "";
+  skillNames.forEach(name => {
+    const chip = document.createElement("span"); chip.className = "chip"; chip.textContent = name; skills.appendChild(chip);
+  });
+
+  edu.className = "graph-list";
+  const credentials = [
+    ...(graph.education || []).map(x => ({title:x.credential || x.field || "Education", meta:[x.institution,x.endDate].filter(Boolean).join(" · "), body:x.field || ""})),
+    ...(graph.certifications || []).map(x => ({title:x.name || "Certification", meta:[x.issuer,x.date].filter(Boolean).join(" · "), body:""}))
+  ];
+  if (!credentials.length) { edu.className += " empty-state"; edu.textContent = "No credentials found."; }
+  credentials.forEach(x => graphRecord(edu,x.title,x.meta,x.body));
+
+  projects.className = "graph-list";
+  const projectItems = [...(graph.projects || []).map(x => ({title:x.name || "Project", meta:(x.tools || []).join(", "), body:x.description || ""}))];
+  (graph.experience || []).forEach(role => (role.achievements || []).slice(0,3).forEach(a => projectItems.push({title:"Achievement · " + (role.title || "Role"), meta:role.employer || "", body:a})));
+  if (!projectItems.length) { projects.className += " empty-state"; projects.textContent = "No projects or achievements found."; }
+  projectItems.slice(0,16).forEach(x => graphRecord(projects,x.title,x.meta,x.body));
+
+  evidence.className = "graph-evidence-list";
+  if (!(graph.evidenceRecords || []).length) { evidence.className += " empty-state"; evidence.textContent = "No source-backed evidence records found."; }
+  (graph.evidenceRecords || []).slice(0,40).forEach(rec => {
+    const card = document.createElement("div"); card.className = "graph-evidence";
+    const strong = document.createElement("strong"); strong.textContent = rec.title || "Evidence";
+    const label = document.createElement("span"); label.className = "source-label"; label.textContent = [rec.category,rec.employer,rec.role].filter(Boolean).join(" · ");
+    const p = document.createElement("p"); p.textContent = rec.text || "";
+    card.append(strong,label,p);
+    if (rec.sourceSnippet) {
+      const quote = document.createElement("blockquote"); quote.textContent = rec.sourceSnippet; card.appendChild(quote);
+    }
+    evidence.appendChild(card);
+  });
+}
+
 document.querySelectorAll(".nav-item").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.view)));
 document.querySelectorAll(".jump-btn").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.target)));
 $("mobileMenu").addEventListener("click", () => $("sidebar").classList.toggle("open"));
+
+const dropZone = $("resumeDropZone");
+const fileInput = $("resumeFile");
+["dragenter","dragover"].forEach(eventName => dropZone.addEventListener(eventName, event => {
+  event.preventDefault(); event.stopPropagation(); dropZone.classList.add("dragover");
+}));
+["dragleave","drop"].forEach(eventName => dropZone.addEventListener(eventName, event => {
+  event.preventDefault(); event.stopPropagation(); dropZone.classList.remove("dragover");
+}));
+dropZone.addEventListener("drop", event => {
+  const file = event.dataTransfer?.files?.[0];
+  if (file) handleResumeFile(file);
+});
+fileInput.addEventListener("change", event => handleResumeFile(event.target.files?.[0]));
+
+$("clearImportedResume").addEventListener("click", () => {
+  state.importedResumeText = "";
+  state.importedFile = null;
+  fileInput.value = "";
+  $("fileMeta").classList.add("hidden");
+  $("parserProgress").classList.add("hidden");
+  $("buildCareerGraph").disabled = true;
+  $("clearImportedResume").disabled = true;
+  renderImportPreview("");
+  toast("Staged resume import cleared");
+});
+
+$("buildCareerGraph").addEventListener("click", async () => {
+  if (!state.importedResumeText) return toast("Import a resume first");
+  const btn = $("buildCareerGraph");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Structuring career evidence...";
+  setParserProgress(78, "AI is identifying roles, achievements, skills, tools, and evidence links");
+
+  try {
+    const graph = await ingestCareerGraph(state.importedResumeText);
+    state.careerGraph = graph;
+    state.masterResume = state.importedResumeText;
+    state.resumeSource = {
+      name: state.importedFile?.name || "Imported resume",
+      size: state.importedFile?.size || null,
+      type: state.importedFile?.type || "",
+      importedAt: new Date().toISOString(),
+      parseConfidence: graph?.resumeQuality?.parseConfidence ?? null
+    };
+    const added = graphEvidenceToVault(graph);
+    persist();
+    renderDashboard();
+    $("masterResume").value = state.masterResume;
+    setParserProgress(100, "Career Graph built · " + added + " new evidence records added to the vault");
+    toast("Career Graph built successfully");
+    switchView("graph");
+  } catch (error) {
+    console.error(error);
+    setParserProgress(100, error.message || "Career Graph build failed");
+    toast(error.message || "Career Graph build failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
 
 $("resumeInput").addEventListener("input", e => $("resumeChars").textContent = e.target.value.length);
 $("jobInput").addEventListener("input", e => $("jobChars").textContent = e.target.value.length);
@@ -543,8 +956,8 @@ $("saveApplication").addEventListener("click", () => {
 
 $("clearLocalData").addEventListener("click", () => {
   if (!confirm("Reset all Deep Nexivra local career data on this browser?")) return;
-  ["dn_master_resume","dn_evidence","dn_scans","dn_applications"].forEach(k => localStorage.removeItem(k));
-  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.latest = null;
+  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source"].forEach(k => localStorage.removeItem(k));
+  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
   $("resumeInput").value = ""; $("jobInput").value = ""; $("scanResults").classList.add("hidden");
   persist(); renderDashboard(); toast("Local data reset");
 });
