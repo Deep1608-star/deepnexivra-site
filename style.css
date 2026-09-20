@@ -36,3 +36,44 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:inherit}
 @media(max-width:1100px){.app-shell{grid-template-columns:220px minmax(0,1fr)}.main{padding:24px}.metric-grid{grid-template-columns:1fr 1fr}.hero-panel{grid-template-columns:1fr}.hero-score{border-left:0;border-top:1px solid var(--line);padding:22px 0 0}.analysis-grid{grid-template-columns:1fr}.kanban{grid-template-columns:1fr 1fr}}
 @media(max-width:800px){.app-shell{display:block}.sidebar{position:fixed;left:-290px;width:270px;transition:.22s ease}.sidebar.open{left:0}.topbar{padding:0 18px}.mobile-menu{display:block}.topbar>div:first-of-type{flex:1}.model-pill,.ghost-btn{display:none}.main{padding:18px}.hero-panel{padding:22px}.hero-copy h2{font-size:2.3rem}.metric-grid,.two-col,.scan-grid,.score-grid,.analysis-grid,.kanban,.input-panel{grid-template-columns:1fr}.input-panel .scan-actions{grid-column:auto}.layer-list>div{grid-template-columns:32px 1fr}.layer-list p{grid-column:2}.section-intro{align-items:flex-start;flex-direction:column}.result-summary{align-items:flex-start;flex-direction:column}.hero-score{align-items:flex-start}.radar-orb{width:108px;height:108px}.radar-orb span{font-size:2rem}}
 @media(max-width:500px){.metric-grid{grid-template-columns:1fr}.hero-actions,.row-actions{flex-direction:column}.hero-actions button,.row-actions button{width:100%}.main{padding:14px}.panel{padding:18px}.topbar{height:74px}.hero-score{flex-direction:column}.field textarea{min-height:210px}}
+
+
+/* Resume Intelligence + Career Graph */
+.resume-import-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:14px;margin-bottom:14px}
+.upload-panel,.import-preview{min-height:420px}
+.upload-zone{min-height:250px;border:1px dashed rgba(141,247,208,.28);background:linear-gradient(180deg,rgba(141,247,208,.035),rgba(255,255,255,.015));border-radius:16px;display:grid;place-items:center;align-content:center;text-align:center;padding:28px;gap:9px;transition:.2s ease}
+.upload-zone:hover,.upload-zone.dragover{border-color:rgba(141,247,208,.62);background:rgba(141,247,208,.055);transform:translateY(-1px)}
+.upload-icon{font-size:2rem;color:var(--accent);line-height:1}
+.upload-zone strong{font-size:.9rem}
+.upload-zone small{color:var(--muted);font-size:.72rem;line-height:1.5;max-width:420px}
+.file-meta{margin-top:14px;border:1px solid var(--line);border-radius:13px;padding:12px 13px;background:rgba(255,255,255,.02);font-size:.76rem;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.file-meta strong{display:block}.file-meta small{display:block;color:var(--muted);margin-top:3px}
+.parser-progress{margin-top:14px}.progress-bar{height:7px;background:rgba(255,255,255,.06);border-radius:999px;display:block;overflow:hidden;margin-bottom:7px}.progress-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:inherit;transition:width .25s ease}.parser-progress small{color:var(--muted);font-size:.7rem}
+.preview-box{height:315px;overflow:auto;white-space:pre-wrap;text-align:left;display:block;place-items:unset;padding:16px;line-height:1.6;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;background:#07101d}
+.resume-source-panel{margin-top:14px}
+.graph-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
+.graph-visual-panel{margin-bottom:14px}
+.career-graph{min-height:390px;position:relative;overflow:auto;padding:24px;background:
+radial-gradient(circle at center,rgba(141,247,208,.045),transparent 35%),
+linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);
+background-size:auto,36px 36px,36px 36px}
+.graph-map{min-width:780px;display:grid;grid-template-columns:1fr 180px 1fr;gap:28px;align-items:center;padding:20px}
+.graph-column{display:grid;gap:12px}
+.graph-node{border:1px solid var(--line);background:#091421;border-radius:13px;padding:12px;position:relative}
+.graph-node:after{content:"";position:absolute;top:50%;width:28px;height:1px;background:linear-gradient(90deg,var(--line2),rgba(141,247,208,.32))}
+.graph-column.left .graph-node:after{right:-29px}.graph-column.right .graph-node:after{left:-29px;transform:rotate(180deg)}
+.graph-node strong{display:block;font-size:.76rem}.graph-node small{display:block;color:var(--muted);font-size:.64rem;margin-top:4px;line-height:1.45}
+.graph-core{width:170px;height:170px;border-radius:50%;display:grid;place-items:center;align-content:center;text-align:center;padding:20px;margin:auto;border:1px solid rgba(141,247,208,.32);background:radial-gradient(circle,#123146,#09131e 66%);box-shadow:0 0 60px rgba(124,200,255,.08),inset 0 0 30px rgba(141,247,208,.05)}
+.graph-core strong{font-size:.9rem}.graph-core small{color:var(--muted);font-size:.66rem;margin-top:5px}
+.graph-list{display:grid;gap:9px}
+.graph-record{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(255,255,255,.018)}
+.graph-record strong{display:block;font-size:.78rem}.graph-record small{display:block;color:var(--muted);font-size:.67rem;line-height:1.5;margin-top:4px}.graph-record p{font-size:.7rem;margin:8px 0 0!important;line-height:1.55!important}
+.graph-evidence-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.graph-evidence{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(255,255,255,.018)}
+.graph-evidence strong{font-size:.76rem;display:block}.graph-evidence .source-label{display:inline-block;margin-top:7px;font-size:.58rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em}.graph-evidence p{font-size:.68rem;margin:6px 0!important}.graph-evidence blockquote{margin:8px 0 0;padding:8px 10px;border-left:2px solid rgba(141,247,208,.25);color:var(--muted);font-size:.64rem;line-height:1.5}
+.graph-detail-grid{margin-bottom:14px}
+.import-success{border-color:rgba(141,247,208,.25)!important}.import-warning{border-color:rgba(255,217,138,.28)!important}
+@media(max-width:1100px){.resume-import-grid{grid-template-columns:1fr}.graph-metrics{grid-template-columns:1fr 1fr}.graph-evidence-list{grid-template-columns:1fr}}
+@media(max-width:800px){.graph-metrics{grid-template-columns:1fr 1fr}.career-graph{padding:8px}.graph-map{min-width:680px}.upload-panel,.import-preview{min-height:auto}.preview-box{height:260px}}
+@media(max-width:500px){.graph-metrics{grid-template-columns:1fr}.file-meta{align-items:flex-start;flex-direction:column}}
