@@ -115,12 +115,13 @@ export default async function handler(req, res) {
               items: {
                 type: "object",
                 additionalProperties: false,
-                required: ["bulletId","text","sourceEvidenceIds","confidence","rationale"],
+                required: ["bulletId","text","sourceEvidenceIds","confidence","priority","rationale"],
                 properties: {
                   bulletId: { type: "string" },
                   text: { type: "string" },
                   sourceEvidenceIds: evidenceIdArray,
                   confidence: { type: "number", minimum: 0, maximum: 100 },
+                  priority: { type: "number", minimum: 0, maximum: 100 },
                   rationale: { type: "string" }
                 }
               }
@@ -162,6 +163,7 @@ export default async function handler(req, res) {
     "- Avoid keyword stuffing, empty adjectives, first-person pronouns, tables, icons, graphics, ratings, and unsupported superlatives.",
     "- Do not repeat the same evidence across many bullets.",
     "- Generally produce 2-5 bullets for the most relevant roles; fewer for low-relevance roles.",
+    "- priority is a 0-100 job-relevance score used for one-page compression. Score importance to the target role, not writing quality.",
     "- It is acceptable to omit a role from the tailored experience output when it adds little job value, but never change a role's metadata.",
     "- Core skills should be job-relevant and source-supported.",
     "- The professional summary should be 2-4 concise sentences and source-supported.",
@@ -272,7 +274,8 @@ export default async function handler(req, res) {
         return Object.assign({}, bullet, {
           bulletId: bullet.bulletId || (exp.roleId + "-B" + String(index + 1).padStart(2, "0")),
           sourceEvidenceIds: ids,
-          confidence: Math.max(0, Math.min(100, Math.round(Number(bullet.confidence) || 0)))
+          confidence: Math.max(0, Math.min(100, Math.round(Number(bullet.confidence) || 0))),
+          priority: Math.max(0, Math.min(100, Math.round(Number(bullet.priority) || 0)))
         });
       }).filter(Boolean);
       if (!bullets.length) return null;
