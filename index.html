@@ -542,7 +542,16 @@ What salary are you expecting?"></textarea>
             <div><span class="eyebrow">Career Agent</span><h2>Job Intake & Fit Triage</h2><p>Add job URLs or paste postings. Deep Nexivra imports the role, compares it against your Career Graph, and prioritizes opportunities before you spend time tailoring a resume.</p></div>
           </div>
 
-          <div class="two-col">
+          <div class="two-col agent-search-row">
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Live discovery</span><h3>Search job listings</h3></div><span class="tag" id="agentSearchProviderTag">Optional provider</span></div>
+              <div class="field"><label for="agentSearchKeywords">Keywords / target role</label><input id="agentSearchKeywords" placeholder="e.g. Project Coordinator" /></div>
+              <div class="field"><label for="agentSearchLocation">Location</label><input id="agentSearchLocation" placeholder="e.g. Toronto" /></div>
+              <div class="field"><label for="agentSearchCountry">Country code</label><input id="agentSearchCountry" maxlength="2" value="ca" placeholder="ca" /></div>
+              <div class="row-actions"><button class="primary-btn" id="agentSearchJobs">Search & triage jobs</button></div>
+              <small class="agent-provider-note">Uses the configured job-search provider when credentials are available.</small>
+            </article>
+
             <article class="panel">
               <div class="panel-heading"><div><span class="eyebrow">Job URL import</span><h3>Add opportunity</h3></div><span class="tag">Beta</span></div>
               <div class="field"><label for="agentJobUrl">Job posting URL</label><input id="agentJobUrl" type="url" placeholder="https://company.com/jobs/..." /></div>
