@@ -8,6 +8,8 @@ const state = {
   careerGraph: JSON.parse(localStorage.getItem("dn_career_graph") || "null"),
   resumeSource: JSON.parse(localStorage.getItem("dn_resume_source") || "null"),
   tailoredResume: JSON.parse(localStorage.getItem("dn_tailored_resume") || "null"),
+  resumeVersions: JSON.parse(localStorage.getItem("dn_resume_versions") || "[]"),
+  applicationPackage: JSON.parse(localStorage.getItem("dn_application_package") || "null"),
   importedResumeText: "",
   importedFile: null,
   latest: null
@@ -29,6 +31,8 @@ function persist() {
   localStorage.setItem("dn_career_graph", JSON.stringify(state.careerGraph));
   localStorage.setItem("dn_resume_source", JSON.stringify(state.resumeSource));
   localStorage.setItem("dn_tailored_resume", JSON.stringify(state.tailoredResume));
+  localStorage.setItem("dn_resume_versions", JSON.stringify(state.resumeVersions));
+  localStorage.setItem("dn_application_package", JSON.stringify(state.applicationPackage));
 }
 
 function toast(message) {
@@ -54,7 +58,8 @@ function switchView(name) {
     evidence: "Evidence Vault",
     graph: "Career Graph",
     applications: "Applications",
-    interview: "Interview Lab"
+    interview: "Interview Lab",
+    package: "Application Package"
   };
   $("viewTitle").textContent = titleMap[name] || "Deep Nexivra";
   $("sidebar").classList.remove("open");
@@ -374,6 +379,8 @@ function renderDashboard() {
   renderEvidence();
   renderCareerGraph();
   renderTailorStudio();
+  renderResumeVersions();
+  renderApplicationPackage();
   renderApplications();
   renderInterview();
 }
@@ -862,9 +869,21 @@ function countAcceptedBullets() {
   return total;
 }
 
-function hydrateTailoredState(result, scanId) {
-  result.generatedForScanId = scanId || "";
+function hydrateTailoredState(result, scan) {
+  result.generatedForScanId = scan?.id || "";
+  result.targetContext = {
+    jobDescription: scan?.jobSnapshot || "",
+    analysis: scan?.result || {}
+  };
   result.generatedAt = new Date().toISOString();
+  result.template = result.template || "classic";
+  result.onePageMode = !!result.onePageMode;
+  result.integrity = {
+    status: "valid",
+    checkedAt: result.generatedAt,
+    summary: "Generated content passed evidence-ID and same-role validation.",
+    findings: []
+  };
   result.professionalSummary = result.professionalSummary || {text:"",sourceEvidenceIds:[]};
   result.coreSkills = (result.coreSkills || []).map(skill => Object.assign({selected:true}, skill));
   result.experiences = (result.experiences || []).map(exp => Object.assign({}, exp, {
@@ -896,7 +915,7 @@ async function requestTailoredResume() {
   if (!response.ok || !data?.ok || !data?.result) {
     throw new Error(data?.message || "Tailored resume generation failed");
   }
-  return hydrateTailoredState(data.result, scan.id);
+  return hydrateTailoredState(data.result, scan);
 }
 
 function skillSelectedCount() {
@@ -912,9 +931,17 @@ function approvedResumePayload() {
   (draft.experiences || []).forEach(exp => {
     const sourceRole = roleById(exp.roleId);
     if (!sourceRole) return;
-    const bullets = (exp.bullets || [])
+    let bullets = (exp.bullets || [])
       .filter(b => b.accepted !== false && String(b.editedText || b.text || "").trim())
-      .map(b => String(b.editedText || b.text || "").trim());
+      .map(b => ({
+        text: String(b.editedText || b.text || "").trim(),
+        confidence: Number(b.confidence) || 0
+      }));
+
+    if (draft.onePageMode) {
+      bullets = bullets.sort((a,b) => b.confidence - a.confidence).slice(0,3);
+    }
+
     if (!bullets.length) return;
     experiences.push({
       employer: sourceRole.employer || "",
@@ -923,18 +950,26 @@ function approvedResumePayload() {
       startDate: sourceRole.startDate || "",
       endDate: sourceRole.endDate || "",
       isCurrent: !!sourceRole.isCurrent,
-      bullets
+      bullets: bullets.map(b => b.text)
     });
   });
+
+  let finalExperiences = experiences;
+  if (draft.onePageMode) finalExperiences = experiences.slice(0,4);
+
+  let skills = (draft.coreSkills || []).filter(s => s.selected !== false).map(s => s.name).filter(Boolean);
+  if (draft.onePageMode) skills = skills.slice(0,12);
 
   return {
     targetRole: draft.targetRole || latestTargetScan()?.result?.role || "",
     profile: graph.profile || {},
     summary: String(draft.professionalSummary?.text || "").trim(),
-    skills: (draft.coreSkills || []).filter(s => s.selected !== false).map(s => s.name).filter(Boolean),
-    experiences,
+    skills,
+    experiences: finalExperiences,
     education: graph.education || [],
-    certifications: graph.certifications || []
+    certifications: graph.certifications || [],
+    template: draft.template || "classic",
+    onePageMode: !!draft.onePageMode
   };
 }
 
@@ -943,6 +978,7 @@ function renderTailorPreview() {
   if (!paper) return;
   const resume = approvedResumePayload();
   paper.innerHTML = "";
+  paper.className = "resume-paper template-" + (state.tailoredResume?.template || "classic") + (state.tailoredResume?.onePageMode ? " one-page-mode" : "");
   if (!resume) {
     const empty = document.createElement("div");
     empty.className = "resume-paper-empty";
@@ -1177,6 +1213,7 @@ function renderTailorEditor() {
       textarea.value = bullet.editedText || bullet.text || "";
       textarea.addEventListener("input", () => {
         bullet.editedText = textarea.value;
+        markTailoredDirty("A bullet was edited and must be revalidated against its cited evidence.");
         persist();
         $("acceptedBulletCount").textContent = countAcceptedBullets();
         renderTailorPreview();
@@ -1208,12 +1245,299 @@ function renderTailorEditor() {
   });
 }
 
+
+function markTailoredDirty(reason) {
+  if (!state.tailoredResume) return;
+  state.tailoredResume.integrity = {
+    status: "needs_review",
+    checkedAt: null,
+    summary: reason || "Manual edits require evidence revalidation before export.",
+    findings: []
+  };
+  state.applicationPackage = null;
+  persist();
+  renderIntegrityGate();
+}
+
+function currentIntegrityStatus() {
+  return state.tailoredResume?.integrity?.status || (state.tailoredResume ? "valid" : "none");
+}
+
+function renderIntegrityGate() {
+  if (!$("integrityStatusTag")) return;
+  const integrity = state.tailoredResume?.integrity;
+  const tag = $("integrityStatusTag");
+  const summary = $("integritySummary");
+  const findings = $("integrityFindings");
+  findings.innerHTML = "";
+
+  if (!state.tailoredResume) {
+    tag.textContent = "No draft";
+    summary.textContent = "Generate a tailored resume first.";
+    return;
+  }
+
+  const status = integrity?.status || "valid";
+  tag.textContent = status === "valid" ? "Validated" : status === "blocked" ? "Blocked" : "Needs revalidation";
+  tag.className = "tag " + (status === "valid" ? "grounding-good" : status === "blocked" ? "grounding-warn" : "");
+  summary.textContent = integrity?.summary || "Generated content is evidence-grounded.";
+
+  (integrity?.findings || []).forEach(item => {
+    const div = document.createElement("div");
+    div.className = "integrity-finding " + (item.status || "supported");
+    const strong = document.createElement("strong");
+    strong.textContent = (item.claimLabel || item.claimId || "Claim") + " · " + (item.status || "supported");
+    const p = document.createElement("p");
+    p.textContent = item.explanation || "";
+    div.append(strong,p);
+    if (item.suggestedText) {
+      const suggestion = document.createElement("p");
+      suggestion.textContent = "Suggested correction: " + item.suggestedText;
+      div.appendChild(suggestion);
+    }
+    findings.appendChild(div);
+  });
+
+  const exportBlocked = status !== "valid";
+  $("exportDocx").disabled = exportBlocked;
+  $("exportPdf").disabled = exportBlocked;
+}
+
+async function revalidateTailoredResume() {
+  const graph = ensureCareerGraphIds();
+  const draft = state.tailoredResume;
+  if (!graph || !draft) throw new Error("Generate a tailored resume first");
+
+  const claims = [];
+  if (String(draft.professionalSummary?.text || "").trim()) {
+    claims.push({
+      claimId: "SUMMARY",
+      claimLabel: "Professional summary",
+      text: String(draft.professionalSummary.text).trim(),
+      sourceEvidenceIds: draft.professionalSummary.sourceEvidenceIds || [],
+      roleId: ""
+    });
+  }
+  (draft.experiences || []).forEach(exp => {
+    (exp.bullets || []).forEach(bullet => {
+      if (bullet.accepted === false) return;
+      claims.push({
+        claimId: bullet.bulletId,
+        claimLabel: (roleById(exp.roleId)?.title || "Experience") + " bullet",
+        text: String(bullet.editedText || bullet.text || "").trim(),
+        sourceEvidenceIds: bullet.sourceEvidenceIds || [],
+        roleId: exp.roleId
+      });
+    });
+  });
+
+  const response = await fetch("/api/revalidate-resume", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      careerGraph: graph,
+      claims
+    })
+  });
+  const data = await response.json();
+  if (!response.ok || !data?.ok || !data?.result) throw new Error(data?.message || "Validation failed");
+  return data.result;
+}
+
+function renderResumeVersions() {
+  if (!$("resumeVersionList")) return;
+  const list = $("resumeVersionList");
+  $("versionCountTag").textContent = state.resumeVersions.length + (state.resumeVersions.length === 1 ? " version" : " versions");
+  list.innerHTML = "";
+  if (!state.resumeVersions.length) {
+    list.className = "empty-state";
+    list.textContent = "Save an approved resume version to preserve exactly what you used for an application.";
+    return;
+  }
+  list.className = "";
+  state.resumeVersions.forEach(version => {
+    const row = document.createElement("div");
+    row.className = "version-row";
+    const info = document.createElement("div");
+    const strong = document.createElement("strong");
+    strong.textContent = version.name;
+    const small = document.createElement("small");
+    small.textContent = [version.targetRole, new Date(version.createdAt).toLocaleString(), version.template + " template", version.onePageMode ? "one-page" : "standard"].filter(Boolean).join(" · ");
+    info.append(strong,small);
+
+    const actions = document.createElement("div");
+    actions.className = "version-actions";
+    const load = document.createElement("button");
+    load.textContent = "Load";
+    load.addEventListener("click", () => {
+      state.tailoredResume = JSON.parse(JSON.stringify(version.tailoredResume));
+      state.tailoredResume.versionLoaded = true;
+      state.applicationPackage = version.applicationPackage ? JSON.parse(JSON.stringify(version.applicationPackage)) : null;
+      persist();
+      renderDashboard();
+      switchView("tailor");
+      toast("Saved resume version loaded");
+    });
+    const del = document.createElement("button");
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      state.resumeVersions = state.resumeVersions.filter(v => v.id !== version.id);
+      persist(); renderResumeVersions(); toast("Version deleted");
+    });
+    actions.append(load,del);
+    row.append(info,actions);
+    list.appendChild(row);
+  });
+}
+
+function saveCurrentResumeVersion() {
+  if (!state.tailoredResume) throw new Error("Generate a tailored resume first");
+  if (currentIntegrityStatus() !== "valid") throw new Error("Validate the current draft before saving a version");
+  const defaultName = (state.tailoredResume.targetRole || "Tailored Resume") + " · " + new Date().toLocaleDateString();
+  const name = window.prompt("Name this resume version:", defaultName);
+  if (!name) return false;
+  const record = {
+    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    name: name.trim(),
+    targetRole: state.tailoredResume.targetRole || "",
+    scanId: state.tailoredResume.generatedForScanId || "",
+    createdAt: new Date().toISOString(),
+    template: state.tailoredResume.template || "classic",
+    onePageMode: !!state.tailoredResume.onePageMode,
+    tailoredResume: JSON.parse(JSON.stringify(state.tailoredResume)),
+    approvedResume: approvedResumePayload(),
+    applicationPackage: state.applicationPackage ? JSON.parse(JSON.stringify(state.applicationPackage)) : null
+  };
+  state.resumeVersions.unshift(record);
+  state.resumeVersions = state.resumeVersions.slice(0,50);
+  persist();
+  renderResumeVersions();
+  return true;
+}
+
+function applicationTargetContext() {
+  const draft = state.tailoredResume;
+  const scan = latestTargetScan();
+  return {
+    jobDescription: draft?.targetContext?.jobDescription || scan?.jobSnapshot || "",
+    analysis: draft?.targetContext?.analysis || scan?.result || {},
+    role: draft?.targetRole || scan?.result?.role || ""
+  };
+}
+
+async function requestApplicationPackage() {
+  const graph = ensureCareerGraphIds();
+  const resume = approvedResumePayload();
+  const context = applicationTargetContext();
+  if (!graph) throw new Error("Build your Career Graph first");
+  if (!resume || !resume.experiences.length) throw new Error("Generate an approved tailored resume first");
+  if (currentIntegrityStatus() !== "valid") throw new Error("Validate your resume edits before generating the package");
+  if (!context.jobDescription) throw new Error("Target job description is missing");
+
+  const questions = $("customApplicationQuestions").value
+    .split(/\n+/)
+    .map(q => q.trim())
+    .filter(Boolean)
+    .slice(0,12);
+
+  const response = await fetch("/api/application-package", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      careerGraph: graph,
+      approvedResume: resume,
+      jobDescription: context.jobDescription,
+      jobAnalysis: context.analysis,
+      customQuestions: questions
+    })
+  });
+  const data = await response.json();
+  if (!response.ok || !data?.ok || !data?.result) throw new Error(data?.message || "Application package generation failed");
+  data.result.generatedAt = new Date().toISOString();
+  data.result.targetRole = context.role;
+  return data.result;
+}
+
+function renderApplicationPackage() {
+  if (!$("packageTargetRole")) return;
+  const graph = ensureCareerGraphIds();
+  const resume = approvedResumePayload();
+  const context = applicationTargetContext();
+  $("packageTargetRole").textContent = context.role || "No target";
+  $("packageResumeStatus").textContent = resume?.experiences?.length ? (currentIntegrityStatus() === "valid" ? "Validated" : "Needs validation") : "Not ready";
+  $("packageEvidenceCount").textContent = graph?.evidenceRecords?.length || 0;
+  $("packageStatus").textContent = state.applicationPackage ? "Generated" : "Not generated";
+
+  const workspace = $("applicationPackageWorkspace");
+  if (!state.applicationPackage) {
+    workspace.classList.add("hidden");
+    return;
+  }
+  workspace.classList.remove("hidden");
+  $("packageCoverLetter").value = state.applicationPackage.coverLetter?.text || "";
+  $("packageRecruiterMessage").value = state.applicationPackage.recruiterMessage?.text || "";
+  $("packageWhyRole").value = state.applicationPackage.whyRole?.text || "";
+
+  const answers = $("packageAnswers");
+  answers.innerHTML = "";
+  const allAnswers = state.applicationPackage.answers || [];
+  $("packageAnswerTag").textContent = allAnswers.length + (allAnswers.length === 1 ? " answer" : " answers");
+  allAnswers.forEach((item,index) => {
+    const box = document.createElement("div");
+    box.className = "package-answer";
+    const strong = document.createElement("strong");
+    strong.textContent = item.question || ("Question " + (index + 1));
+    const textarea = document.createElement("textarea");
+    textarea.value = item.answer || "";
+    textarea.addEventListener("input", () => {
+      item.answer = textarea.value;
+      persist();
+    });
+    const chips = document.createElement("div");
+    (item.sourceEvidenceIds || []).forEach(id => {
+      const chip = document.createElement("span");
+      chip.className = "package-evidence-chip";
+      chip.textContent = id;
+      chips.appendChild(chip);
+    });
+    box.append(strong,textarea,chips);
+    answers.appendChild(box);
+  });
+
+  const usedIds = new Set();
+  [state.applicationPackage.coverLetter,state.applicationPackage.recruiterMessage,state.applicationPackage.whyRole]
+    .forEach(item => (item?.sourceEvidenceIds || []).forEach(id => usedIds.add(id)));
+  allAnswers.forEach(item => (item.sourceEvidenceIds || []).forEach(id => usedIds.add(id)));
+  $("packageAuditTag").textContent = usedIds.size + (usedIds.size === 1 ? " source" : " sources");
+
+  const audit = $("packageEvidenceAudit");
+  audit.innerHTML = "";
+  if (!usedIds.size) {
+    audit.className = "empty-state";
+    audit.textContent = "No evidence sources were returned.";
+  } else {
+    audit.className = "";
+    [...usedIds].forEach(id => {
+      const evidence = evidenceById(id);
+      if (!evidence) return;
+      const record = document.createElement("div");
+      record.className = "package-audit-record";
+      const strong = document.createElement("strong");
+      strong.textContent = id + " · " + (evidence.title || evidence.category || "Evidence");
+      const p = document.createElement("p");
+      p.textContent = evidence.sourceSnippet || evidence.text || "";
+      record.append(strong,p);
+      audit.appendChild(record);
+    });
+  }
+}
+
 function renderTailorStudio() {
   const scan = latestTargetScan();
   const graph = ensureCareerGraphIds();
   let draft = state.tailoredResume;
   if (!$("tailorTargetRole")) return;
-  if (draft && scan && draft.generatedForScanId && draft.generatedForScanId !== scan.id) {
+  if (draft && scan && draft.generatedForScanId && draft.generatedForScanId !== scan.id && !draft.versionLoaded) {
     state.tailoredResume = null;
     draft = null;
     persist();
@@ -1245,24 +1569,33 @@ function renderTailorStudio() {
 
   empty.classList.add("hidden");
   workspace.classList.remove("hidden");
-  $("tailorVersionTag").textContent = "Draft · " + new Date(draft.generatedAt || Date.now()).toLocaleDateString();
+  $("tailorVersionTag").textContent = (draft.versionLoaded ? "Saved version" : "Draft") + " · " + new Date(draft.generatedAt || Date.now()).toLocaleDateString();
   $("tailorDocumentTitle").textContent = draft.documentTitle || ((draft.targetRole || "Target") + " Resume");
   $("tailorSkillTag").textContent = skillSelectedCount() + " selected";
   $("tailorSummary").value = draft.professionalSummary?.text || "";
+  $("resumeTemplate").value = draft.template || "classic";
+  $("onePageMode").checked = !!draft.onePageMode;
   renderTailorEditor();
   renderTailorPreview();
   renderTailorAudit();
+  renderIntegrityGate();
 }
 
 async function exportApprovedResume(format) {
   const resume = approvedResumePayload();
   if (!resume) throw new Error("Generate a tailored resume first");
+  if (currentIntegrityStatus() !== "valid") throw new Error("Validate manual edits before export");
   if (!resume.experiences.length) throw new Error("Accept at least one experience bullet before export");
 
   const response = await fetch("/api/export-resume", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({format, resume})
+    body: JSON.stringify({
+      format,
+      resume,
+      template: state.tailoredResume?.template || "classic",
+      onePageMode: !!state.tailoredResume?.onePageMode
+    })
   });
 
   if (!response.ok) {
@@ -1312,8 +1645,84 @@ $("generateTailoredResume").addEventListener("click", async () => {
 $("tailorSummary").addEventListener("input", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.professionalSummary.text = event.target.value;
+  markTailoredDirty("The professional summary was edited and must be revalidated against its cited evidence.");
   persist();
   renderTailorPreview();
+});
+
+$("resumeTemplate").addEventListener("change", event => {
+  if (!state.tailoredResume) return;
+  state.tailoredResume.template = event.target.value;
+  persist();
+  renderTailorPreview();
+});
+
+$("onePageMode").addEventListener("change", event => {
+  if (!state.tailoredResume) return;
+  state.tailoredResume.onePageMode = event.target.checked;
+  if (event.target.checked) toast("One-page mode prioritizes up to 4 roles, 3 strongest bullets per role, and 12 skills.");
+  persist();
+  renderTailorStudio();
+});
+
+$("validateTailoredResume").addEventListener("click", async () => {
+  const btn = $("validateTailoredResume");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "Validating claims...";
+  try {
+    const result = await revalidateTailoredResume();
+    state.tailoredResume.integrity = result;
+    persist();
+    renderIntegrityGate();
+    toast(result.status === "valid" ? "All accepted claims validated" : "Validation found claims that need correction");
+  } catch (error) {
+    toast(error.message || "Validation failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+$("saveResumeVersion").addEventListener("click", () => {
+  try {
+    if (saveCurrentResumeVersion()) toast("Resume version saved");
+  } catch (error) {
+    toast(error.message);
+  }
+});
+
+$("generateApplicationPackage").addEventListener("click", async () => {
+  const btn = $("generateApplicationPackage");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Generating package...";
+  try {
+    state.applicationPackage = await requestApplicationPackage();
+    persist();
+    renderApplicationPackage();
+    toast("Application package generated");
+  } catch (error) {
+    toast(error.message || "Package generation failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+document.addEventListener("click", async event => {
+  const btn = event.target.closest(".copy-package-btn");
+  if (!btn) return;
+  const target = $(btn.dataset.copyTarget);
+  if (!target) return;
+  try {
+    await navigator.clipboard.writeText(target.value || target.textContent || "");
+    toast("Copied");
+  } catch (_) {
+    target.select?.();
+    document.execCommand?.("copy");
+    toast("Copied");
+  }
 });
 
 $("exportDocx").addEventListener("click", async () => {
@@ -1483,8 +1892,8 @@ $("saveApplication").addEventListener("click", () => {
 
 $("clearLocalData").addEventListener("click", () => {
   if (!confirm("Reset all Deep Nexivra local career data on this browser?")) return;
-  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume"].forEach(k => localStorage.removeItem(k));
-  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
+  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume","dn_resume_versions","dn_application_package"].forEach(k => localStorage.removeItem(k));
+  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.resumeVersions = []; state.applicationPackage = null; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
   $("resumeInput").value = ""; $("jobInput").value = ""; $("scanResults").classList.add("hidden");
   persist(); renderDashboard(); toast("Local data reset");
 });
