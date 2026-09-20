@@ -925,7 +925,11 @@ function skillSelectedCount() {
 function approvedResumePayload() {
   const graph = ensureCareerGraphIds();
   const draft = state.tailoredResume;
-  if (!graph || !draft) return null;
+  if (!draft) return null;
+  if (draft.versionLoaded && draft.versionApprovedResume && !draft.versionModified) {
+    return JSON.parse(JSON.stringify(draft.versionApprovedResume));
+  }
+  if (!graph) return null;
 
   const experiences = [];
   (draft.experiences || []).forEach(exp => {
@@ -1156,6 +1160,7 @@ function renderTailorEditor() {
     btn.textContent = skill.name;
     btn.addEventListener("click", () => {
       skill.selected = skill.selected === false;
+      if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
       state.applicationPackage = null;
       persist();
       renderTailorStudio();
@@ -1201,11 +1206,13 @@ function renderTailorEditor() {
       reject.className = bullet.accepted === false ? "active-reject" : "";
       accept.addEventListener("click", () => {
         bullet.accepted = true;
+        if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
         state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
       reject.addEventListener("click", () => {
         bullet.accepted = false;
+        if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
         state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
@@ -1252,6 +1259,7 @@ function renderTailorEditor() {
 
 function markTailoredDirty(reason) {
   if (!state.tailoredResume) return;
+  state.tailoredResume.versionModified = true;
   state.tailoredResume.integrity = {
     status: "needs_review",
     checkedAt: null,
@@ -1376,6 +1384,8 @@ function renderResumeVersions() {
     load.addEventListener("click", () => {
       state.tailoredResume = JSON.parse(JSON.stringify(version.tailoredResume));
       state.tailoredResume.versionLoaded = true;
+      state.tailoredResume.versionModified = false;
+      state.tailoredResume.versionApprovedResume = JSON.parse(JSON.stringify(version.approvedResume));
       state.applicationPackage = version.applicationPackage ? JSON.parse(JSON.stringify(version.applicationPackage)) : null;
       persist();
       renderDashboard();
@@ -1671,6 +1681,7 @@ $("tailorSummary").addEventListener("input", event => {
 $("resumeTemplate").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.template = event.target.value;
+  if (state.tailoredResume.versionLoaded) state.tailoredResume.versionModified = true;
   persist();
   renderTailorPreview();
 });
@@ -1678,6 +1689,7 @@ $("resumeTemplate").addEventListener("change", event => {
 $("onePageMode").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.onePageMode = event.target.checked;
+  if (state.tailoredResume.versionLoaded) state.tailoredResume.versionModified = true;
   state.applicationPackage = null;
   if (event.target.checked) toast("One-page mode prioritizes up to 4 roles, 3 strongest bullets per role, and 12 skills.");
   persist();
