@@ -3,6 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
+  if (!process.env.OPENAI_API_KEY) {
+    return res.status(503).json({ ok: false, message: "OPENAI_API_KEY is not configured for this Vercel environment" });
+  }
+
   const body = req.body || {};
   const graph = body.careerGraph;
   const jobDescription = typeof body.jobDescription === "string" ? body.jobDescription.trim() : "";
@@ -181,46 +185,209 @@ export default async function handler(req, res) {
     jobDescription,
     "",
     "PREVIOUS JOB ANALYSIS:",
-    JSON.stringify(jobAnalysis).slice(0, 18000),
+    JSON.stringify(jobAnalysis).slice(0, 12000),
     "",
     "ROLE CATALOG (metadata is immutable):",
-    JSON.stringify(roleCatalog),
+    JSON.stringify(roleCatalog.slice(0, 15)),
     "",
     "EVIDENCE CATALOG (all generated claims must cite IDs from here):",
-    JSON.stringify(evidenceCatalog)
+    JSON.stringify(evidenceCatalog.slice(0, 70))
   ].join("\n");
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + process.env.OPENAI_API_KEY
-      },
-      body: JSON.stringify({
-        model: process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
-        reasoning: { effort: "high" },
-        instructions: instructions,
-        input: input,
-        text: {
-          format: {
-            type: "json_schema",
-            name: "deep_nexivra_tailored_resume",
-            strict: true,
-            schema: schema
-          }
-        },
-        max_output_tokens: 14000,
-        store: false
-      })
+  function norm(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  }
+
+  function evidenceMatchesRole(record, role) {
+    if (!record || !role) return false;
+    const recEmployer = norm(record.employer);
+    const recRole = norm(record.role);
+    const roleEmployer = norm(role.employer);
+    const roleTitle = norm(role.title);
+
+    if (recEmployer && roleEmployer && recEmployer === roleEmployer) {
+      if (!recRole || !roleTitle) return true;
+      return recRole === roleTitle || recRole.includes(roleTitle) || roleTitle.includes(recRole);
+    }
+    if (!recEmployer && recRole && roleTitle) {
+      return recRole === roleTitle || recRole.includes(roleTitle) || roleTitle.includes(recRole);
+    }
+    return false;
+  }
+
+  function tokenize(value) {
+    const stop = new Set(["the","and","for","with","that","this","from","your","you","our","are","will","have","has","had","into","their","they","job","role","work","team","years","year","experience","skills","skill","required","preferred","responsibilities","qualifications"]);
+    return norm(value).split(" ").filter(function(token) {
+      return token.length > 3 && !stop.has(token) && !/^\d+$/.test(token);
+    });
+  }
+
+  const targetTerms = new Set(tokenize(jobDescription + " " + JSON.stringify(jobAnalysis || {})));
+
+  function relevanceScore(text) {
+    const terms = [...new Set(tokenize(text))];
+    if (!terms.length || !targetTerms.size) return 35;
+    let hits = 0;
+    terms.forEach(function(term) { if (targetTerms.has(term)) hits++; });
+    return Math.max(20, Math.min(100, Math.round(25 + hits * 12)));
+  }
+
+  function safeFallback(reason) {
+    const experiences = [];
+    const usedEvidence = new Set();
+
+    roles.forEach(function(role) {
+      const candidates = evidence.filter(function(record) {
+        return evidenceMatchesRole(record, role) && (record.text || record.sourceSnippet);
+      }).map(function(record) {
+        return {
+          record: record,
+          priority: relevanceScore((record.title || "") + " " + (record.text || "") + " " + (record.sourceSnippet || ""))
+        };
+      }).sort(function(a,b) { return b.priority - a.priority; }).slice(0, 4);
+
+      if (!candidates.length) return;
+
+      experiences.push({
+        roleId: role.roleId,
+        bullets: candidates.map(function(item, index) {
+          usedEvidence.add(item.record.evidenceId);
+          return {
+            bulletId: role.roleId + "-F" + String(index + 1).padStart(2, "0"),
+            text: String(item.record.text || item.record.sourceSnippet || "").trim(),
+            sourceEvidenceIds: [item.record.evidenceId],
+            confidence: 100,
+            priority: item.priority,
+            rationale: "Direct source-backed evidence retained without semantic rewriting because the AI tailoring fallback was used."
+          };
+        })
+      });
     });
 
-    const data = await response.json();
-    if (!response.ok) {
-      return res.status(response.status).json({
-        ok: false,
-        message: data && data.error && data.error.message ? data.error.message : "Tailored resume request failed"
+    const skillCandidates = evidence.filter(function(record) {
+      return (record.category === "Skill" || record.category === "Tool") && (record.title || record.text);
+    }).map(function(record) {
+      return {
+        record: record,
+        priority: relevanceScore((record.title || "") + " " + (record.text || ""))
+      };
+    }).sort(function(a,b) { return b.priority - a.priority; });
+
+    const seenSkills = new Set();
+    const coreSkills = [];
+    skillCandidates.forEach(function(item) {
+      const name = String(item.record.title || item.record.text || "").trim();
+      const key = norm(name);
+      if (!name || !key || seenSkills.has(key) || coreSkills.length >= 12) return;
+      seenSkills.add(key);
+      usedEvidence.add(item.record.evidenceId);
+      coreSkills.push({
+        name: name,
+        sourceEvidenceIds: [item.record.evidenceId],
+        reason: "Source-backed capability relevant to the target role."
       });
+    });
+
+    const priorities = [];
+    experiences.forEach(function(exp) {
+      exp.bullets.forEach(function(bullet) { priorities.push(bullet.priority); });
+    });
+    const avgPriority = priorities.length
+      ? Math.round(priorities.reduce(function(a,b){ return a+b; },0) / priorities.length)
+      : 0;
+
+    return {
+      documentTitle: (jobAnalysis.role || "Target Role") + " — Tailored Resume",
+      targetRole: jobAnalysis.role || "Target Role",
+      professionalSummary: { text: "", sourceEvidenceIds: [] },
+      coreSkills: coreSkills,
+      experiences: experiences,
+      warnings: [
+        "AI rewrite fallback used: " + reason,
+        "Fallback bullets preserve verified source evidence verbatim and can be edited, then revalidated."
+      ],
+      quality: {
+        groundingCoverage: experiences.length ? 100 : 0,
+        atsSafety: 92,
+        jobAlignment: avgPriority,
+        notes: ["Fallback mode prioritized same-role evidence by target-job relevance."]
+      }
+    };
+  }
+
+  async function callTailorModel(model, effort, timeoutMs) {
+    const controller = new AbortController();
+    const timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+    try {
+      const response = await fetch("https://api.openai.com/v1/responses", {
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + process.env.OPENAI_API_KEY
+        },
+        body: JSON.stringify({
+          model: model,
+          reasoning: { effort: effort },
+          instructions: instructions,
+          input: input,
+          text: {
+            format: {
+              type: "json_schema",
+              name: "deep_nexivra_tailored_resume",
+              strict: true,
+              schema: schema
+            }
+          },
+          max_output_tokens: 9000,
+          store: false
+        })
+      });
+      const data = await response.json();
+      return { response: response, data: data };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  try {
+    let attempt;
+    let fallbackReason = "";
+
+    try {
+      attempt = await callTailorModel(
+        process.env.OPENAI_TAILOR_MODEL || "gpt-5.6-terra",
+        "medium",
+        100000
+      );
+    } catch (error) {
+      if (error && error.name !== "AbortError") throw error;
+      fallbackReason = "primary tailoring request timed out";
+      try {
+        attempt = await callTailorModel(
+          process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-luna",
+          "low",
+          70000
+        );
+      } catch (fallbackError) {
+        const result = safeFallback(fallbackReason + "; fallback model was unavailable");
+        if (!result.experiences.length) {
+          return res.status(422).json({ ok: false, message: "No role-specific evidence was available to build a safe fallback resume" });
+        }
+        return res.status(200).json({ ok: true, result: result, fallback: true });
+      }
+    }
+
+    const response = attempt.response;
+    const data = attempt.data;
+
+    if (!response.ok) {
+      const reason = data && data.error && data.error.message ? data.error.message : "AI tailoring request failed";
+      const result = safeFallback(reason);
+      if (!result.experiences.length) {
+        return res.status(response.status).json({ ok: false, message: reason });
+      }
+      return res.status(200).json({ ok: true, result: result, fallback: true });
     }
 
     let outputText = data.output_text || "";
@@ -235,27 +402,6 @@ export default async function handler(req, res) {
     const result = JSON.parse(outputText);
     const evidenceMap = new Map(evidence.map(function(item) { return [item.evidenceId, item]; }));
     const roleMap = new Map(roles.map(function(item) { return [item.roleId, item]; }));
-
-    function norm(value) {
-      return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-    }
-
-    function evidenceMatchesRole(record, role) {
-      if (!record || !role) return false;
-      const recEmployer = norm(record.employer);
-      const recRole = norm(record.role);
-      const roleEmployer = norm(role.employer);
-      const roleTitle = norm(role.title);
-
-      if (recEmployer && roleEmployer && recEmployer === roleEmployer) {
-        if (!recRole || !roleTitle) return true;
-        return recRole === roleTitle || recRole.includes(roleTitle) || roleTitle.includes(recRole);
-      }
-      if (!recEmployer && recRole && roleTitle) {
-        return recRole === roleTitle || recRole.includes(roleTitle) || roleTitle.includes(recRole);
-      }
-      return false;
-    }
 
     let proposedBullets = 0;
     let retainedBullets = 0;
@@ -309,17 +455,28 @@ export default async function handler(req, res) {
     result.documentTitle = result.targetRole + " — Tailored Resume";
 
     if (retainedBullets === 0) {
-      return res.status(422).json({
-        ok: false,
-        message: "No role-specific evidence-grounded bullets could be generated for this target job"
-      });
+      const fallback = safeFallback("AI output contained no bullets with valid same-role evidence");
+      if (!fallback.experiences.length) {
+        return res.status(422).json({
+          ok: false,
+          message: "No role-specific evidence-grounded bullets could be generated for this target job"
+        });
+      }
+      return res.status(200).json({ ok: true, result: fallback, fallback: true });
     }
 
     return res.status(200).json({ ok: true, result: result });
   } catch (error) {
+    const reason = error && error.name === "AbortError"
+      ? "tailoring request timed out"
+      : (error && error.message ? error.message : "tailoring request failed");
+    const fallback = safeFallback(reason);
+    if (fallback.experiences.length) {
+      return res.status(200).json({ ok: true, result: fallback, fallback: true });
+    }
     return res.status(500).json({
       ok: false,
-      message: "Unable to generate the tailored resume"
+      message: "Unable to generate the tailored resume: " + reason
     });
   }
 }
