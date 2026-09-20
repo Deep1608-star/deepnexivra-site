@@ -721,19 +721,41 @@ async function handleResumeFile(file) {
 }
 
 async function ingestCareerGraph(rawText) {
-  const response = await fetch("/api/resume-ingest", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      resumeText: rawText,
-      sourceFile: state.importedFile || null
-    })
-  });
-  const data = await response.json();
-  if (!response.ok || !data?.ok || !data?.result) {
-    throw new Error(data?.message || "Career graph ingestion failed");
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 180000);
+  try {
+    const response = await fetch("/api/resume-ingest", {
+      method: "POST",
+      signal: controller.signal,
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        resumeText: rawText,
+        sourceFile: state.importedFile || null
+      })
+    });
+
+    let data = null;
+    try {
+      data = await response.json();
+    } catch (_) {
+      throw new Error("The Career Graph service returned an unreadable response. Please retry.");
+    }
+
+    if (!response.ok || !data?.ok || !data?.result) {
+      throw new Error(data?.message || "Career Graph generation failed");
+    }
+    return data.result;
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      throw new Error("Career Graph generation took too long. Please retry; Deep Nexivra now uses a faster extraction path.");
+    }
+    if (/load failed|failed to fetch|network/i.test(String(error?.message || error))) {
+      throw new Error("The AI request was interrupted by the network or server. Please tap Build Career Graph again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
-  return data.result;
 }
 
 function graphUniqueSkillNames(graph) {
