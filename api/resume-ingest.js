@@ -260,6 +260,18 @@ export default async function handler(req, res) {
       return skill;
     });
 
+    result.evidenceRecords = (result.evidenceRecords || []).map(function(record, index) {
+      return Object.assign({}, record, {
+        evidenceId: "E" + String(index + 1).padStart(3, "0")
+      });
+    });
+
+    result.experience = (result.experience || []).map(function(role, index) {
+      return Object.assign({}, role, {
+        roleId: "R" + String(index + 1).padStart(3, "0")
+      });
+    });
+
     return res.status(200).json({ ok: true, result: result });
   } catch (error) {
     return res.status(500).json({
