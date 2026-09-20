@@ -1156,6 +1156,7 @@ function renderTailorEditor() {
     btn.textContent = skill.name;
     btn.addEventListener("click", () => {
       skill.selected = skill.selected === false;
+      state.applicationPackage = null;
       persist();
       renderTailorStudio();
     });
@@ -1200,10 +1201,12 @@ function renderTailorEditor() {
       reject.className = bullet.accepted === false ? "active-reject" : "";
       accept.addEventListener("click", () => {
         bullet.accepted = true;
+        state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
       reject.addEventListener("click", () => {
         bullet.accepted = false;
+        state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
       actions.append(accept,reject);
@@ -1644,6 +1647,7 @@ $("generateTailoredResume").addEventListener("click", async () => {
   btn.textContent = "Generating evidence-grounded draft...";
   try {
     state.tailoredResume = await requestTailoredResume();
+    state.applicationPackage = null;
     persist();
     renderDashboard();
     toast("Tailored resume generated");
@@ -1674,6 +1678,7 @@ $("resumeTemplate").addEventListener("change", event => {
 $("onePageMode").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.onePageMode = event.target.checked;
+  state.applicationPackage = null;
   if (event.target.checked) toast("One-page mode prioritizes up to 4 roles, 3 strongest bullets per role, and 12 skills.");
   persist();
   renderTailorStudio();
@@ -1813,6 +1818,7 @@ $("buildCareerGraph").addEventListener("click", async () => {
     const graph = await ingestCareerGraph(state.importedResumeText);
     state.careerGraph = graph;
     state.tailoredResume = null;
+    state.applicationPackage = null;
     state.masterResume = state.importedResumeText;
     state.resumeSource = {
       name: state.importedFile?.name || "Imported resume",
@@ -1880,6 +1886,7 @@ $("runScan").addEventListener("click", async () => {
     const result = await deepAnalyze(resume, job);
     renderScan(result);
     state.tailoredResume = null;
+    state.applicationPackage = null;
     state.scans.unshift({
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       createdAt:new Date().toISOString(),
