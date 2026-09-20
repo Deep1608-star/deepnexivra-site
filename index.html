@@ -50,6 +50,9 @@
         <button class="nav-item" data-view="package">
           <span class="nav-icon">▣</span><span>Application Package</span>
         </button>
+        <button class="nav-item" data-view="agent">
+          <span class="nav-icon">⌁</span><span>Career Agent</span>
+        </button>
       </nav>
 
       <div class="sidebar-note">
@@ -127,6 +130,31 @@
               <div id="historyList" class="empty-state">No scans yet.</div>
             </article>
           </div>
+
+          <article class="panel cloud-sync-panel">
+            <div class="panel-heading">
+              <div><span class="eyebrow">Private cloud sync</span><h3>Encrypted cross-device workspace</h3></div>
+              <span class="tag" id="cloudStatusTag">Checking configuration</span>
+            </div>
+            <div class="cloud-sync-grid">
+              <div class="field">
+                <label for="cloudEmail">Account email</label>
+                <input id="cloudEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="cloudPassphrase">Encryption passphrase</label>
+                <input id="cloudPassphrase" type="password" placeholder="Required to encrypt/decrypt cloud workspace" autocomplete="new-password" />
+                <small>Never uploaded. Deep Nexivra derives a browser encryption key from this passphrase.</small>
+              </div>
+              <div class="cloud-actions">
+                <button class="secondary-btn" id="cloudSignIn">Send secure sign-in link</button>
+                <button class="secondary-btn" id="cloudPush">Encrypt & sync</button>
+                <button class="secondary-btn" id="cloudPull">Restore & decrypt</button>
+                <button class="ghost-btn" id="cloudSignOut">Sign out</button>
+              </div>
+            </div>
+            <div class="cloud-status-line" id="cloudStatusLine">Local-only mode remains available even when cloud sync is not configured.</div>
+          </article>
         </section>
 
         <section class="view" id="view-match">
@@ -320,8 +348,11 @@
                       <option value="compact">Compact ATS</option>
                     </select>
                     <label class="one-page-toggle"><input type="checkbox" id="onePageMode" /> One-page mode</label>
+                    <span class="tag" id="pageFitStatus">Fit not measured</span>
                   </div>
                   <div class="row-actions export-actions">
+                    <button class="secondary-btn" id="undoTailor">Undo</button>
+                    <button class="secondary-btn" id="redoTailor">Redo</button>
                     <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
                     <button class="secondary-btn" id="saveResumeVersion">Save version</button>
                     <button class="secondary-btn" id="exportDocx">Export DOCX</button>
@@ -332,6 +363,14 @@
 
               <article class="resume-paper" id="tailoredResumePreview">
                 <div class="resume-paper-empty">Generate a tailored resume to see the document preview.</div>
+              </article>
+
+              <article class="panel change-history-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Change history</span><h3>Recent resume edits</h3></div>
+                  <span class="tag" id="historyCountTag">0 changes</span>
+                </div>
+                <div id="tailorChangeHistory" class="empty-state">Resume edits will appear here and can be undone/redone.</div>
               </article>
 
               <article class="panel integrity-panel">
@@ -492,6 +531,43 @@ What salary are you expecting?"></textarea>
               <div id="packageEvidenceAudit" class="empty-state">Generate a package to see its evidence trail.</div>
             </article>
           </div>
+        </section>
+
+        <section class="view" id="view-agent">
+          <div class="section-intro">
+            <div><span class="eyebrow">Career Agent</span><h2>Job Intake & Fit Triage</h2><p>Add job URLs or paste postings. Deep Nexivra imports the role, compares it against your Career Graph, and prioritizes opportunities before you spend time tailoring a resume.</p></div>
+          </div>
+
+          <div class="two-col">
+            <article class="panel">
+              <div class="panel-heading"><div><span class="eyebrow">Job URL import</span><h3>Add opportunity</h3></div><span class="tag">Beta</span></div>
+              <div class="field"><label for="agentJobUrl">Job posting URL</label><input id="agentJobUrl" type="url" placeholder="https://company.com/jobs/..." /></div>
+              <div class="field"><label for="agentJobText">Or paste job description</label><textarea id="agentJobText" placeholder="Paste the complete job posting if the website blocks automated retrieval."></textarea></div>
+              <div class="row-actions"><button class="primary-btn" id="agentAnalyzeJob">Import & triage</button></div>
+            </article>
+            <article class="panel">
+              <span class="eyebrow">Agent policy</span>
+              <h3>Prioritize before tailoring.</h3>
+              <p>Career Agent evaluates requirement coverage, evidence strength, critical gaps, role adjacency, and repeated missing capabilities. It does not predict whether an employer will hire you.</p>
+            </article>
+          </div>
+
+          <div class="agent-metrics">
+            <article class="metric-card"><span>Opportunities</span><strong id="agentOpportunityCount">0</strong><small>Saved job records</small></article>
+            <article class="metric-card"><span>Strong-fit queue</span><strong id="agentStrongCount">0</strong><small>High evidence coverage</small></article>
+            <article class="metric-card"><span>Recurring gaps</span><strong id="agentGapCount">0</strong><small>Capabilities appearing across jobs</small></article>
+            <article class="metric-card"><span>Next learning action</span><strong id="agentNextSkill">—</strong><small>Most repeated supported gap</small></article>
+          </div>
+
+          <article class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Opportunity queue</span><h3>Career Agent triage</h3></div><span class="tag" id="agentQueueTag">0 jobs</span></div>
+            <div id="agentOpportunityList" class="empty-state">Add a job to start the opportunity queue.</div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading"><div><span class="eyebrow">Market signal</span><h3>Recurring capability gaps</h3></div><span class="tag">Across saved jobs</span></div>
+            <div id="agentGapList" class="empty-state">Analyze multiple roles to see which missing skills or tools recur most often.</div>
+          </article>
         </section>
 
         <section class="view" id="view-interview">
