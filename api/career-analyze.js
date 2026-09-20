@@ -22,51 +22,24 @@ export default async function handler(req, res) {
 
   const instructions = [
     "You are Deep Nexivra Career Intelligence Engine, an evidence-first resume and job analysis system.",
-    "",
     "PRIMARY RULE: truth preservation. Never invent experience, metrics, education, certifications, job titles, employers, technologies, responsibilities, dates, or achievements.",
     "A requirement is direct only when explicit supporting evidence exists in the resume or verified evidence vault.",
     "Use transferable when related capability exists but the exact requirement is not proven.",
     "Use gap when support is missing or too weak.",
-    "",
     "Do not pretend to know an employer's internal ATS score. ATS Readability is Deep Nexivra's own text-level assessment.",
-    "",
-    "Return ONLY valid JSON with this exact top-level shape:",
-    "{",
-    "  \"role\": \"string\",",
-    "  \"summary\": \"string\",",
-    "  \"scores\": {",
-    "    \"requirementMatch\": 0,",
-    "    \"evidenceStrength\": 0,",
-    "    \"atsReadability\": 0,",
-    "    \"recruiterQuality\": 0,",
-    "    \"readiness\": 0",
-    "  },",
-    "  \"requirements\": [{\"requirement\":\"string\",\"status\":\"direct | transferable | gap\",\"evidence\":\"string\"}],",
-    "  \"keywords\": [{\"keyword\":\"string\",\"present\":true}],",
-    "  \"atsIssues\": [{\"level\":\"good | warn\",\"text\":\"string\"}],",
-    "  \"strengths\": [\"string\"],",
-    "  \"rewrites\": [{\"title\":\"string\",\"suggestion\":\"string\"}],",
-    "  \"nextActions\": [\"string\"],",
-    "  \"interviewQuestions\": [{\"question\":\"string\",\"why\":\"string\"}]",
-    "}",
-    "",
-    "SCORING:",
-    "- requirementMatch: coverage of important job requirements based on supported evidence.",
-    "- evidenceStrength: specificity, measurable proof, context, actions, tools, scope, and outcomes.",
-    "- atsReadability: standard headings, text structure, wording clarity, and likely parseability; never claim certainty about an employer ATS.",
-    "- recruiterQuality: relevance, clarity, credibility, seniority alignment, specificity, and impact.",
-    "- readiness: weighted synthesis of the four dimensions with must-have gaps penalized.",
-    "",
-    "ANALYSIS RULES:",
-    "- Identify 8-14 high-value requirements when the posting supports that many.",
-    "- Treat keyword presence as insufficient by itself for direct evidence.",
-    "- In evidence, paraphrase the actual supporting candidate fact.",
-    "- Return 10-18 high-value role terms, tools, competencies, certifications, or domain phrases.",
-    "- present=true only when candidate material genuinely contains or clearly supports the concept.",
-    "- Give 4-8 rewrite recommendations.",
-    "- When evidence is missing, make the recommendation conditional instead of inventing content.",
-    "- Generate 6-10 interview questions based on key responsibilities, gaps, and claims likely to be tested.",
-    "- Keep the result concise enough for a dashboard."
+    "Identify 8-14 high-value requirements when the posting supports that many.",
+    "Treat keyword presence as insufficient by itself for direct evidence.",
+    "In evidence, paraphrase the actual supporting candidate fact.",
+    "Return 10-18 high-value role terms, tools, competencies, certifications, or domain phrases.",
+    "present=true only when candidate material genuinely contains or clearly supports the concept.",
+    "Give 4-8 rewrite recommendations. When evidence is missing, make the recommendation conditional instead of inventing content.",
+    "Generate 6-10 interview questions based on key responsibilities, gaps, and claims likely to be tested.",
+    "Score requirementMatch from supported job requirement coverage.",
+    "Score evidenceStrength from specificity, measurable proof, context, actions, tools, scope, and outcomes.",
+    "Score atsReadability from standard headings, text structure, wording clarity, and likely parseability, without claiming knowledge of an employer's ATS.",
+    "Score recruiterQuality from relevance, clarity, credibility, seniority alignment, specificity, and impact.",
+    "Score readiness as a weighted synthesis with important must-have gaps penalized.",
+    "Keep all dashboard strings concise."
   ].join("\n");
 
   const input = [
@@ -80,6 +53,99 @@ export default async function handler(req, res) {
     vaultText || "No additional verified evidence supplied."
   ].join("\n");
 
+  const stringArray = {
+    type: "array",
+    items: { type: "string" }
+  };
+
+  const schema = {
+    type: "object",
+    additionalProperties: false,
+    required: [
+      "role","summary","scores","requirements","keywords","atsIssues",
+      "strengths","rewrites","nextActions","interviewQuestions"
+    ],
+    properties: {
+      role: { type: "string" },
+      summary: { type: "string" },
+      scores: {
+        type: "object",
+        additionalProperties: false,
+        required: ["requirementMatch","evidenceStrength","atsReadability","recruiterQuality","readiness"],
+        properties: {
+          requirementMatch: { type: "number", minimum: 0, maximum: 100 },
+          evidenceStrength: { type: "number", minimum: 0, maximum: 100 },
+          atsReadability: { type: "number", minimum: 0, maximum: 100 },
+          recruiterQuality: { type: "number", minimum: 0, maximum: 100 },
+          readiness: { type: "number", minimum: 0, maximum: 100 }
+        }
+      },
+      requirements: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["requirement","status","evidence"],
+          properties: {
+            requirement: { type: "string" },
+            status: { type: "string", enum: ["direct","transferable","gap"] },
+            evidence: { type: "string" }
+          }
+        }
+      },
+      keywords: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["keyword","present"],
+          properties: {
+            keyword: { type: "string" },
+            present: { type: "boolean" }
+          }
+        }
+      },
+      atsIssues: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["level","text"],
+          properties: {
+            level: { type: "string", enum: ["good","warn"] },
+            text: { type: "string" }
+          }
+        }
+      },
+      strengths: stringArray,
+      rewrites: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["title","suggestion"],
+          properties: {
+            title: { type: "string" },
+            suggestion: { type: "string" }
+          }
+        }
+      },
+      nextActions: stringArray,
+      interviewQuestions: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["question","why"],
+          properties: {
+            question: { type: "string" },
+            why: { type: "string" }
+          }
+        }
+      }
+    }
+  };
+
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -92,7 +158,16 @@ export default async function handler(req, res) {
         reasoning: { effort: "high" },
         instructions: instructions,
         input: input,
-        max_output_tokens: 9000
+        text: {
+          format: {
+            type: "json_schema",
+            name: "deep_nexivra_career_analysis",
+            strict: true,
+            schema: schema
+          }
+        },
+        max_output_tokens: 9000,
+        store: false
       })
     });
 
@@ -114,21 +189,11 @@ export default async function handler(req, res) {
       });
     }
 
-    outputText = outputText.trim();
-    if (outputText.startsWith("~~~json")) outputText = outputText.slice(7);
-    if (outputText.startsWith("~~~")) outputText = outputText.slice(3);
-    if (outputText.endsWith("~~~")) outputText = outputText.slice(0, -3);
-    if (outputText.startsWith("```json")) outputText = outputText.slice(7);
-    if (outputText.startsWith("```")) outputText = outputText.slice(3);
-    if (outputText.endsWith("```")) outputText = outputText.slice(0, -3);
-    outputText = outputText.trim();
-
     const result = JSON.parse(outputText);
     const clamp = function(n) {
       return Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
     };
 
-    if (!result.scores) result.scores = {};
     result.scores.requirementMatch = clamp(result.scores.requirementMatch);
     result.scores.evidenceStrength = clamp(result.scores.evidenceStrength);
     result.scores.atsReadability = clamp(result.scores.atsReadability);
@@ -137,9 +202,6 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ ok: true, result: result });
   } catch (error) {
-    return res.status(500).json({
-      ok: false,
-      message: "Career analysis failed"
-    });
+    return res.status(500).json({ ok: false, message: "Career analysis failed" });
   }
 }
