@@ -1188,7 +1188,20 @@ function renderTailorEditor() {
       const sourceIds = (bullet.sourceEvidenceIds || []).join(", ");
       rationale.textContent = (bullet.rationale || "") + (sourceIds ? " · Sources: " + sourceIds : "");
 
-      card.append(top,textarea,rationale);
+      const sourceBox = document.createElement("div");
+      sourceBox.className = "bullet-source-box";
+      const sourceLabel = document.createElement("strong");
+      sourceLabel.textContent = "Source evidence";
+      sourceBox.appendChild(sourceLabel);
+      (bullet.sourceEvidenceIds || []).forEach(id => {
+        const evidence = evidenceById(id);
+        if (!evidence) return;
+        const source = document.createElement("div");
+        source.textContent = id + " · " + (evidence.sourceSnippet || evidence.text || "");
+        sourceBox.appendChild(source);
+      });
+
+      card.append(top,textarea,rationale,sourceBox);
       wrap.appendChild(card);
     });
     editor.appendChild(wrap);
@@ -1198,8 +1211,13 @@ function renderTailorEditor() {
 function renderTailorStudio() {
   const scan = latestTargetScan();
   const graph = ensureCareerGraphIds();
-  const draft = state.tailoredResume;
+  let draft = state.tailoredResume;
   if (!$("tailorTargetRole")) return;
+  if (draft && scan && draft.generatedForScanId && draft.generatedForScanId !== scan.id) {
+    state.tailoredResume = null;
+    draft = null;
+    persist();
+  }
 
   $("tailorTargetRole").textContent = scan?.result?.role || "No scan selected";
   $("tailorGraphStatus").textContent = graph ? ((graph.evidenceRecords || []).length + " evidence records") : "Not ready";
@@ -1361,6 +1379,7 @@ $("buildCareerGraph").addEventListener("click", async () => {
   try {
     const graph = await ingestCareerGraph(state.importedResumeText);
     state.careerGraph = graph;
+    state.tailoredResume = null;
     state.masterResume = state.importedResumeText;
     state.resumeSource = {
       name: state.importedFile?.name || "Imported resume",
@@ -1427,6 +1446,7 @@ $("runScan").addEventListener("click", async () => {
   try {
     const result = await deepAnalyze(resume, job);
     renderScan(result);
+    state.tailoredResume = null;
     state.scans.unshift({
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       createdAt:new Date().toISOString(),
