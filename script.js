@@ -1379,13 +1379,25 @@ function renderResumeVersions() {
       switchView("tailor");
       toast("Saved resume version loaded");
     });
+    const docx = document.createElement("button");
+    docx.textContent = "DOCX";
+    docx.addEventListener("click", async () => {
+      try { await exportResumePayload("docx", version.approvedResume, version.name); }
+      catch (error) { toast(error.message || "Version export failed"); }
+    });
+    const pdf = document.createElement("button");
+    pdf.textContent = "PDF";
+    pdf.addEventListener("click", async () => {
+      try { await exportResumePayload("pdf", version.approvedResume, version.name); }
+      catch (error) { toast(error.message || "Version export failed"); }
+    });
     const del = document.createElement("button");
     del.textContent = "Delete";
     del.addEventListener("click", () => {
       state.resumeVersions = state.resumeVersions.filter(v => v.id !== version.id);
       persist(); renderResumeVersions(); toast("Version deleted");
     });
-    actions.append(load,del);
+    actions.append(load,docx,pdf,del);
     row.append(info,actions);
     list.appendChild(row);
   });
@@ -1582,21 +1594,14 @@ function renderTailorStudio() {
   renderIntegrityGate();
 }
 
-async function exportApprovedResume(format) {
-  const resume = approvedResumePayload();
-  if (!resume) throw new Error("Generate a tailored resume first");
-  if (currentIntegrityStatus() !== "valid") throw new Error("Validate manual edits before export");
-  if (!resume.experiences.length) throw new Error("Accept at least one experience bullet before export");
+async function exportResumePayload(format, resume, filenamePrefix) {
+  if (!resume) throw new Error("Resume payload is missing");
+  if (!resume.experiences?.length) throw new Error("At least one experience entry is required");
 
   const response = await fetch("/api/export-resume", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({
-      format,
-      resume,
-      template: state.tailoredResume?.template || "classic",
-      onePageMode: !!state.tailoredResume?.onePageMode
-    })
+    body: JSON.stringify({format, resume})
   });
 
   if (!response.ok) {
@@ -1612,12 +1617,20 @@ async function exportApprovedResume(format) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   const safeRole = String(resume.targetRole || "Tailored-Resume").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"");
+  const safePrefix = String(filenamePrefix || "Deep-Nexivra").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"");
   link.href = url;
-  link.download = "Deep-Nexivra-" + safeRole + "." + format;
+  link.download = safePrefix + "-" + safeRole + "." + format;
   document.body.appendChild(link);
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+async function exportApprovedResume(format) {
+  const resume = approvedResumePayload();
+  if (!resume) throw new Error("Generate a tailored resume first");
+  if (currentIntegrityStatus() !== "valid") throw new Error("Validate manual edits before export");
+  return exportResumePayload(format, resume, "Deep-Nexivra");
 }
 
 document.querySelectorAll(".nav-item").forEach(btn => btn.addEventListener("click", () => switchView(btn.dataset.view)));
@@ -1709,6 +1722,16 @@ $("generateApplicationPackage").addEventListener("click", async () => {
     btn.disabled = false;
     btn.textContent = old;
   }
+});
+
+["packageCoverLetter","packageRecruiterMessage","packageWhyRole"].forEach(id => {
+  $(id).addEventListener("input", event => {
+    if (!state.applicationPackage) return;
+    if (id === "packageCoverLetter") state.applicationPackage.coverLetter.text = event.target.value;
+    if (id === "packageRecruiterMessage") state.applicationPackage.recruiterMessage.text = event.target.value;
+    if (id === "packageWhyRole") state.applicationPackage.whyRole.text = event.target.value;
+    persist();
+  });
 });
 
 document.addEventListener("click", async event => {
