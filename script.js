@@ -10,7 +10,12 @@ const state = {
   tailoredResume: JSON.parse(localStorage.getItem("dn_tailored_resume") || "null"),
   resumeVersions: JSON.parse(localStorage.getItem("dn_resume_versions") || "[]"),
   applicationPackage: JSON.parse(localStorage.getItem("dn_application_package") || "null"),
+  changeHistory: JSON.parse(localStorage.getItem("dn_change_history") || "[]"),
+  historyIndex: Number(localStorage.getItem("dn_history_index") || "-1"),
+  careerAgentJobs: JSON.parse(localStorage.getItem("dn_agent_jobs") || "[]"),
   importedResumeText: "",
+  cloudClient: null,
+  cloudConfig: null,
   importedFile: null,
   latest: null
 };
@@ -33,6 +38,9 @@ function persist() {
   localStorage.setItem("dn_tailored_resume", JSON.stringify(state.tailoredResume));
   localStorage.setItem("dn_resume_versions", JSON.stringify(state.resumeVersions));
   localStorage.setItem("dn_application_package", JSON.stringify(state.applicationPackage));
+  localStorage.setItem("dn_change_history", JSON.stringify(state.changeHistory));
+  localStorage.setItem("dn_history_index", String(state.historyIndex));
+  localStorage.setItem("dn_agent_jobs", JSON.stringify(state.careerAgentJobs));
 }
 
 function toast(message) {
@@ -59,7 +67,8 @@ function switchView(name) {
     graph: "Career Graph",
     applications: "Applications",
     interview: "Interview Lab",
-    package: "Application Package"
+    package: "Application Package",
+    agent: "Career Agent"
   };
   $("viewTitle").textContent = titleMap[name] || "Deep Nexivra";
   $("sidebar").classList.remove("open");
@@ -381,6 +390,8 @@ function renderDashboard() {
   renderTailorStudio();
   renderResumeVersions();
   renderApplicationPackage();
+  renderChangeHistory();
+  renderCareerAgent();
   renderApplications();
   renderInterview();
 }
@@ -407,7 +418,8 @@ function renderEvidence() {
     btn.textContent = "Remove";
     btn.addEventListener("click", () => {
       state.evidence = state.evidence.filter(x => x.id !== item.id);
-      persist(); renderDashboard(); toast("Evidence removed");
+      persist(); renderDashboard();
+refreshCloudStatus(); toast("Evidence removed");
     });
     div.append(strong,small,btn);
     list.appendChild(div);
@@ -452,7 +464,25 @@ function renderApplications() {
       select.addEventListener("change", () => {
         app.stage = select.value; persist(); renderApplications(); renderDashboard();
       });
-      card.append(strong,small,select);
+
+      const versionSelect = document.createElement("select");
+      versionSelect.className = "application-version-select";
+      const none = document.createElement("option");
+      none.value = ""; none.textContent = "No resume version linked";
+      versionSelect.appendChild(none);
+      state.resumeVersions.forEach(version => {
+        const option = document.createElement("option");
+        option.value = version.id;
+        option.textContent = version.name;
+        if (app.resumeVersionId === version.id) option.selected = true;
+        versionSelect.appendChild(option);
+      });
+      versionSelect.addEventListener("change", () => {
+        app.resumeVersionId = versionSelect.value || null;
+        persist();
+        toast(app.resumeVersionId ? "Resume version linked to application" : "Resume version unlinked");
+      });
+      card.append(strong,small,select,versionSelect);
       col.appendChild(card);
     });
     board.appendChild(col);
@@ -487,6 +517,8 @@ function renderInterview() {
 }
 
 
+const TESSERACT_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js";
+const SUPABASE_ESM_URL = "https://esm.sh/@supabase/supabase-js@2.116.0";
 const PDFJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.min.mjs";
 const PDFJS_WORKER_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs";
 const MAMMOTH_URL = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.12.3/mammoth.browser.min.js";
@@ -559,7 +591,48 @@ async function extractPdfText(file) {
     setParserProgress(24 + Math.round((pageNo / doc.numPages) * 46), "Extracting PDF page " + pageNo + " of " + doc.numPages);
   }
 
-  return cleanExtractedText(pages.join("\n\n"));
+  const extracted = cleanExtractedText(pages.join("\n\n"));
+  if (extracted.length >= 120) return extracted;
+
+  setParserProgress(72, "Selectable text is insufficient · starting OCR");
+  const Tesseract = await loadExternalScript(TESSERACT_URL, "Tesseract");
+  if (!Tesseract || typeof Tesseract.createWorker !== "function") {
+    throw new Error("OCR engine could not be loaded.");
+  }
+
+  const worker = await Tesseract.createWorker("eng", 1, {
+    logger: function(message) {
+      if (message && message.status === "recognizing text" && Number.isFinite(message.progress)) {
+        const pct = 74 + Math.round(message.progress * 20);
+        setParserProgress(pct, "OCR recognizing scanned resume text");
+      }
+    }
+  });
+
+  const ocrPages = [];
+  try {
+    const maxPages = Math.min(doc.numPages, 10);
+    for (let pageNo = 1; pageNo <= maxPages; pageNo++) {
+      const page = await doc.getPage(pageNo);
+      const viewport = page.getViewport({scale: 2});
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d", {willReadFrequently:true});
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      await page.render({canvasContext:context,viewport}).promise;
+      setParserProgress(74 + Math.round(((pageNo - 1) / maxPages) * 20), "OCR page " + pageNo + " of " + maxPages);
+      const result = await worker.recognize(canvas);
+      ocrPages.push(result?.data?.text || "");
+      canvas.width = 1; canvas.height = 1;
+    }
+  } finally {
+    await worker.terminate();
+  }
+
+  const ocrText = cleanExtractedText(ocrPages.join("\n\n"));
+  if (ocrText.length < 120) throw new Error("OCR found too little readable resume text.");
+  setParserProgress(96, "OCR complete · cleaning text");
+  return ocrText;
 }
 
 async function extractDocxText(file) {
@@ -1161,6 +1234,7 @@ function renderTailorEditor() {
     btn.addEventListener("click", () => {
       skill.selected = skill.selected === false;
       if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
+      recordTailorState("Toggle skill: " + skill.name);
       state.applicationPackage = null;
       persist();
       renderTailorStudio();
@@ -1207,12 +1281,14 @@ function renderTailorEditor() {
       accept.addEventListener("click", () => {
         bullet.accepted = true;
         if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
+        recordTailorState("Accept resume bullet");
         state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
       reject.addEventListener("click", () => {
         bullet.accepted = false;
         if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
+        recordTailorState("Reject resume bullet");
         state.applicationPackage = null;
         persist(); renderTailorStudio();
       });
@@ -1225,6 +1301,7 @@ function renderTailorEditor() {
       textarea.addEventListener("input", () => {
         bullet.editedText = textarea.value;
         markTailoredDirty("A bullet was edited and must be revalidated against its cited evidence.");
+        scheduleTailorHistory("Edit resume bullet");
         persist();
         $("acceptedBulletCount").textContent = countAcceptedBullets();
         renderTailorPreview();
@@ -1558,6 +1635,351 @@ function renderApplicationPackage() {
   }
 }
 
+
+function workspaceSnapshot() {
+  return {
+    schemaVersion: 1,
+    savedAt: new Date().toISOString(),
+    masterResume: state.masterResume,
+    evidence: state.evidence,
+    scans: state.scans,
+    applications: state.applications,
+    careerGraph: state.careerGraph,
+    resumeSource: state.resumeSource,
+    tailoredResume: state.tailoredResume,
+    resumeVersions: state.resumeVersions,
+    applicationPackage: state.applicationPackage,
+    changeHistory: state.changeHistory,
+    historyIndex: state.historyIndex,
+    careerAgentJobs: state.careerAgentJobs
+  };
+}
+
+function restoreWorkspaceSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") throw new Error("Invalid workspace snapshot");
+  state.masterResume = snapshot.masterResume || "";
+  state.evidence = Array.isArray(snapshot.evidence) ? snapshot.evidence : [];
+  state.scans = Array.isArray(snapshot.scans) ? snapshot.scans : [];
+  state.applications = Array.isArray(snapshot.applications) ? snapshot.applications : [];
+  state.careerGraph = snapshot.careerGraph || null;
+  state.resumeSource = snapshot.resumeSource || null;
+  state.tailoredResume = snapshot.tailoredResume || null;
+  state.resumeVersions = Array.isArray(snapshot.resumeVersions) ? snapshot.resumeVersions : [];
+  state.applicationPackage = snapshot.applicationPackage || null;
+  state.changeHistory = Array.isArray(snapshot.changeHistory) ? snapshot.changeHistory : [];
+  state.historyIndex = Number.isFinite(snapshot.historyIndex) ? snapshot.historyIndex : state.changeHistory.length - 1;
+  state.careerAgentJobs = Array.isArray(snapshot.careerAgentJobs) ? snapshot.careerAgentJobs : [];
+  persist();
+  renderDashboard();
+}
+
+function bytesToBase64(bytes) {
+  let binary = "";
+  bytes.forEach(byte => binary += String.fromCharCode(byte));
+  return btoa(binary);
+}
+
+function base64ToBytes(value) {
+  const binary = atob(value);
+  return Uint8Array.from(binary, ch => ch.charCodeAt(0));
+}
+
+async function deriveWorkspaceKey(passphrase, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey("raw", enc.encode(passphrase), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({
+    name:"PBKDF2",
+    salt,
+    iterations:250000,
+    hash:"SHA-256"
+  }, keyMaterial, {
+    name:"AES-GCM",
+    length:256
+  }, false, ["encrypt","decrypt"]);
+}
+
+async function encryptWorkspace(snapshot, passphrase) {
+  if (!passphrase || passphrase.length < 8) throw new Error("Use an encryption passphrase of at least 8 characters");
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveWorkspaceKey(passphrase, salt);
+  const plain = new TextEncoder().encode(JSON.stringify(snapshot));
+  const encrypted = await crypto.subtle.encrypt({name:"AES-GCM",iv}, key, plain);
+  return {
+    ciphertext: bytesToBase64(new Uint8Array(encrypted)),
+    salt: bytesToBase64(salt),
+    iv: bytesToBase64(iv),
+    algorithm: "AES-256-GCM/PBKDF2-SHA256-250000"
+  };
+}
+
+async function decryptWorkspace(payload, passphrase) {
+  const salt = base64ToBytes(payload.salt);
+  const iv = base64ToBytes(payload.iv);
+  const key = await deriveWorkspaceKey(passphrase, salt);
+  const encrypted = base64ToBytes(payload.ciphertext);
+  const plain = await crypto.subtle.decrypt({name:"AES-GCM",iv}, key, encrypted);
+  return JSON.parse(new TextDecoder().decode(plain));
+}
+
+async function getCloudClient() {
+  if (state.cloudClient) return state.cloudClient;
+  if (!state.cloudConfig) {
+    const response = await fetch("/api/cloud-config");
+    const data = await response.json();
+    state.cloudConfig = data;
+  }
+  if (!state.cloudConfig?.enabled) throw new Error("Cloud sync is not configured on this deployment");
+  const module = await import(SUPABASE_ESM_URL);
+  state.cloudClient = module.createClient(state.cloudConfig.url, state.cloudConfig.publishableKey, {
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  return state.cloudClient;
+}
+
+async function refreshCloudStatus() {
+  const tag = $("cloudStatusTag");
+  const line = $("cloudStatusLine");
+  try {
+    const client = await getCloudClient();
+    const {data} = await client.auth.getSession();
+    const user = data?.session?.user;
+    tag.textContent = user ? "Signed in" : "Cloud ready";
+    line.textContent = user
+      ? "Signed in as " + user.email + ". Cloud data is stored as a client-side encrypted blob."
+      : "Cloud sync is configured. Sign in with a secure email link when you want cross-device sync.";
+  } catch (error) {
+    tag.textContent = "Local-only";
+    line.textContent = error.message + ". Local mode continues to work normally.";
+  }
+}
+
+function recordTailorState(label) {
+  if (!state.tailoredResume) return;
+  const snapshot = JSON.parse(JSON.stringify(state.tailoredResume));
+  const current = state.changeHistory[state.historyIndex];
+  if (current && JSON.stringify(current.snapshot) === JSON.stringify(snapshot)) return;
+  if (state.historyIndex < state.changeHistory.length - 1) {
+    state.changeHistory = state.changeHistory.slice(0, state.historyIndex + 1);
+  }
+  state.changeHistory.push({
+    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    label: label || "Resume change",
+    createdAt: new Date().toISOString(),
+    snapshot
+  });
+  state.changeHistory = state.changeHistory.slice(-30);
+  state.historyIndex = state.changeHistory.length - 1;
+  persist();
+  renderChangeHistory();
+}
+
+let historyDebounce;
+function scheduleTailorHistory(label) {
+  clearTimeout(historyDebounce);
+  historyDebounce = setTimeout(() => recordTailorState(label), 650);
+}
+
+function undoTailorChange() {
+  if (state.historyIndex <= 0) return toast("No earlier resume change");
+  state.historyIndex--;
+  state.tailoredResume = JSON.parse(JSON.stringify(state.changeHistory[state.historyIndex].snapshot));
+  state.applicationPackage = null;
+  persist(); renderDashboard(); toast("Undid resume change");
+}
+
+function redoTailorChange() {
+  if (state.historyIndex >= state.changeHistory.length - 1) return toast("No later resume change");
+  state.historyIndex++;
+  state.tailoredResume = JSON.parse(JSON.stringify(state.changeHistory[state.historyIndex].snapshot));
+  state.applicationPackage = null;
+  persist(); renderDashboard(); toast("Redid resume change");
+}
+
+function renderChangeHistory() {
+  if (!$("tailorChangeHistory")) return;
+  const root = $("tailorChangeHistory");
+  $("historyCountTag").textContent = state.changeHistory.length + (state.changeHistory.length === 1 ? " change" : " changes");
+  root.innerHTML = "";
+  if (!state.changeHistory.length) {
+    root.className = "empty-state";
+    root.textContent = "Resume edits will appear here and can be undone/redone.";
+  } else {
+    root.className = "";
+    state.changeHistory.slice().reverse().slice(0,12).forEach((event,reverseIndex) => {
+      const actualIndex = state.changeHistory.length - 1 - reverseIndex;
+      const div = document.createElement("div");
+      div.className = "history-event";
+      const strong = document.createElement("strong");
+      strong.textContent = (actualIndex === state.historyIndex ? "Current · " : "") + event.label;
+      const small = document.createElement("small");
+      small.textContent = new Date(event.createdAt).toLocaleString();
+      div.append(strong,small);
+      root.appendChild(div);
+    });
+  }
+  $("undoTailor").disabled = state.historyIndex <= 0;
+  $("redoTailor").disabled = state.historyIndex < 0 || state.historyIndex >= state.changeHistory.length - 1;
+}
+
+function measureResumeFit() {
+  const paper = $("tailoredResumePreview");
+  const tag = $("pageFitStatus");
+  if (!paper || !tag || !state.tailoredResume) return;
+  requestAnimationFrame(() => {
+    if (!state.tailoredResume.onePageMode) {
+      tag.textContent = "Standard length";
+      tag.className = "tag";
+      paper.classList.remove("ultra-compact");
+      return;
+    }
+    paper.classList.remove("ultra-compact");
+    const allowed = paper.clientHeight || 1056;
+    const overflow = paper.scrollHeight - allowed;
+    if (overflow <= 4) {
+      tag.textContent = "Fits one page";
+      tag.className = "tag page-fit-ok";
+      return;
+    }
+    paper.classList.add("ultra-compact");
+    requestAnimationFrame(() => {
+      const overflow2 = paper.scrollHeight - (paper.clientHeight || 1056);
+      if (overflow2 <= 4) {
+        tag.textContent = "Fits after compression";
+        tag.className = "tag page-fit-ok";
+      } else {
+        const pct = Math.max(1, Math.round((overflow2 / (paper.clientHeight || 1056)) * 100));
+        tag.textContent = "Over by ~" + pct + "%";
+        tag.className = "tag page-fit-bad";
+      }
+    });
+  });
+}
+
+function careerAgentGapStats() {
+  const map = new Map();
+  state.careerAgentJobs.forEach(job => {
+    (job.recurringGapTags || []).forEach(tag => {
+      const key = String(tag || "").trim();
+      if (!key) return;
+      map.set(key, (map.get(key) || 0) + 1);
+    });
+  });
+  return [...map.entries()].sort((a,b) => b[1] - a[1]);
+}
+
+function renderCareerAgent() {
+  if (!$("agentOpportunityCount")) return;
+  const jobs = state.careerAgentJobs || [];
+  const gaps = careerAgentGapStats();
+  $("agentOpportunityCount").textContent = jobs.length;
+  $("agentStrongCount").textContent = jobs.filter(j => j.fitLevel === "Strong").length;
+  $("agentGapCount").textContent = gaps.length;
+  $("agentNextSkill").textContent = gaps[0]?.[0] || "—";
+  $("agentQueueTag").textContent = jobs.length + (jobs.length === 1 ? " job" : " jobs");
+
+  const list = $("agentOpportunityList");
+  list.innerHTML = "";
+  if (!jobs.length) {
+    list.className = "empty-state";
+    list.textContent = "Add a job to start the opportunity queue.";
+  } else {
+    list.className = "";
+    jobs.forEach(job => {
+      const card = document.createElement("div");
+      card.className = "agent-job-card";
+      const head = document.createElement("div");
+      head.className = "agent-job-head";
+      const left = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = [job.title,job.company].filter(Boolean).join(" — ") || "Imported job";
+      const small = document.createElement("small");
+      small.textContent = [job.location,job.fitLevel + " evidence fit",new Date(job.createdAt).toLocaleDateString()].filter(Boolean).join(" · ");
+      left.append(strong,small);
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = job.fitLevel || "Triage";
+      head.append(left,tag);
+      const p = document.createElement("p");
+      p.textContent = job.summary || "";
+      const scores = document.createElement("div");
+      scores.className = "agent-score-grid";
+      [["Requirement",job.scores?.requirementMatch],["Evidence",job.scores?.evidenceStrength],["Readiness",job.scores?.readiness]].forEach(pair => {
+        const box = document.createElement("div");
+        const span = document.createElement("span"); span.textContent = pair[0];
+        const val = document.createElement("strong"); val.textContent = (pair[1] ?? 0) + "/100";
+        box.append(span,val); scores.appendChild(box);
+      });
+      const actions = document.createElement("div");
+      actions.className = "agent-job-actions";
+      const target = document.createElement("button");
+      target.textContent = "Set as target";
+      target.addEventListener("click", () => {
+        $("jobInput").value = job.jobDescription || "";
+        $("jobChars").textContent = (job.jobDescription || "").length;
+        switchView("match");
+        toast("Job loaded into Match Lab");
+      });
+      const remove = document.createElement("button");
+      remove.textContent = "Remove";
+      remove.addEventListener("click", () => {
+        state.careerAgentJobs = state.careerAgentJobs.filter(x => x.id !== job.id);
+        persist(); renderCareerAgent();
+      });
+      actions.append(target,remove);
+      card.append(head,p,scores,actions);
+      list.appendChild(card);
+    });
+  }
+
+  const gapRoot = $("agentGapList");
+  gapRoot.innerHTML = "";
+  if (!gaps.length) {
+    gapRoot.className = "empty-state";
+    gapRoot.textContent = "Analyze multiple roles to see which missing skills or tools recur most often.";
+  } else {
+    gapRoot.className = "";
+    gaps.slice(0,15).forEach(([name,count]) => {
+      const row = document.createElement("div");
+      row.className = "agent-gap-row";
+      const strong = document.createElement("strong"); strong.textContent = name;
+      const span = document.createElement("span"); span.textContent = count + (count === 1 ? " job" : " jobs");
+      row.append(strong,span);
+      gapRoot.appendChild(row);
+    });
+  }
+}
+
+async function exportCoverLetter(format) {
+  if (!state.applicationPackage?.coverLetter?.text) throw new Error("Generate an application package first");
+  const context = applicationTargetContext();
+  const response = await fetch("/api/export-letter", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      format,
+      letter:{
+        candidateName: state.careerGraph?.profile?.fullName || "",
+        candidateEmail: state.careerGraph?.profile?.email || "",
+        candidatePhone: state.careerGraph?.profile?.phone || "",
+        targetRole: context.role || "",
+        text: state.applicationPackage.coverLetter.text
+      }
+    })
+  });
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.message || "Cover letter export failed");
+  }
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Deep-Nexivra-Cover-Letter-" + String(context.role || "Application").replace(/[^a-z0-9]+/gi,"-") + "." + format;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),2000);
+}
+
 function renderTailorStudio() {
   const scan = latestTargetScan();
   const graph = ensureCareerGraphIds();
@@ -1605,6 +2027,8 @@ function renderTailorStudio() {
   renderTailorPreview();
   renderTailorAudit();
   renderIntegrityGate();
+  renderChangeHistory();
+  measureResumeFit();
 }
 
 async function exportResumePayload(format, resume, filenamePrefix) {
@@ -1658,6 +2082,9 @@ $("generateTailoredResume").addEventListener("click", async () => {
   try {
     state.tailoredResume = await requestTailoredResume();
     state.applicationPackage = null;
+    state.changeHistory = [];
+    state.historyIndex = -1;
+    recordTailorState("Generated tailored resume");
     persist();
     renderDashboard();
     toast("Tailored resume generated");
@@ -1674,6 +2101,7 @@ $("tailorSummary").addEventListener("input", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.professionalSummary.text = event.target.value;
   markTailoredDirty("The professional summary was edited and must be revalidated against its cited evidence.");
+  scheduleTailorHistory("Edit professional summary");
   persist();
   renderTailorPreview();
 });
@@ -1682,6 +2110,7 @@ $("resumeTemplate").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.template = event.target.value;
   if (state.tailoredResume.versionLoaded) state.tailoredResume.versionModified = true;
+  recordTailorState("Change resume template");
   persist();
   renderTailorPreview();
 });
@@ -1690,6 +2119,7 @@ $("onePageMode").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.onePageMode = event.target.checked;
   if (state.tailoredResume.versionLoaded) state.tailoredResume.versionModified = true;
+  recordTailorState(event.target.checked ? "Enable one-page mode" : "Disable one-page mode");
   state.applicationPackage = null;
   if (event.target.checked) toast("One-page mode prioritizes up to 4 roles, 3 strongest bullets per role, and 12 skills.");
   persist();
@@ -1764,6 +2194,113 @@ document.addEventListener("click", async event => {
     document.execCommand?.("copy");
     toast("Copied");
   }
+});
+
+$("undoTailor").addEventListener("click", undoTailorChange);
+$("redoTailor").addEventListener("click", redoTailorChange);
+
+$("cloudSignIn").addEventListener("click", async () => {
+  try {
+    const email = $("cloudEmail").value.trim();
+    if (!email) throw new Error("Enter your email first");
+    const client = await getCloudClient();
+    const {error} = await client.auth.signInWithOtp({
+      email,
+      options:{emailRedirectTo:window.location.origin}
+    });
+    if (error) throw error;
+    toast("Secure sign-in link sent");
+    refreshCloudStatus();
+  } catch (error) { toast(error.message || "Cloud sign-in failed"); }
+});
+
+$("cloudSignOut").addEventListener("click", async () => {
+  try {
+    const client = await getCloudClient();
+    await client.auth.signOut();
+    refreshCloudStatus();
+    toast("Signed out");
+  } catch (error) { toast(error.message || "Sign-out failed"); }
+});
+
+$("cloudPush").addEventListener("click", async () => {
+  try {
+    const client = await getCloudClient();
+    const {data} = await client.auth.getSession();
+    const user = data?.session?.user;
+    if (!user) throw new Error("Sign in before syncing");
+    const payload = await encryptWorkspace(workspaceSnapshot(), $("cloudPassphrase").value);
+    const {error} = await client.from("career_workspaces").upsert({
+      user_id:user.id,
+      encrypted_blob:payload.ciphertext,
+      salt:payload.salt,
+      iv:payload.iv,
+      algorithm:payload.algorithm,
+      updated_at:new Date().toISOString()
+    }, {onConflict:"user_id"});
+    if (error) throw error;
+    toast("Encrypted workspace synced");
+    refreshCloudStatus();
+  } catch (error) { toast(error.message || "Cloud sync failed"); }
+});
+
+$("cloudPull").addEventListener("click", async () => {
+  try {
+    const client = await getCloudClient();
+    const {data:sessionData} = await client.auth.getSession();
+    const user = sessionData?.session?.user;
+    if (!user) throw new Error("Sign in before restoring");
+    const {data,error} = await client.from("career_workspaces")
+      .select("encrypted_blob,salt,iv,algorithm,updated_at")
+      .eq("user_id",user.id)
+      .single();
+    if (error) throw error;
+    const snapshot = await decryptWorkspace({
+      ciphertext:data.encrypted_blob,
+      salt:data.salt,
+      iv:data.iv
+    }, $("cloudPassphrase").value);
+    if (!confirm("Replace this browser's local Deep Nexivra workspace with the decrypted cloud workspace?")) return;
+    restoreWorkspaceSnapshot(snapshot);
+    toast("Cloud workspace restored");
+  } catch (error) { toast(error.message || "Cloud restore failed"); }
+});
+
+$("agentAnalyzeJob").addEventListener("click", async () => {
+  const btn = $("agentAnalyzeJob");
+  const old = btn.textContent;
+  btn.disabled = true; btn.textContent = "Importing & triaging...";
+  try {
+    if (!state.careerGraph) throw new Error("Build your Career Graph first");
+    const url = $("agentJobUrl").value.trim();
+    const jobText = $("agentJobText").value.trim();
+    if (!url && jobText.length < 200) throw new Error("Add a job URL or paste the full posting");
+    const response = await fetch("/api/job-intake", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({url,jobText,careerGraph:ensureCareerGraphIds()})
+    });
+    const data = await response.json();
+    if (!response.ok || !data?.ok || !data?.result) throw new Error(data?.message || "Job intake failed");
+    state.careerAgentJobs.unshift(Object.assign({
+      id:crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      createdAt:new Date().toISOString()
+    },data.result));
+    state.careerAgentJobs = state.careerAgentJobs.slice(0,50);
+    persist(); renderCareerAgent();
+    $("agentJobUrl").value = ""; $("agentJobText").value = "";
+    toast("Opportunity added to Career Agent");
+  } catch (error) { toast(error.message || "Job triage failed"); }
+  finally { btn.disabled = false; btn.textContent = old; }
+});
+
+$("exportCoverLetterDocx").addEventListener("click", async () => {
+  try { await exportCoverLetter("docx"); toast("Cover letter DOCX created"); }
+  catch (error) { toast(error.message || "Cover letter export failed"); }
+});
+$("exportCoverLetterPdf").addEventListener("click", async () => {
+  try { await exportCoverLetter("pdf"); toast("Cover letter PDF created"); }
+  catch (error) { toast(error.message || "Cover letter export failed"); }
 });
 
 $("exportDocx").addEventListener("click", async () => {
@@ -1928,6 +2465,7 @@ $("saveApplication").addEventListener("click", () => {
     role: state.latest.role || "Target role",
     readiness: state.latest.scores?.readiness || 0,
     stage: "Saved",
+    resumeVersionId: null,
     createdAt: new Date().toISOString()
   });
   persist(); renderDashboard(); toast("Application saved to pipeline");
@@ -1935,8 +2473,8 @@ $("saveApplication").addEventListener("click", () => {
 
 $("clearLocalData").addEventListener("click", () => {
   if (!confirm("Reset all Deep Nexivra local career data on this browser?")) return;
-  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume","dn_resume_versions","dn_application_package"].forEach(k => localStorage.removeItem(k));
-  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.resumeVersions = []; state.applicationPackage = null; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
+  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume","dn_resume_versions","dn_application_package","dn_change_history","dn_history_index","dn_agent_jobs"].forEach(k => localStorage.removeItem(k));
+  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.resumeVersions = []; state.applicationPackage = null; state.changeHistory = []; state.historyIndex = -1; state.careerAgentJobs = []; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
   $("resumeInput").value = ""; $("jobInput").value = ""; $("scanResults").classList.add("hidden");
   persist(); renderDashboard(); toast("Local data reset");
 });
