@@ -2677,7 +2677,10 @@ function renderTailorStudio() {
 
   const empty = $("tailorEmpty");
   const workspace = $("tailorWorkspace");
+  const tailorView = $("view-tailor");
   const ready = !!scan;
+
+  if (tailorView) tailorView.classList.toggle("has-tailored-resume", !!draft);
 
   if (!draft) {
     empty.classList.remove("hidden");
@@ -2904,7 +2907,7 @@ $("maximizeMatchFromScan").addEventListener("click", async () => {
   const btn = $("maximizeMatchFromScan");
   const old = btn.textContent;
   btn.disabled = true;
-  btn.textContent = "Building tailored resume...";
+  btn.textContent = "Generating + optimizing...";
   try {
     await maximizeTailoredMatch({switchToTailor:true});
   } catch (error) {
