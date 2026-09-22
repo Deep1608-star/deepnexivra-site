@@ -1808,6 +1808,52 @@ function renderTailorPreview() {
     paper.appendChild(section);
   }
 
+  if ((resume.projects || []).length) {
+    const section = document.createElement("section");
+    section.className = "resume-section";
+    section.appendChild(sectionTitle("Projects"));
+    resume.projects.forEach(item => {
+      const project = document.createElement("div");
+      project.className = "resume-job";
+      const head = document.createElement("div");
+      head.className = "resume-job-head";
+      const strong = document.createElement("strong");
+      strong.textContent = [item.name, item.role].filter(Boolean).join(" — ") || "Project";
+      head.appendChild(strong);
+      project.appendChild(head);
+
+      if (item.description) {
+        const desc = document.createElement("div");
+        desc.className = "resume-job-meta";
+        desc.textContent = item.description;
+        project.appendChild(desc);
+      }
+
+      const detailLines = [];
+      if ((item.tools || []).length) detailLines.push("Tools: " + item.tools.join(" | "));
+      if ((item.skills || []).length) detailLines.push("Skills: " + item.skills.join(" | "));
+      detailLines.forEach(text => {
+        const meta = document.createElement("div");
+        meta.className = "resume-job-meta";
+        meta.textContent = text;
+        project.appendChild(meta);
+      });
+
+      if ((item.outcomes || []).length) {
+        const ul = document.createElement("ul");
+        item.outcomes.forEach(text => {
+          const li = document.createElement("li");
+          li.textContent = text;
+          ul.appendChild(li);
+        });
+        project.appendChild(ul);
+      }
+
+      section.appendChild(project);
+    });
+    paper.appendChild(section);
+  }
+
   if (resume.education.length) {
     const section = document.createElement("section");
     section.className = "resume-section";
