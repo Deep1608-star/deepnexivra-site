@@ -17,6 +17,7 @@ export default async function handler(req, res) {
   const graph = body.careerGraph;
   const jobDescription = typeof body.jobDescription === "string" ? body.jobDescription.trim() : "";
   const jobAnalysis = body.jobAnalysis && typeof body.jobAnalysis === "object" ? body.jobAnalysis : {};
+  const masterResume = typeof body.masterResume === "string" ? body.masterResume.trim().slice(0, 30000) : "";
   const optimizationFeedback = body.optimizationFeedback && typeof body.optimizationFeedback === "object"
     ? body.optimizationFeedback
     : null;
@@ -210,6 +211,10 @@ export default async function handler(req, res) {
     "- Optimize relevance for a human recruiter and text-based ATS retrieval separately from visual design.",
     "- Front-load the strongest supported evidence for the target role and prefer wording that a recruiter can understand in a 10-15 second first scan.",
     "- Use important target-job terminology when and only when the evidence genuinely supports that concept.",
+    "- Treat the previous job analysis as a coverage checklist: every direct or transferable requirement that has supporting evidence should be represented somewhere in the resume unless doing so would duplicate stronger wording.",
+    "- Preserve relevant source-backed duties, projects, tools, certifications, and accomplishments from the original evidence. Do not make the tailored resume less complete than the source when that content helps the target role.",
+    "- Prefer the exact terminology used by the job posting when the supplied evidence explicitly supports the same concept. This is wording alignment, not permission to create new experience.",
+    "- For supported requirements, make the evidence easy to find in the first scan: summary, core skills, and the most relevant role bullets should carry the strongest target-language coverage.",
     "- When OPTIMIZATION FEEDBACK is supplied, improve the resume specifically against the remaining supported gaps, missing supported terms, weak evidence placement, and recruiter/ATS weaknesses identified there.",
     "- Never try to eliminate a true evidence gap by inventing a claim. If the candidate does not support a requirement, preserve it as a gap rather than forcing the resume toward 100%.",
     "- Do not claim knowledge of an employer's internal ATS score.",
@@ -226,6 +231,9 @@ export default async function handler(req, res) {
     "",
     "OPTIMIZATION FEEDBACK FROM POST-TAILOR RESCAN:",
     optimizationFeedback ? JSON.stringify(optimizationFeedback).slice(0, 12000) : "No post-tailor optimization feedback supplied.",
+    "",
+    "ORIGINAL RESUME TEXT (preserve relevant supported coverage; do not create claims from text that cannot be tied back to supplied evidence IDs):",
+    masterResume || "Original resume text unavailable.",
     "",
     "ROLE CATALOG (metadata is immutable):",
     JSON.stringify(roleCatalog.slice(0, 15)),
@@ -284,7 +292,7 @@ export default async function handler(req, res) {
           record: record,
           priority: relevanceScore((record.title || "") + " " + (record.text || "") + " " + (record.sourceSnippet || ""))
         };
-      }).sort(function(a,b) { return b.priority - a.priority; }).slice(0, 4);
+      }).sort(function(a,b) { return b.priority - a.priority; }).slice(0, 8);
 
       if (!candidates.length) return;
 
@@ -320,7 +328,7 @@ export default async function handler(req, res) {
     skillCandidates.forEach(function(item) {
       const name = String(item.record.title || item.record.text || "").trim();
       const key = norm(name);
-      if (!name || !key || seenSkills.has(key) || coreSkills.length >= 12) return;
+      if (!name || !key || seenSkills.has(key) || coreSkills.length >= 24) return;
       seenSkills.add(key);
       usedEvidence.add(item.record.evidenceId);
       coreSkills.push({
@@ -329,6 +337,39 @@ export default async function handler(req, res) {
         reason: "Source-backed capability relevant to the target role."
       });
     });
+
+    const summaryCandidates = roles.map(function(role) {
+      const roleEvidence = evidence.filter(function(record) {
+        return evidenceMatchesRole(record, role) && (record.text || record.sourceSnippet);
+      }).sort(function(a,b) {
+        return relevanceScore((b.title || "") + " " + (b.text || "")) -
+          relevanceScore((a.title || "") + " " + (a.text || ""));
+      });
+      return {
+        role: role,
+        evidence: roleEvidence,
+        score: roleEvidence.length
+          ? relevanceScore((role.title || "") + " " + (role.summary || "") + " " + (roleEvidence[0].text || ""))
+          : 0
+      };
+    }).filter(function(item) { return item.evidence.length; })
+      .sort(function(a,b) { return b.score - a.score; });
+
+    let fallbackSummaryText = "";
+    let fallbackSummaryEvidence = [];
+    if (summaryCandidates.length) {
+      const best = summaryCandidates[0];
+      fallbackSummaryEvidence = best.evidence.slice(0, 3).map(function(record) { return record.evidenceId; });
+      const sourceSummary = String(best.role.summary || "").trim();
+      if (sourceSummary) {
+        fallbackSummaryText = sourceSummary;
+      } else {
+        const snippets = best.evidence.slice(0, 2).map(function(record) {
+          return String(record.text || record.sourceSnippet || "").trim();
+        }).filter(Boolean);
+        fallbackSummaryText = snippets.join(" ");
+      }
+    }
 
     const priorities = [];
     experiences.forEach(function(exp) {
@@ -342,10 +383,10 @@ export default async function handler(req, res) {
       documentTitle: (jobAnalysis.role || "Target Role") + " — Tailored Resume",
       targetRole: jobAnalysis.role || "Target Role",
       professionalSummary: {
-        text: "",
-        sourceEvidenceIds: [],
+        text: fallbackSummaryText,
+        sourceEvidenceIds: fallbackSummaryEvidence,
         alternatives: [],
-        improvementTip: "Add a concise evidence-backed summary that leads with the strongest target-role proof."
+        improvementTip: "Fallback mode preserved a source-backed summary from the uploaded resume evidence."
       },
       coreSkills: coreSkills,
       experiences: experiences,
@@ -365,7 +406,7 @@ export default async function handler(req, res) {
         groundingCoverage: experiences.length ? 100 : 0,
         atsSafety: 92,
         jobAlignment: avgPriority,
-        notes: ["Fallback mode prioritized same-role evidence by target-job relevance."]
+        notes: ["Fallback mode preserved a broader set of same-role evidence and source-backed skills instead of compressing the resume."]
       }
     };
   }
@@ -406,44 +447,67 @@ export default async function handler(req, res) {
   }
 
   try {
-    let attempt;
-    let fallbackReason = "";
+    let attempt = null;
+    const failureReasons = [];
 
     try {
       attempt = await callTailorModel(
-        process.env.OPENAI_TAILOR_MODEL || "gpt-5.6-terra",
-        "medium",
-        100000
+        process.env.OPENAI_TAILOR_MODEL || process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
+        "high",
+        140000
       );
-    } catch (error) {
-      if (error && error.name !== "AbortError") throw error;
-      fallbackReason = "primary tailoring request timed out";
-      try {
-        attempt = await callTailorModel(
-          process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-luna",
-          "low",
-          70000
+      if (!attempt.response.ok) {
+        failureReasons.push(
+          attempt.data && attempt.data.error && attempt.data.error.message
+            ? "primary: " + attempt.data.error.message
+            : "primary model returned an error"
         );
-      } catch (fallbackError) {
-        const result = safeFallback(fallbackReason + "; fallback model was unavailable");
-        if (!result.experiences.length) {
-          return res.status(422).json({ ok: false, message: "No role-specific evidence was available to build a safe fallback resume" });
-        }
-        return res.status(200).json({ ok: true, result: result, fallback: true });
+        attempt = null;
       }
+    } catch (error) {
+      failureReasons.push(
+        error && error.name === "AbortError"
+          ? "primary tailoring request timed out"
+          : "primary: " + (error && error.message ? error.message : "request failed")
+      );
+      attempt = null;
+    }
+
+    if (!attempt) {
+      try {
+        const backup = await callTailorModel(
+          process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-terra",
+          "medium",
+          105000
+        );
+        if (backup.response.ok) {
+          attempt = backup;
+        } else {
+          failureReasons.push(
+            backup.data && backup.data.error && backup.data.error.message
+              ? "backup: " + backup.data.error.message
+              : "backup model returned an error"
+          );
+        }
+      } catch (fallbackError) {
+        failureReasons.push(
+          fallbackError && fallbackError.name === "AbortError"
+            ? "backup tailoring request timed out"
+            : "backup: " + (fallbackError && fallbackError.message ? fallbackError.message : "request failed")
+        );
+      }
+    }
+
+    if (!attempt) {
+      return res.status(503).json({
+        ok: false,
+        message: "High-quality resume generation is temporarily unavailable. Please retry.",
+        detail: failureReasons.join("; ")
+      });
     }
 
     const response = attempt.response;
     const data = attempt.data;
-
-    if (!response.ok) {
-      const reason = data && data.error && data.error.message ? data.error.message : "AI tailoring request failed";
-      const result = safeFallback(reason);
-      if (!result.experiences.length) {
-        return res.status(response.status).json({ ok: false, message: reason });
-      }
-      return res.status(200).json({ ok: true, result: result, fallback: true });
-    }
 
     let outputText = data.output_text || "";
     if (!outputText && Array.isArray(data.output)) {
@@ -518,14 +582,10 @@ export default async function handler(req, res) {
     result.documentTitle = result.targetRole + " — Tailored Resume";
 
     if (retainedBullets === 0) {
-      const fallback = safeFallback("AI output contained no bullets with valid same-role evidence");
-      if (!fallback.experiences.length) {
-        return res.status(422).json({
-          ok: false,
-          message: "No role-specific evidence-grounded bullets could be generated for this target job"
-        });
-      }
-      return res.status(200).json({ ok: true, result: fallback, fallback: true });
+      return res.status(422).json({
+        ok: false,
+        message: "The generated resume did not meet Deep Nexivra's evidence-quality threshold. Please retry."
+      });
     }
 
     return res.status(200).json({ ok: true, result: result });
@@ -533,13 +593,10 @@ export default async function handler(req, res) {
     const reason = error && error.name === "AbortError"
       ? "tailoring request timed out"
       : (error && error.message ? error.message : "tailoring request failed");
-    const fallback = safeFallback(reason);
-    if (fallback.experiences.length) {
-      return res.status(200).json({ ok: true, result: fallback, fallback: true });
-    }
     return res.status(500).json({
       ok: false,
-      message: "Unable to generate the tailored resume: " + reason
+      message: "Unable to generate a high-quality tailored resume. Please retry.",
+      detail: reason
     });
   }
 }
