@@ -348,11 +348,24 @@ function scannerNormalize(value) {
     .trim();
 }
 
-function scannerPhrasePresent(text, phrase) {
+function scannerPhraseCount(text, phrase) {
   const needle = scannerNormalize(phrase);
-  if (!needle) return false;
+  if (!needle) return 0;
   const hay = " " + scannerNormalize(text) + " ";
-  return hay.includes(" " + needle + " ");
+  const token = " " + needle + " ";
+  let count = 0;
+  let from = 0;
+  while (true) {
+    const index = hay.indexOf(token, from);
+    if (index < 0) break;
+    count += 1;
+    from = index + token.length - 1;
+  }
+  return count;
+}
+
+function scannerPhrasePresent(text, phrase) {
+  return scannerPhraseCount(text, phrase) > 0;
 }
 
 function scannerKeywordPresent(text, item) {
@@ -367,8 +380,13 @@ function scannerModelForText(text, sourceKeywords) {
   };
   const importanceBase = {high:1.45,medium:1,low:.72};
 
+  const activeJob = String($("jobInput")?.value || latestTargetScan()?.jobSnapshot || "");
   const items = (sourceKeywords || []).map(item => {
-    const frequency = Math.max(1, Number(item.frequency || 1));
+    let derivedFrequency = scannerPhraseCount(activeJob,item?.keyword || "");
+    (item?.aliases || []).forEach(alias => {
+      derivedFrequency = Math.max(derivedFrequency,scannerPhraseCount(activeJob,alias));
+    });
+    const frequency = Math.max(1, Number(item.frequency || derivedFrequency || 1));
     const rawWeight = Number(item.points || 0) > 0
       ? 0
       : (categoryBase[item.category] || 1) *
