@@ -1220,9 +1220,10 @@ function approvedResumePayload() {
   return {
     targetRole: draft.targetRole || latestTargetScan()?.result?.role || "",
     profile: graph.profile || {},
-    summary: String(draft.professionalSummary?.text || "").trim(),
+    summary: String(draft.professionalSummary?.text || graph.profile?.professionalHeadline || "").trim(),
     skills,
     experiences: finalExperiences,
+    projects: draft.onePageMode ? (graph.projects || []).slice(0, 3) : (graph.projects || []),
     education: graph.education || [],
     certifications: graph.certifications || [],
     template: draft.template || "classic",
@@ -1250,6 +1251,17 @@ function resumePayloadToAnalysisText(resume) {
     });
   }
 
+  if ((resume.projects || []).length) {
+    lines.push("\nPROJECTS");
+    resume.projects.forEach(item => {
+      lines.push("\n" + [item.name, item.role].filter(Boolean).join(" — "));
+      if (item.description) lines.push(item.description);
+      if ((item.tools || []).length) lines.push("Tools: " + item.tools.join(" | "));
+      if ((item.skills || []).length) lines.push("Skills: " + item.skills.join(" | "));
+      (item.outcomes || []).forEach(text => lines.push("• " + text));
+    });
+  }
+
   if ((resume.education || []).length) {
     lines.push("\nEDUCATION");
     resume.education.forEach(item => {
@@ -1260,6 +1272,7 @@ function resumePayloadToAnalysisText(resume) {
         item.location,
         item.endDate
       ].filter(Boolean).join(" | "));
+      (item.details || []).forEach(text => lines.push("• " + text));
     });
   }
 
@@ -1350,6 +1363,51 @@ async function scoreCurrentTailoredResume(options = {}) {
   return result;
 }
 
+
+function boostSupportedJobTerms(draft, scan, graph) {
+  if (!draft || !scan || !graph) return draft;
+
+  const existing = new Set(
+    (draft.coreSkills || []).map(skill => normalize(skill.name || "")).filter(Boolean)
+  );
+  const evidenceRecords = graph.evidenceRecords || [];
+  const jobTerms = (scan.result?.keywords || [])
+    .map(item => String(item.keyword || "").trim())
+    .filter(term => term.length >= 3);
+
+  draft.coreSkills = draft.coreSkills || [];
+
+  jobTerms.forEach(term => {
+    const key = normalize(term);
+    if (!key || existing.has(key)) return;
+
+    const termTokens = key.split(" ").filter(token => token.length > 2);
+    if (!termTokens.length) return;
+
+    const supporting = evidenceRecords.find(record => {
+      const hay = normalize([
+        record.title,
+        record.text,
+        record.sourceSnippet
+      ].filter(Boolean).join(" "));
+      if (!hay) return false;
+      return termTokens.every(token => hay.includes(token));
+    });
+
+    if (!supporting?.evidenceId) return;
+
+    draft.coreSkills.push({
+      name: term,
+      sourceEvidenceIds: [supporting.evidenceId],
+      reason: "Exact target-job terminology is explicitly supported by uploaded resume evidence.",
+      selected: true
+    });
+    existing.add(key);
+  });
+
+  return draft;
+}
+
 function optimizationFeedbackFromAnalysis(result) {
   return {
     scores: result?.scores || {},
@@ -1374,15 +1432,23 @@ async function maximizeTailoredMatch(options = {}) {
   await ensureTailoringGraph();
 
   const targetMatch = 94;
-  const maxTailorPasses = 3;
+  const maxTailorPasses = 4;
 
-  state.tailoredResume = await requestTailoredResume();
+  state.tailoredResume = boostSupportedJobTerms(
+    await requestTailoredResume(),
+    scan,
+    ensureCareerGraphIds()
+  );
   state.applicationPackage = null;
   persist();
 
   let currentAnalysis = await scoreCurrentTailoredResume({quiet:true});
   let bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
   let bestMatch = Number(bestSnapshot.postTailorAnalysis?.match) || 0;
+  const originalMatch = Math.max(
+    0,
+    Math.min(100, Math.round(Number(scan.result?.scores?.requirementMatch) || 0))
+  );
   let passesUsed = 1;
 
   while (passesUsed < maxTailorPasses && bestMatch < targetMatch) {
@@ -1396,7 +1462,11 @@ async function maximizeTailoredMatch(options = {}) {
       "% as truthfully possible by improving supported wording, ordering, terminology, evidence placement, and ATS clarity. " +
       "Never invent missing experience or qualifications.";
 
-    const nextDraft = await requestTailoredResume(feedback);
+    const nextDraft = boostSupportedJobTerms(
+      await requestTailoredResume(feedback),
+      scan,
+      ensureCareerGraphIds()
+    );
     state.tailoredResume = nextDraft;
     state.applicationPackage = null;
     persist();
@@ -1414,6 +1484,14 @@ async function maximizeTailoredMatch(options = {}) {
       persist();
       break;
     }
+  }
+
+  if (bestMatch < originalMatch) {
+    bestSnapshot.postTailorAnalysis = Object.assign({}, bestSnapshot.postTailorAnalysis || {}, {
+      match: bestMatch,
+      belowOriginal: true,
+      originalMatch
+    });
   }
 
   state.tailoredResume = bestSnapshot;
@@ -1434,9 +1512,11 @@ async function maximizeTailoredMatch(options = {}) {
   }
 
   toast(
-    bestMatch >= targetMatch
-      ? "Tailored resume ready · " + bestMatch + "% match"
-      : "Tailored resume ready · best truthful match " + bestMatch + "%"
+    bestMatch < originalMatch
+      ? "No stronger truthful version found yet · original remains better at " + originalMatch + "%"
+      : bestMatch >= targetMatch
+        ? "Tailored resume ready · " + bestMatch + "% match"
+        : "Tailored resume ready · best truthful match " + bestMatch + "%"
   );
 
   return bestMatch;
@@ -3269,7 +3349,7 @@ $("runScan").addEventListener("click", async () => {
       state.applicationPackage = null;
     }
     primeResumePreparation(resume);
-    const result = await deepAnalyze(resume, job);
+    const result = await deepAnalyze(resume, job, {analysisMode:"tailored-resume"});
     renderScan(result);
     state.tailoredResume = null;
     state.applicationPackage = null;
