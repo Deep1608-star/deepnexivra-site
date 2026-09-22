@@ -17,6 +17,7 @@ export default async function handler(req, res) {
   const graph = body.careerGraph;
   const jobDescription = typeof body.jobDescription === "string" ? body.jobDescription.trim() : "";
   const jobAnalysis = body.jobAnalysis && typeof body.jobAnalysis === "object" ? body.jobAnalysis : {};
+  const masterResume = typeof body.masterResume === "string" ? body.masterResume.trim().slice(0, 30000) : "";
   const optimizationFeedback = body.optimizationFeedback && typeof body.optimizationFeedback === "object"
     ? body.optimizationFeedback
     : null;
@@ -231,7 +232,10 @@ export default async function handler(req, res) {
     "OPTIMIZATION FEEDBACK FROM POST-TAILOR RESCAN:",
     optimizationFeedback ? JSON.stringify(optimizationFeedback).slice(0, 12000) : "No post-tailor optimization feedback supplied.",
     "",
-    "ROLE CATALOG (metadata is immutable):",
+    "ORIGINAL RESUME TEXT (preserve relevant supported coverage; do not create claims from text that cannot be tied back to supplied evidence IDs):",
+    masterResume || "Original resume text unavailable.",
+    "",
+    "ROLE CATALOG (metadata is immutable):"
     JSON.stringify(roleCatalog.slice(0, 15)),
     "",
     "EVIDENCE CATALOG (all generated claims must cite IDs from here):",
@@ -443,8 +447,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    let attempt;
-    let fallbackReason = "";
+    let attempt = null;
+    const failureReasons = [];
 
     try {
       attempt = await callTailorModel(
@@ -452,35 +456,63 @@ export default async function handler(req, res) {
         "high",
         140000
       );
+      if (!attempt.response.ok) {
+        failureReasons.push(
+          attempt.data && attempt.data.error && attempt.data.error.message
+            ? "primary: " + attempt.data.error.message
+            : "primary model returned an error"
+        );
+        attempt = null;
+      }
     } catch (error) {
-      if (error && error.name !== "AbortError") throw error;
-      fallbackReason = "primary tailoring request timed out";
+      failureReasons.push(
+        error && error.name === "AbortError"
+          ? "primary tailoring request timed out"
+          : "primary: " + (error && error.message ? error.message : "request failed")
+      );
+      attempt = null;
+    }
+
+    if (!attempt) {
       try {
-        attempt = await callTailorModel(
+        const backup = await callTailorModel(
           process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-terra",
           "medium",
           105000
         );
-      } catch (fallbackError) {
-        const result = safeFallback(fallbackReason + "; fallback model was unavailable");
-        if (!result.experiences.length) {
-          return res.status(422).json({ ok: false, message: "No role-specific evidence was available to build a safe fallback resume" });
+        if (backup.response.ok) {
+          attempt = backup;
+        } else {
+          failureReasons.push(
+            backup.data && backup.data.error && backup.data.error.message
+              ? "backup: " + backup.data.error.message
+              : "backup model returned an error"
+          );
         }
-        return res.status(200).json({ ok: true, result: result, fallback: true });
+      } catch (fallbackError) {
+        failureReasons.push(
+          fallbackError && fallbackError.name === "AbortError"
+            ? "backup tailoring request timed out"
+            : "backup: " + (fallbackError && fallbackError.message ? fallbackError.message : "request failed")
+        );
       }
+    }
+
+    if (!attempt) {
+      const result = safeFallback(failureReasons.join("; ") || "AI tailoring models were unavailable");
+      if (!result.experiences.length) {
+        return res.status(422).json({ ok: false, message: "No role-specific evidence was available to build a safe fallback resume" });
+      }
+      return res.status(200).json({
+        ok: true,
+        result: result,
+        fallback: true,
+        fallbackReason: failureReasons.join("; ")
+      });
     }
 
     const response = attempt.response;
     const data = attempt.data;
-
-    if (!response.ok) {
-      const reason = data && data.error && data.error.message ? data.error.message : "AI tailoring request failed";
-      const result = safeFallback(reason);
-      if (!result.experiences.length) {
-        return res.status(response.status).json({ ok: false, message: reason });
-      }
-      return res.status(200).json({ ok: true, result: result, fallback: true });
-    }
 
     let outputText = data.output_text || "";
     if (!outputText && Array.isArray(data.output)) {
