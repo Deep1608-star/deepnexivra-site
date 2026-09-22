@@ -9,10 +9,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
+  if (!openAIKey()) {
+    return res.status(503).json({ ok: false, message: "OPENAI_API_KEY is not configured for this Vercel environment" });
+  }
+
   const body = req.body || {};
   const resume = body.resume;
   const jobDescription = body.jobDescription;
   const evidenceVault = Array.isArray(body.evidenceVault) ? body.evidenceVault : [];
+  const careerGraph = body.careerGraph && typeof body.careerGraph === "object" ? body.careerGraph : null;
   const analysisMode = body.analysisMode === "tailored-resume" ? "tailored-resume" : "candidate-fit";
   const referenceRequirements = Array.isArray(body.referenceRequirements)
     ? body.referenceRequirements.slice(0, 20).map(function(item) {
