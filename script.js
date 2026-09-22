@@ -1506,7 +1506,37 @@ function renderTailorEditor() {
         sourceBox.appendChild(source);
       });
 
-      card.append(top,textarea,rationale,sourceBox);
+      const suggestionBox = document.createElement("details");
+      suggestionBox.className = "bullet-suggestion-box";
+      const suggestionSummary = document.createElement("summary");
+      const altCount = (bullet.alternatives || []).length;
+      suggestionSummary.textContent = altCount
+        ? "Improve this bullet · " + altCount + (altCount === 1 ? " option" : " options")
+        : "Improvement guidance";
+      suggestionBox.appendChild(suggestionSummary);
+
+      if (bullet.improvementTip) {
+        const tip = document.createElement("p");
+        tip.className = "suggestion-tip";
+        tip.textContent = bullet.improvementTip;
+        suggestionBox.appendChild(tip);
+      }
+
+      (bullet.alternatives || []).forEach((text,index) => {
+        const option = document.createElement("div");
+        option.className = "rewrite-option";
+        const copy = document.createElement("p");
+        copy.textContent = text;
+        const use = document.createElement("button");
+        use.type = "button";
+        use.className = "suggestion-use-btn";
+        use.textContent = "Use stronger option " + (index + 1);
+        use.addEventListener("click", () => applyBulletSuggestion(exp.roleId, bullet.bulletId, text));
+        option.append(copy,use);
+        suggestionBox.appendChild(option);
+      });
+
+      card.append(top,textarea,rationale,sourceBox,suggestionBox);
       wrap.appendChild(card);
     });
     editor.appendChild(wrap);
