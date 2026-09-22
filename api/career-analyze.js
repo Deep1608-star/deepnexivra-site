@@ -14,6 +14,15 @@ export default async function handler(req, res) {
   const jobDescription = body.jobDescription;
   const evidenceVault = Array.isArray(body.evidenceVault) ? body.evidenceVault : [];
   const analysisMode = body.analysisMode === "tailored-resume" ? "tailored-resume" : "candidate-fit";
+  const referenceRequirements = Array.isArray(body.referenceRequirements)
+    ? body.referenceRequirements.slice(0, 20).map(function(item) {
+        return {
+          requirement: String(item && item.requirement || "").trim(),
+          originalStatus: String(item && item.status || "").trim(),
+          originalEvidence: String(item && item.evidence || "").trim()
+        };
+      }).filter(function(item) { return item.requirement; })
+    : [];
 
   if (!resume || !jobDescription) {
     return res.status(400).json({ ok: false, message: "Resume and job description are required" });
@@ -37,7 +46,9 @@ export default async function handler(req, res) {
     "Use transferable when related capability exists but the exact requirement is not proven.",
     "Use gap when support is missing or too weak.",
     "Do not pretend to know an employer's internal ATS score. ATS Readability is Deep Nexivra's own text-level assessment.",
-    "Identify 8-14 high-value requirements when the posting supports that many.",
+    referenceRequirements.length
+      ? "CANONICAL REQUIREMENT MODE: evaluate exactly the supplied reference requirements. Do not replace them, merge them away, or introduce a different requirement set. Return one requirement result for each reference requirement in the same order."
+      : "Identify 8-14 high-value requirements when the posting supports that many.",
     "Treat keyword presence as insufficient by itself for direct evidence.",
     "Use the Career Graph to find stronger source-backed relationships across roles, tools, achievements, education, and projects, but never treat graph structure as permission to add a claim that is not supported by candidate evidence.",
     "In evidence, paraphrase the actual supporting candidate fact.",
@@ -68,6 +79,9 @@ export default async function handler(req, res) {
   const input = [
     "TARGET JOB DESCRIPTION:",
     jobDescription,
+    "",
+    "CANONICAL REFERENCE REQUIREMENTS:",
+    referenceRequirements.length ? JSON.stringify(referenceRequirements) : "No canonical requirement list supplied; identify the important requirements from the posting.",
     "",
     "CANDIDATE RESUME:",
     resume,
@@ -220,7 +234,17 @@ export default async function handler(req, res) {
       return Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
     };
 
-    result.scores.requirementMatch = clamp(result.scores.requirementMatch);
+    const requirementItems = Array.isArray(result.requirements) ? result.requirements : [];
+    if (requirementItems.length) {
+      const coveragePoints = requirementItems.reduce(function(total, item) {
+        if (item.status === "direct") return total + 100;
+        if (item.status === "transferable") return total + 55;
+        return total;
+      }, 0);
+      result.scores.requirementMatch = clamp(coveragePoints / requirementItems.length);
+    } else {
+      result.scores.requirementMatch = clamp(result.scores.requirementMatch);
+    }
     result.scores.evidenceStrength = clamp(result.scores.evidenceStrength);
     result.scores.atsReadability = clamp(result.scores.atsReadability);
     result.scores.recruiterQuality = clamp(result.scores.recruiterQuality);
