@@ -669,3 +669,10 @@ body.simplified-product #jobInput{
 body.simplified-product #scanResults>.score-grid{display:none!important}
 body.simplified-product .result-summary{margin-top:16px}
 body.simplified-product #view-match .scanner-report-shell{margin-top:16px}
+
+.scanner-editor-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.scanner-editor-actions button{white-space:nowrap}
+@media(max-width:620px){
+  .scanner-editor-actions{width:100%;justify-content:stretch}
+  .scanner-editor-actions button{flex:1 1 calc(50% - 7px)}
+}
