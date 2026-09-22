@@ -235,6 +235,34 @@ export default async function handler(req, res) {
     }
 
     const result = JSON.parse(outputText);
+
+    if (referenceRequirements.length) {
+      const normalizeRequirement = function(value) {
+        return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      };
+      const returned = Array.isArray(result.requirements) ? result.requirements : [];
+      result.requirements = referenceRequirements.map(function(ref) {
+        const refKey = normalizeRequirement(ref.requirement);
+        const match = returned.find(function(item) {
+          const itemKey = normalizeRequirement(item && item.requirement);
+          return itemKey === refKey ||
+            (itemKey && refKey && (itemKey.includes(refKey) || refKey.includes(itemKey)));
+        });
+        if (!match) {
+          return {
+            requirement: ref.requirement,
+            status: "gap",
+            evidence: "No explicit support for this canonical requirement was found in the scored resume."
+          };
+        }
+        return {
+          requirement: ref.requirement,
+          status: match.status === "direct" || match.status === "transferable" ? match.status : "gap",
+          evidence: String(match.evidence || "")
+        };
+      });
+    }
+
     const clamp = function(n) {
       return Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
     };
