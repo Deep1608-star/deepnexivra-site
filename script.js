@@ -2679,7 +2679,18 @@ $("validateTailoredResume").addEventListener("click", async () => {
     state.tailoredResume.integrity = result;
     persist();
     renderIntegrityGate();
-    toast(result.status === "valid" ? "All accepted claims validated" : "Validation found claims that need correction");
+    if (result.status === "valid" && state.tailoredResume?.postTailorAnalysis?.stale) {
+      try {
+        await scoreCurrentTailoredResume({quiet:true});
+        renderTailorStudio();
+        toast("Claims validated · updated match " + (state.tailoredResume?.postTailorAnalysis?.match ?? "—") + "%");
+      } catch (scoreError) {
+        console.warn("Automatic re-score after validation failed:", scoreError);
+        toast("Claims validated · re-score unavailable");
+      }
+    } else {
+      toast(result.status === "valid" ? "All accepted claims validated" : "Validation found claims that need correction");
+    }
   } catch (error) {
     toast(error.message || "Validation failed");
   } finally {
