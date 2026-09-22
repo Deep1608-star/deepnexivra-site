@@ -9,6 +9,7 @@ const state = {
   resumeSource: JSON.parse(localStorage.getItem("dn_resume_source") || "null"),
   tailoredResume: JSON.parse(localStorage.getItem("dn_tailored_resume") || "null"),
   resumeVersions: JSON.parse(localStorage.getItem("dn_resume_versions") || "[]"),
+  analysisCache: JSON.parse(localStorage.getItem("dn_analysis_cache") || "{}"),
   applicationPackage: JSON.parse(localStorage.getItem("dn_application_package") || "null"),
   changeHistory: JSON.parse(localStorage.getItem("dn_change_history") || "[]"),
   historyIndex: Number(localStorage.getItem("dn_history_index") || "-1"),
@@ -40,6 +41,7 @@ function persist() {
   localStorage.setItem("dn_resume_source", JSON.stringify(state.resumeSource));
   localStorage.setItem("dn_tailored_resume", JSON.stringify(state.tailoredResume));
   localStorage.setItem("dn_resume_versions", JSON.stringify(state.resumeVersions));
+  localStorage.setItem("dn_analysis_cache", JSON.stringify(state.analysisCache));
   localStorage.setItem("dn_application_package", JSON.stringify(state.applicationPackage));
   localStorage.setItem("dn_change_history", JSON.stringify(state.changeHistory));
   localStorage.setItem("dn_history_index", String(state.historyIndex));
@@ -381,14 +383,40 @@ function scannerKeywordPresent(text, item) {
   return terms.some(term => scannerPhrasePresent(text, term));
 }
 
-function scannerModelForText(text, sourceKeywords) {
+function stableFingerprint(value = "") {
+  const text = String(value);
+  let hashA = 2166136261;
+  let hashB = 2654435761;
+  for (const char of text) {
+    const code = char.charCodeAt(0);
+    hashA ^= code;
+    hashA = Math.imul(hashA, 16777619);
+    hashB ^= code + 0x9e37;
+    hashB = Math.imul(hashB, 2246822519);
+  }
+  return text.length.toString(16) + "-" + (hashA >>> 0).toString(16) + (hashB >>> 0).toString(16);
+}
+
+function analysisCacheKey(resume, job) {
+  return stableFingerprint(scannerNormalize(resume) + "\n---JOB---\n" + scannerNormalize(job));
+}
+
+function latestScannerKeywords(scan = latestTargetScan()) {
+  return scan?.scoringModel?.keywords || scan?.result?.keywords || [];
+}
+
+function latestScannerJob(scan = latestTargetScan()) {
+  return scan?.scoringModel?.jobText || scan?.jobSnapshot || String($("jobInput")?.value || "");
+}
+
+function scannerModelForText(text, sourceKeywords, jobText = "") {
   const categoryBase = {
     hard_skill:1.55, tool:1.55, certification:1.6, qualification:1.45,
     responsibility:1.25, domain:1.15, soft_skill:.8
   };
   const importanceBase = {high:1.45,medium:1,low:.72};
 
-  const activeJob = String($("jobInput")?.value || latestTargetScan()?.jobSnapshot || "");
+  const activeJob = String(jobText || latestScannerJob() || "");
   const items = (sourceKeywords || []).map(item => {
     let derivedFrequency = scannerPhraseCount(activeJob,item?.keyword || "");
     (item?.aliases || []).forEach(alias => {
@@ -472,6 +500,12 @@ function scannerApplyScoreModel(model, options = {}) {
     if (scan?.result === state.latest) {
       scan.result = state.latest;
     }
+    if (scan?.scoringModel) {
+      scan.scoringModel.keywords = scan.scoringModel.keywords.map(item => {
+        const updated = model.items.find(candidate => scannerNormalize(candidate.keyword) === scannerNormalize(item.keyword));
+        return updated ? Object.assign({}, item, {excluded: !!updated.excluded}) : item;
+      });
+    }
     persist();
   }
 }
@@ -479,7 +513,8 @@ function scannerApplyScoreModel(model, options = {}) {
 function renderScannerKeywordReport(text) {
   const root = $("scannerKeywordReport");
   if (!root || !state.latest) return;
-  const model = scannerModelForText(text, state.latest.keywords || []);
+  const scan = latestTargetScan();
+  const model = scannerModelForText(text, latestScannerKeywords(scan), latestScannerJob(scan));
   scannerApplyScoreModel(model,{updateResult:true});
   root.innerHTML = "";
 
@@ -528,7 +563,9 @@ function renderScannerKeywordReport(text) {
     toggle.addEventListener("click", () => {
       const source = (state.latest.keywords || []).find(k => scannerNormalize(k.keyword) === scannerNormalize(item.keyword));
       if (source) source.excluded = !source.excluded;
-      const updated = scannerModelForText(scannerCurrentResumeText(), state.latest.keywords || []);
+      const frozenSource = latestScannerKeywords().find(k => scannerNormalize(k.keyword) === scannerNormalize(item.keyword));
+      if (frozenSource) frozenSource.excluded = source ? !!source.excluded : !frozenSource.excluded;
+      const updated = scannerModelForText(scannerCurrentResumeText(), latestScannerKeywords(), latestScannerJob());
       scannerApplyScoreModel(updated,{updateResult:true});
       renderScannerKeywordReport(scannerCurrentResumeText());
     });
@@ -1643,7 +1680,7 @@ async function scoreCurrentTailoredResume(options = {}) {
   const resumeText = resumePayloadToAnalysisText(resume);
   if (resumeText.length < 200) throw new Error("Tailored resume does not contain enough content to score");
 
-  const model = scannerModelForText(resumeText, scan.result?.keywords || []);
+  const model = scannerModelForText(resumeText, latestScannerKeywords(scan), latestScannerJob(scan));
   const match = model.score;
 
   state.tailoredResume.postTailorAnalysis = {
@@ -1867,9 +1904,9 @@ async function maximizeTailoredMatch(options = {}) {
   if (sourceText.length < 200) throw new Error("Resume text is too short to optimize. Your edits were kept.");
   const previousTailored = state.tailoredResume;
   const draftSnapshot = JSON.stringify(previousTailored);
-  const keywordSnapshot = JSON.stringify(scan.result?.keywords || []);
+  const keywordSnapshot = JSON.stringify(latestScannerKeywords(scan));
 
-  const sourceModel = scannerModelForText(sourceText, scan.result?.keywords || []);
+  const sourceModel = scannerModelForText(sourceText, latestScannerKeywords(scan), latestScannerJob(scan));
   const baselineMatch = sourceModel.score;
 
   const missing = sourceModel.items
@@ -1889,9 +1926,10 @@ async function maximizeTailoredMatch(options = {}) {
     instruction:"Optimize this resume against the weighted missing job terms. Preserve strong existing content. Use exact job terminology only when candidate evidence supports the same concept. Return one stronger optimized version for review."
   };
 
+  captureAutomaticResumeVersion("before Auto Optimize");
   setAutoOptimizeStage("Preparing resume...");
   const graph = await ensureTailoringGraph();
-  const candidate = boostSupportedJobTerms(
+  let candidate = boostSupportedJobTerms(
     await requestTailoredResume(feedback, {graph, sourceText}),
     scan,
     graph
@@ -1899,18 +1937,47 @@ async function maximizeTailoredMatch(options = {}) {
   setAutoOptimizeStage("Scoring optimized resume...");
   // Score without mutating or persisting active state. Failure leaves the
   // previous draft, application package, history and live editor untouched.
-  const optimizedPayload = approvedResumePayload(candidate);
+  let optimizedPayload = approvedResumePayload(candidate);
   if (!optimizedPayload) throw new Error("The optimized resume could not be scored. Your current resume was kept.");
-  const optimizedText = resumePayloadToAnalysisText(optimizedPayload);
+  let optimizedText = resumePayloadToAnalysisText(optimizedPayload);
   if (optimizedText.length < 200) throw new Error("The optimized resume is incomplete. Your current resume was kept.");
-  const optimizedModel = scannerModelForText(optimizedText, sourceModel.items);
-  const optimizedMatch = optimizedModel.score;
+  let optimizedModel = scannerModelForText(optimizedText, sourceModel.items, latestScannerJob(scan));
+  let optimizedMatch = optimizedModel.score;
+
+  if (optimizedMatch <= baselineMatch) {
+    setAutoOptimizeStage("Trying one targeted second pass...");
+    try {
+      const retryFeedback = Object.assign({}, feedback, {
+        targetMatch:Math.min(100, baselineMatch + 8),
+        instruction:"Targeted second pass: revise only the summary, skills, and specific bullets that can truthfully include the remaining supported terms. Keep every other section unchanged. Never invent evidence."
+      });
+      const retryCandidate = boostSupportedJobTerms(
+        await requestTailoredResume(retryFeedback, {graph, sourceText}),
+        scan,
+        graph
+      );
+      const retryPayload = approvedResumePayload(retryCandidate);
+      const retryText = retryPayload ? resumePayloadToAnalysisText(retryPayload) : "";
+      const retryModel = retryText.length >= 200
+        ? scannerModelForText(retryText, sourceModel.items, latestScannerJob(scan))
+        : null;
+      if (retryModel && retryModel.score > optimizedMatch) {
+        candidate = retryCandidate;
+        optimizedPayload = retryPayload;
+        optimizedText = retryText;
+        optimizedModel = retryModel;
+        optimizedMatch = retryModel.score;
+      }
+    } catch (error) {
+      console.warn("Targeted Auto Optimize retry failed", error);
+    }
+  }
 
   if (latestTargetScan() !== scan || state.tailoredResume !== previousTailored ||
       JSON.stringify(state.tailoredResume) !== draftSnapshot ||
       state.careerGraph !== graph ||
       (editor && editor.value !== editorSnapshot) ||
-      JSON.stringify(scan.result?.keywords || []) !== keywordSnapshot) {
+      JSON.stringify(latestScannerKeywords(scan)) !== keywordSnapshot) {
     setAutoOptimizeStage("Resume or scan changed — current work kept. Run Auto Optimize again.");
     toast("Your work changed during optimization. Current edits were kept.");
     return baselineMatch;
@@ -1941,6 +2008,7 @@ async function maximizeTailoredMatch(options = {}) {
   state.historyIndex = -1;
   recordTailorState("Auto optimized resume");
   persist();
+  captureAutomaticResumeVersion("after Auto Optimize");
   renderDashboard();
   renderTailoredMatchScore();
   renderScannerSuggestions();
@@ -2719,7 +2787,7 @@ function renderResumeVersions() {
     const strong = document.createElement("strong");
     strong.textContent = version.name;
     const small = document.createElement("small");
-    small.textContent = [version.targetRole, new Date(version.createdAt).toLocaleString(), version.template + " template", version.onePageMode ? "one-page" : "standard"].filter(Boolean).join(" · ");
+    small.textContent = [version.automatic ? "Automatic checkpoint" : "Saved version", version.targetRole, new Date(version.createdAt).toLocaleString(), version.template + " template", version.onePageMode ? "one-page" : "standard"].filter(Boolean).join(" · ");
     info.append(strong,small);
 
     const actions = document.createElement("div");
@@ -2727,15 +2795,23 @@ function renderResumeVersions() {
     const load = document.createElement("button");
     load.textContent = "Load";
     load.addEventListener("click", () => {
-      state.tailoredResume = JSON.parse(JSON.stringify(version.tailoredResume));
-      state.tailoredResume.versionLoaded = true;
-      state.tailoredResume.versionModified = false;
-      state.tailoredResume.versionApprovedResume = JSON.parse(JSON.stringify(version.approvedResume));
+      state.tailoredResume = version.tailoredResume ? JSON.parse(JSON.stringify(version.tailoredResume)) : null;
+      if (state.tailoredResume) {
+        state.tailoredResume.versionLoaded = true;
+        state.tailoredResume.versionModified = false;
+        state.tailoredResume.versionApprovedResume = version.approvedResume ? JSON.parse(JSON.stringify(version.approvedResume)) : null;
+      }
+      if (version.resumeText && $("scannerLiveEditor")) {
+        $("scannerLiveEditor").value = version.resumeText;
+        state.masterResume = version.resumeText;
+        state.importedResumeText = version.resumeText;
+      }
       state.applicationPackage = version.applicationPackage ? JSON.parse(JSON.stringify(version.applicationPackage)) : null;
       persist();
       renderDashboard();
+      if (version.resumeText && $("scannerLiveEditor")) $("scannerLiveEditor").value = version.resumeText;
       switchView("tailor");
-      toast("Saved resume version loaded");
+      toast(version.automatic ? "Automatic checkpoint loaded" : "Saved resume version loaded");
     });
     const docx = document.createElement("button");
     docx.textContent = "DOCX";
@@ -2755,10 +2831,38 @@ function renderResumeVersions() {
       state.resumeVersions = state.resumeVersions.filter(v => v.id !== version.id);
       persist(); renderResumeVersions(); toast("Version deleted");
     });
-    actions.append(load,docx,pdf,del);
+    actions.append(load);
+    if (version.approvedResume) actions.append(docx,pdf);
+    actions.append(del);
     row.append(info,actions);
     list.appendChild(row);
   });
+}
+
+function captureAutomaticResumeVersion(label = "Recovery checkpoint") {
+  const approved = approvedResumePayload();
+  const hasResume = approved || state.tailoredResume || scannerCurrentResumeText();
+  if (!hasResume) return;
+  const record = {
+    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    name: "Auto checkpoint · " + label,
+    automatic: true,
+    targetRole: state.tailoredResume?.targetRole || latestTargetScan()?.result?.role || "",
+    scanId: state.tailoredResume?.generatedForScanId || latestTargetScan()?.id || "",
+    createdAt: new Date().toISOString(),
+    template: state.tailoredResume?.template || "classic",
+    onePageMode: !!state.tailoredResume?.onePageMode,
+    tailoredResume: state.tailoredResume ? JSON.parse(JSON.stringify(state.tailoredResume)) : null,
+    approvedResume: approved ? JSON.parse(JSON.stringify(approved)) : null,
+    applicationPackage: state.applicationPackage ? JSON.parse(JSON.stringify(state.applicationPackage)) : null
+  };
+  record.resumeText = scannerCurrentResumeText();
+  state.resumeVersions = [record].concat(state.resumeVersions || []);
+  const automatic = state.resumeVersions.filter(version => version.automatic);
+  const keepAutomatic = new Set(automatic.slice(0, 20).map(version => version.id));
+  state.resumeVersions = state.resumeVersions.filter(version => !version.automatic || keepAutomatic.has(version.id)).slice(0, 50);
+  persist();
+  renderResumeVersions();
 }
 
 function saveCurrentResumeVersion() {
@@ -2773,6 +2877,7 @@ function saveCurrentResumeVersion() {
     targetRole: state.tailoredResume.targetRole || "",
     scanId: state.tailoredResume.generatedForScanId || "",
     createdAt: new Date().toISOString(),
+    automatic: false,
     template: state.tailoredResume.template || "classic",
     onePageMode: !!state.tailoredResume.onePageMode,
     tailoredResume: JSON.parse(JSON.stringify(state.tailoredResume)),
@@ -2916,6 +3021,7 @@ function workspaceSnapshot() {
     resumeSource: state.resumeSource,
     tailoredResume: state.tailoredResume,
     resumeVersions: state.resumeVersions,
+    analysisCache: state.analysisCache,
     applicationPackage: state.applicationPackage,
     changeHistory: state.changeHistory,
     historyIndex: state.historyIndex,
@@ -2933,6 +3039,7 @@ function restoreWorkspaceSnapshot(snapshot) {
   state.resumeSource = snapshot.resumeSource || null;
   state.tailoredResume = snapshot.tailoredResume || null;
   state.resumeVersions = Array.isArray(snapshot.resumeVersions) ? snapshot.resumeVersions : [];
+  state.analysisCache = snapshot.analysisCache && typeof snapshot.analysisCache === "object" ? snapshot.analysisCache : {};
   state.applicationPackage = snapshot.applicationPackage || null;
   state.changeHistory = Array.isArray(snapshot.changeHistory) ? snapshot.changeHistory : [];
   state.historyIndex = Number.isFinite(snapshot.historyIndex) ? snapshot.historyIndex : state.changeHistory.length - 1;
@@ -3584,6 +3691,7 @@ $("scannerLiveEditor")?.addEventListener("input", event => {
 $("applyLiveEditorResume")?.addEventListener("click", () => {
   const text = $("scannerLiveEditor").value.trim();
   if (text.length < 200) return toast("Resume text is too short");
+  captureAutomaticResumeVersion("before applying live edit");
   state.importedResumeText = text;
   state.masterResume = text;
   state.careerGraph = null;
@@ -3591,7 +3699,7 @@ $("applyLiveEditorResume")?.addEventListener("click", () => {
   const scan = latestTargetScan();
   if (scan) {
     scan.resumeSnapshot = text.slice(0,30000);
-    const model = scannerModelForText(text,scan.result?.keywords || []);
+    const model = scannerModelForText(text,latestScannerKeywords(scan),latestScannerJob(scan));
     scan.result.keywords = model.items;
     scan.result.keywordStats = {score:model.score,matched:model.matched,missing:model.missing,total:model.total,model:"weighted-keyword-v1"};
     scan.result.scores = scan.result.scores || {};
@@ -4045,6 +4153,7 @@ $("runScan").addEventListener("click", async () => {
   $("scanStatus").textContent = "Mapping requirements to evidence";
 
   try {
+    captureAutomaticResumeVersion("before new scan");
     const resumeChanged = normalize(state.masterResume || "") !== normalize(resume);
     if (resumeChanged) {
       state.masterResume = resume;
@@ -4053,18 +4162,34 @@ $("runScan").addEventListener("click", async () => {
       state.applicationPackage = null;
     }
     primeResumePreparation(resume);
-    const result = await deepAnalyze(resume, job, {analysisMode:"tailored-resume"});
-    renderScan(result);
+    const cacheKey = analysisCacheKey(resume, job);
+    const cachedAnalysis = !!state.analysisCache[cacheKey];
+    let result = cachedAnalysis ? JSON.parse(JSON.stringify(state.analysisCache[cacheKey])) : null;
+    if (!result) {
+      result = await deepAnalyze(resume, job, {analysisMode:"tailored-resume"});
+      state.analysisCache[cacheKey] = JSON.parse(JSON.stringify(result));
+      const cacheKeys = Object.keys(state.analysisCache);
+      cacheKeys.slice(0, Math.max(0, cacheKeys.length - 12)).forEach(key => delete state.analysisCache[key]);
+    }
+    const frozenModel = scannerModelForText(resume, result.keywords || [], job);
+    result.keywords = frozenModel.items;
+    result.keywordStats = {score:frozenModel.score, matched:frozenModel.matched, missing:frozenModel.missing, total:frozenModel.total, model:"weighted-keyword-v1"};
+    result.scores = Object.assign({}, result.scores, {requirementMatch:frozenModel.score});
     state.tailoredResume = null;
     state.applicationPackage = null;
-    state.scans.unshift({
+    const scanRecord = {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       createdAt:new Date().toISOString(),
       result,
       resumeSnapshot: resume.slice(0,30000),
-      jobSnapshot: job.slice(0,30000)
-    });
+      jobSnapshot: job.slice(0,30000),
+      scoringModel: {version:"weighted-keyword-v1", jobText:job.slice(0,30000), keywords:JSON.parse(JSON.stringify(frozenModel.items))},
+      analysisCacheKey: cacheKey,
+      analysisSource: cachedAnalysis ? "cache" : "server"
+    };
+    state.scans.unshift(scanRecord);
     state.scans = state.scans.slice(0,30);
+    renderScan(result);
     persist(); renderDashboard();
     $("scanStatus").textContent = "Scan complete";
     toast("Deep Scan complete");
@@ -4094,8 +4219,8 @@ $("saveApplication").addEventListener("click", () => {
 
 $("clearLocalData").addEventListener("click", () => {
   if (!confirm("Reset all Deep Nexivra local career data on this browser?")) return;
-  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume","dn_resume_versions","dn_application_package","dn_change_history","dn_history_index","dn_agent_jobs"].forEach(k => localStorage.removeItem(k));
-  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.resumeVersions = []; state.applicationPackage = null; state.changeHistory = []; state.historyIndex = -1; state.careerAgentJobs = []; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
+  ["dn_master_resume","dn_evidence","dn_scans","dn_applications","dn_career_graph","dn_resume_source","dn_tailored_resume","dn_resume_versions","dn_analysis_cache","dn_application_package","dn_change_history","dn_history_index","dn_agent_jobs"].forEach(k => localStorage.removeItem(k));
+  state.masterResume = ""; state.evidence = []; state.scans = []; state.applications = []; state.careerGraph = null; state.resumeSource = null; state.tailoredResume = null; state.resumeVersions = []; state.analysisCache = {}; state.applicationPackage = null; state.changeHistory = []; state.historyIndex = -1; state.careerAgentJobs = []; state.importedResumeText = ""; state.importedFile = null; state.latest = null;
   $("resumeInput").value = ""; $("jobInput").value = ""; $("scanResults").classList.add("hidden");
   persist(); renderDashboard(); toast("Local data reset");
 });
