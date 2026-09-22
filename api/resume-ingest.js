@@ -1,9 +1,15 @@
+function openAIKey() {
+  return String(process.env.OPENAI_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  if (!openAIKey()) {
     return res.status(503).json({ ok: false, message: "OPENAI_API_KEY is not configured for this Vercel environment" });
   }
 
@@ -217,7 +223,7 @@ export default async function handler(req, res) {
           signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + process.env.OPENAI_API_KEY
+            "Authorization": "Bearer " + openAIKey()
           },
           body: JSON.stringify({
             model: model,
