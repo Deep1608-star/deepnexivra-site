@@ -1356,6 +1356,11 @@ function renderTailoredMatchScore() {
     return;
   }
 
+  if (analysis.belowOriginal) {
+    metaEl.textContent = "Generated version is below the original · original remains the stronger resume";
+    return;
+  }
+
   metaEl.textContent = analysis.analysisSource === "local"
     ? "Generated resume vs job description · local fallback"
     : "Generated resume vs job description";
