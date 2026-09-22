@@ -474,11 +474,11 @@ body{
 body.simplified-product .sidebar{display:none!important}
 body.simplified-product .workspace{margin-left:0!important;width:100%!important;min-width:0}
 body.simplified-product .mobile-menu{display:none!important}
-body.simplified-product .topbar{left:0!important;padding-left:clamp(18px,4vw,54px);padding-right:clamp(18px,4vw,54px);grid-template-columns:auto 1fr auto;gap:24px}
+body.simplified-product .topbar{left:0!important;padding-left:clamp(18px,4vw,54px);padding-right:clamp(18px,4vw,54px);grid-template-columns:auto 1fr;gap:24px}
 body.simplified-product .topbar>div:first-of-type{min-width:max-content}
 body.simplified-product .simplified-top-copy{display:flex!important;align-items:center;justify-content:center;color:#667085;font-size:.78rem;font-weight:650;letter-spacing:.01em}
 body.simplified-product .model-pill{display:none!important}
-body.simplified-product .top-actions{justify-self:end}
+body.simplified-product .top-actions{display:none!important}
 body.simplified-product .main{max-width:1180px;margin:0 auto;padding-left:clamp(18px,4vw,42px);padding-right:clamp(18px,4vw,42px)}
 body.simplified-product .view{display:none!important}
 body.simplified-product #view-match.active,
@@ -537,7 +537,7 @@ body.simplified-product #view-tailor .resume-paper{margin-top:14px}
 body.simplified-product #view-tailor .live-edit-hint{max-width:460px}
 
 @media(max-width:820px){
-  body.simplified-product .topbar{grid-template-columns:1fr auto}
+  body.simplified-product .topbar{grid-template-columns:1fr}
   body.simplified-product .simplified-top-copy{display:none!important}
   body.simplified-product .result-summary{grid-template-columns:1fr}
   body.simplified-product .result-actions{justify-content:flex-start}
