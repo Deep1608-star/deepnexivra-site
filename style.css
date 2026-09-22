@@ -551,3 +551,12 @@ body.simplified-product #view-tailor .live-edit-hint{max-width:460px}
   body.simplified-product #view-tailor .export-actions{justify-content:stretch}
   body.simplified-product #view-tailor .export-actions button{flex:1 1 calc(50% - 8px)}
 }
+
+
+/* One-click flow: tailored output stays out of the way until generated */
+body.simplified-product #view-tailor.active:not(.has-tailored-resume){display:none!important}
+body.simplified-product #view-tailor.has-tailored-resume{display:block!important}
+body.simplified-product #view-tailor .tailor-empty{display:none!important}
+body.simplified-product .match-upload-panel .upload-zone{min-height:150px}
+body.simplified-product .match-upload-panel .upload-zone strong{font-size:.86rem}
+body.simplified-product .match-upload-panel .upload-zone small{max-width:520px}
