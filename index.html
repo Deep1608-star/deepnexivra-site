@@ -394,7 +394,11 @@
                 <textarea id="scannerLiveEditor" class="scanner-live-editor" spellcheck="true" placeholder="Your parsed resume will appear here after the scan."></textarea>
                 <div class="scanner-editor-footer">
                   <small>Score updates locally as you edit. This does not claim to reproduce any employer's private ATS algorithm.</small>
-                  <button type="button" class="secondary-btn" id="applyLiveEditorResume">Use edited resume</button>
+                  <div class="scanner-editor-actions">
+                    <button type="button" class="secondary-btn" id="applyLiveEditorResume">Use edited resume</button>
+                    <button type="button" class="secondary-btn" id="scannerExportDocx">Export DOCX</button>
+                    <button type="button" class="primary-btn" id="scannerExportPdf">Export PDF</button>
+                  </div>
                 </div>
               </article>
             </div>
