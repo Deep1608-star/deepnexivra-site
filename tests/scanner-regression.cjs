@@ -102,6 +102,12 @@ test('automatic checkpoints preserve text and retain only the newest 20',()=>{
   assert.equal(state.resumeVersions[0].resumeText,resume('Excel SQL'));
   assert.match(state.resumeVersions[0].name,/test/);
 });
+test('a fresh scan becomes active before rendering its keyword report',()=>{
+  const listenerStart=source.indexOf('$("runScan").addEventListener');
+  const listenerEnd=source.indexOf('$("saveApplication").addEventListener',listenerStart);
+  const listener=source.slice(listenerStart,listenerEnd);
+  assert.ok(listener.indexOf('state.scans.unshift(scanRecord)') < listener.indexOf('renderScan(result)'));
+});
 test('candidate below live edits is discarded, despite exceeding old draft',async()=>{
   const c=setup('Excel SQL Python');
   const previous=c.state.tailoredResume;
