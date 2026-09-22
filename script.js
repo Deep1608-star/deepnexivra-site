@@ -1834,26 +1834,26 @@ async function maximizeTailoredMatch(options = {}) {
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
 
+  setAutoOptimizeStage("Preparing resume...");
   const graph = await ensureTailoringGraph();
   const sourceText = String(scan.resumeSnapshot || state.masterResume || state.importedResumeText || "");
   const sourceModel = scannerModelForText(sourceText, scan.result?.keywords || []);
-  const originalMatch = sourceModel.score;
-  const targetMatch = 94;
+  const originalMatch = Number(scan.result?.originalKeywordScore ?? sourceModel.score) || 0;
 
-  const firstMissing = sourceModel.items
+  const missing = sourceModel.items
     .filter(item => !item.present && !item.excluded)
     .sort((a,b) => Number(b.points || 0) - Number(a.points || 0))
-    .slice(0,15);
+    .slice(0,18);
 
-  const firstFeedback = {
-    targetMatch,
-    missingSupportedTerms:firstMissing,
-    instruction:"Optimize the resume against these weighted job keywords. Surface exact job terminology only when the candidate evidence supports it. Preserve strong original content."
+  const feedback = {
+    targetMatch:94,
+    missingSupportedTerms:missing,
+    instruction:"Optimize this resume against the weighted missing job terms. Preserve strong original content. Use exact job terminology only when candidate evidence supports the same concept. Return one strong optimized version for review."
   };
 
   setAutoOptimizeStage("Writing optimized resume...");
   state.tailoredResume = boostSupportedJobTerms(
-    await requestTailoredResume(firstFeedback),
+    await requestTailoredResume(feedback),
     scan,
     graph
   );
@@ -1862,52 +1862,18 @@ async function maximizeTailoredMatch(options = {}) {
 
   setAutoOptimizeStage("Scoring optimized resume...");
   await scoreCurrentTailoredResume({quiet:true});
-  let bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
-  let bestMatch = Number(bestSnapshot.postTailorAnalysis?.match) || 0;
+  const optimizedMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
 
-  const firstOptimizedText = resumePayloadToAnalysisText(approvedResumePayload());
-  const firstOptimizedModel = scannerModelForText(firstOptimizedText, scan.result?.keywords || []);
-  const remaining = firstOptimizedModel.items
-    .filter(item => !item.present && !item.excluded)
-    .sort((a,b) => Number(b.points || 0) - Number(a.points || 0));
-
-  if (bestMatch < targetMatch && remaining.length) {
-    setAutoOptimizeStage("Improving remaining gaps...");
-    const secondFeedback = {
-      targetMatch,
-      missingSupportedTerms:remaining.slice(0,12),
-      instruction:"Second and final optimization pass. Focus on the highest-value missing terms that are genuinely supported by candidate evidence. Do not invent claims."
-    };
-
-    const secondDraft = boostSupportedJobTerms(
-      await requestTailoredResume(secondFeedback),
-      scan,
-      graph
-    );
-    state.tailoredResume = secondDraft;
-    persist();
-
-    await scoreCurrentTailoredResume({quiet:true});
-    const secondMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
-    if (secondMatch > bestMatch) {
-      bestMatch = secondMatch;
-      bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
-    } else {
-      state.tailoredResume = bestSnapshot;
-      persist();
-    }
-  }
-
-  if (bestMatch <= originalMatch) {
+  if (optimizedMatch <= originalMatch) {
     state.tailoredResume = null;
     state.applicationPackage = null;
     persist();
     renderTailorStudio();
-    toast("No stronger supported version was found. Your current resume remains at " + originalMatch + "%.");
+    setAutoOptimizeStage("Original resume remains stronger");
+    toast("This optimization did not beat your original " + originalMatch + "% score. No weaker version was kept.");
     return originalMatch;
   }
 
-  state.tailoredResume = bestSnapshot;
   const optimizedPayload = approvedResumePayload();
   if (optimizedPayload) {
     const optimizedText = resumePayloadToAnalysisText(optimizedPayload);
@@ -1915,6 +1881,7 @@ async function maximizeTailoredMatch(options = {}) {
     renderScannerKeywordReport(optimizedText);
     renderScannerChecks(optimizedText);
   }
+
   state.changeHistory = [];
   state.historyIndex = -1;
   recordTailorState("Auto optimized resume");
@@ -1923,14 +1890,13 @@ async function maximizeTailoredMatch(options = {}) {
   renderTailoredMatchScore();
   renderScannerSuggestions();
 
+  setAutoOptimizeStage("Optimization complete");
   if (switchToTailor) {
-    switchView("match");
-    setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
+    setTimeout(() => $("scannerAiPanel")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
 
-  setAutoOptimizeStage("Optimization complete");
-  toast("Auto Optimize complete · " + bestMatch + "% match");
-  return bestMatch;
+  toast("Auto Optimize complete · " + optimizedMatch + "% match");
+  return optimizedMatch;
 }
 
 function tailorBulletById(roleId, bulletId) {
