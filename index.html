@@ -379,7 +379,8 @@
               <div><span class="eyebrow">Analysis</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p></div>
               <div class="row-actions result-actions">
                 <button class="secondary-btn jump-btn" data-target="tailor">Build tailored resume</button>
-                <button class="primary-btn" id="saveApplication">Save application</button>
+                <button class="primary-btn" id="maximizeMatchFromScan">Maximize Match</button>
+                <button class="secondary-btn" id="saveApplication">Save application</button>
               </div>
             </div>
 
@@ -470,6 +471,7 @@
             <article class="metric-card"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Required for grounded generation</small></article>
             <article class="metric-card"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>
             <article class="metric-card"><span>Grounding</span><strong id="tailorGrounding">—</strong><small>Evidence-linked output</small></article>
+            <article class="metric-card match-score-card"><span>Tailored Match</span><strong id="tailoredMatchScore">—</strong><small id="tailoredMatchMeta">Generate to score vs job</small></article>
           </div>
 
           <div id="tailorEmpty" class="panel tailor-empty">
@@ -492,7 +494,8 @@
               <div class="field">
                 <label for="tailorSummary">Professional summary</label>
                 <textarea id="tailorSummary" class="summary-editor" placeholder="Generated summary"></textarea>
-                <small>Editable. Keep changes truthful and supported by your Career Graph.</small>
+                <small>Editable here or directly on the resume page. Manual changes are revalidated before export.</small>
+                <div id="tailorSummarySuggestions" class="inline-suggestions"></div>
               </div>
 
               <div class="tailor-subsection">
@@ -509,8 +512,9 @@
             <section class="tailor-output-column">
               <article class="panel tailor-toolbar">
                 <div>
-                  <span class="eyebrow">Live ATS-safe preview</span>
+                  <span class="eyebrow">Live ATS-safe editor</span>
                   <h3 id="tailorDocumentTitle">Tailored Resume</h3>
+                  <small class="live-edit-hint"><span></span> Click the summary or any bullet on the resume to edit it directly.</small>
                 </div>
                 <div class="tailor-toolbar-actions">
                   <div class="template-controls">
@@ -527,11 +531,21 @@
                     <button class="secondary-btn" id="undoTailor">Undo</button>
                     <button class="secondary-btn" id="redoTailor">Redo</button>
                     <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
+                    <button class="secondary-btn" id="rescanTailoredMatch">Re-score match</button>
+                    <button class="primary-btn" id="maximizeTailoredMatch">Maximize Match</button>
                     <button class="secondary-btn" id="saveResumeVersion">Save version</button>
                     <button class="secondary-btn" id="exportDocx">Export DOCX</button>
                     <button class="secondary-btn" id="exportPdf">Export PDF</button>
                   </div>
                 </div>
+              </article>
+
+              <article class="panel resume-coach-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Resume Coach</span><h3>High-impact improvements</h3></div>
+                  <span class="tag">Evidence-safe suggestions</span>
+                </div>
+                <div id="resumeCoachSuggestions" class="coach-suggestions empty-state">Generate a tailored resume to see recruiter and ATS improvement suggestions.</div>
               </article>
 
               <article class="resume-paper" id="tailoredResumePreview">

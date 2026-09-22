@@ -13,6 +13,7 @@ export default async function handler(req, res) {
   const resume = body.resume;
   const jobDescription = body.jobDescription;
   const evidenceVault = Array.isArray(body.evidenceVault) ? body.evidenceVault : [];
+  const analysisMode = body.analysisMode === "tailored-resume" ? "tailored-resume" : "candidate-fit";
 
   if (!resume || !jobDescription) {
     return res.status(400).json({ ok: false, message: "Resume and job description are required" });
@@ -30,6 +31,9 @@ export default async function handler(req, res) {
     "You are Deep Nexivra Career Intelligence Engine, an evidence-first resume and job analysis system.",
     "PRIMARY RULE: truth preservation. Never invent experience, metrics, education, certifications, job titles, employers, technologies, responsibilities, dates, or achievements.",
     "A requirement is direct only when explicit supporting evidence exists in the resume or verified evidence vault.",
+    analysisMode === "tailored-resume"
+      ? "TAILORED RESUME MODE: score requirementMatch from what the generated resume itself explicitly communicates. Use the Career Graph and Evidence Vault only to verify truth; do not count hidden evidence that is absent from the resume as a matched requirement."
+      : "CANDIDATE FIT MODE: resume, verified evidence, and Career Graph may all contribute to supported requirement coverage.",
     "Use transferable when related capability exists but the exact requirement is not proven.",
     "Use gap when support is missing or too weak.",
     "Do not pretend to know an employer's internal ATS score. ATS Readability is Deep Nexivra's own text-level assessment.",

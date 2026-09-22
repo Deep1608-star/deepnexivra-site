@@ -17,6 +17,9 @@ export default async function handler(req, res) {
   const graph = body.careerGraph;
   const jobDescription = typeof body.jobDescription === "string" ? body.jobDescription.trim() : "";
   const jobAnalysis = body.jobAnalysis && typeof body.jobAnalysis === "object" ? body.jobAnalysis : {};
+  const optimizationFeedback = body.optimizationFeedback && typeof body.optimizationFeedback === "object"
+    ? body.optimizationFeedback
+    : null;
 
   if (!graph || !Array.isArray(graph.experience) || !Array.isArray(graph.evidenceRecords)) {
     return res.status(400).json({ ok: false, message: "A structured Career Graph is required" });
@@ -85,7 +88,7 @@ export default async function handler(req, res) {
     additionalProperties: false,
     required: [
       "documentTitle","targetRole","professionalSummary","coreSkills",
-      "experiences","warnings","quality"
+      "experiences","optimizationSuggestions","warnings","quality"
     ],
     properties: {
       documentTitle: { type: "string" },
@@ -93,10 +96,12 @@ export default async function handler(req, res) {
       professionalSummary: {
         type: "object",
         additionalProperties: false,
-        required: ["text","sourceEvidenceIds"],
+        required: ["text","sourceEvidenceIds","alternatives","improvementTip"],
         properties: {
           text: { type: "string" },
-          sourceEvidenceIds: evidenceIdArray
+          sourceEvidenceIds: evidenceIdArray,
+          alternatives: { type: "array", items: { type: "string" }, maxItems: 2 },
+          improvementTip: { type: "string" }
         }
       },
       coreSkills: {
@@ -125,17 +130,34 @@ export default async function handler(req, res) {
               items: {
                 type: "object",
                 additionalProperties: false,
-                required: ["bulletId","text","sourceEvidenceIds","confidence","priority","rationale"],
+                required: ["bulletId","text","sourceEvidenceIds","confidence","priority","rationale","alternatives","improvementTip"],
                 properties: {
                   bulletId: { type: "string" },
                   text: { type: "string" },
                   sourceEvidenceIds: evidenceIdArray,
                   confidence: { type: "number", minimum: 0, maximum: 100 },
                   priority: { type: "number", minimum: 0, maximum: 100 },
-                  rationale: { type: "string" }
+                  rationale: { type: "string" },
+                  alternatives: { type: "array", items: { type: "string" }, maxItems: 2 },
+                  improvementTip: { type: "string" }
                 }
               }
             }
+          }
+        }
+      },
+      optimizationSuggestions: {
+        type: "array",
+        maxItems: 8,
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["section","priority","issue","recommendation"],
+          properties: {
+            section: { type: "string" },
+            priority: { type: "string", enum: ["high","medium","low"] },
+            issue: { type: "string" },
+            recommendation: { type: "string" }
           }
         }
       },
@@ -177,10 +199,19 @@ export default async function handler(req, res) {
     "- It is acceptable to omit a role from the tailored experience output when it adds little job value, but never change a role's metadata.",
     "- Core skills should be job-relevant and source-supported.",
     "- The professional summary should be 2-4 concise sentences and source-supported.",
+    "- For the summary and each bullet, provide up to 2 stronger alternatives that remain fully supported by the SAME cited evidence IDs.",
+    "- alternatives must improve clarity, job relevance, ATS retrieval, specificity, action/result structure, or recruiter scanability without adding unsupported facts.",
+    "- improvementTip should briefly explain what would make the line stronger (for example: lead with outcome, reduce filler, surface a supported tool, or move the strongest phrase earlier).",
+    "- optimizationSuggestions should identify the highest-value resume-level improvements for this target job. Focus on relevance, evidence placement, section order, missing proof, ATS clarity, and recruiter readability.",
+    "- Never suggest deception, fake metrics, title inflation, hidden keywords, unsupported credentials, or claims designed only to bypass screening.",
     "",
     "TARGETING:",
     "- Use the supplied job analysis to prioritize must-have responsibilities and proven transferable strengths.",
     "- Optimize relevance for a human recruiter and text-based ATS retrieval separately from visual design.",
+    "- Front-load the strongest supported evidence for the target role and prefer wording that a recruiter can understand in a 10-15 second first scan.",
+    "- Use important target-job terminology when and only when the evidence genuinely supports that concept.",
+    "- When OPTIMIZATION FEEDBACK is supplied, improve the resume specifically against the remaining supported gaps, missing supported terms, weak evidence placement, and recruiter/ATS weaknesses identified there.",
+    "- Never try to eliminate a true evidence gap by inventing a claim. If the candidate does not support a requirement, preserve it as a gap rather than forcing the resume toward 100%.",
     "- Do not claim knowledge of an employer's internal ATS score.",
     "",
     "Return structured data only."
@@ -192,6 +223,9 @@ export default async function handler(req, res) {
     "",
     "PREVIOUS JOB ANALYSIS:",
     JSON.stringify(jobAnalysis).slice(0, 12000),
+    "",
+    "OPTIMIZATION FEEDBACK FROM POST-TAILOR RESCAN:",
+    optimizationFeedback ? JSON.stringify(optimizationFeedback).slice(0, 12000) : "No post-tailor optimization feedback supplied.",
     "",
     "ROLE CATALOG (metadata is immutable):",
     JSON.stringify(roleCatalog.slice(0, 15)),
@@ -264,7 +298,9 @@ export default async function handler(req, res) {
             sourceEvidenceIds: [item.record.evidenceId],
             confidence: 100,
             priority: item.priority,
-            rationale: "Direct source-backed evidence retained without semantic rewriting because the AI tailoring fallback was used."
+            rationale: "Direct source-backed evidence retained without semantic rewriting because the AI tailoring fallback was used.",
+            alternatives: [],
+            improvementTip: "Keep this claim source-backed; improve phrasing only after evidence validation."
           };
         })
       });
@@ -305,9 +341,22 @@ export default async function handler(req, res) {
     return {
       documentTitle: (jobAnalysis.role || "Target Role") + " — Tailored Resume",
       targetRole: jobAnalysis.role || "Target Role",
-      professionalSummary: { text: "", sourceEvidenceIds: [] },
+      professionalSummary: {
+        text: "",
+        sourceEvidenceIds: [],
+        alternatives: [],
+        improvementTip: "Add a concise evidence-backed summary that leads with the strongest target-role proof."
+      },
       coreSkills: coreSkills,
       experiences: experiences,
+      optimizationSuggestions: [
+        {
+          section: "Experience",
+          priority: "high",
+          issue: "AI rewrite fallback was used.",
+          recommendation: "Review the highest-priority source-backed bullets and strengthen wording without adding unsupported facts."
+        }
+      ],
       warnings: [
         "AI rewrite fallback used: " + reason,
         "Fallback bullets preserve verified source evidence verbatim and can be edited, then revalidated."
@@ -345,7 +394,7 @@ export default async function handler(req, res) {
               schema: schema
             }
           },
-          max_output_tokens: 9000,
+          max_output_tokens: 10500,
           store: false
         })
       });
@@ -427,7 +476,9 @@ export default async function handler(req, res) {
           bulletId: bullet.bulletId || (exp.roleId + "-B" + String(index + 1).padStart(2, "0")),
           sourceEvidenceIds: ids,
           confidence: Math.max(0, Math.min(100, Math.round(Number(bullet.confidence) || 0))),
-          priority: Math.max(0, Math.min(100, Math.round(Number(bullet.priority) || 0)))
+          priority: Math.max(0, Math.min(100, Math.round(Number(bullet.priority) || 0))),
+          alternatives: (bullet.alternatives || []).map(function(value) { return String(value || "").trim(); }).filter(Boolean).slice(0, 2),
+          improvementTip: String(bullet.improvementTip || "").trim()
         });
       }).filter(Boolean);
       if (!bullets.length) return null;
@@ -435,6 +486,12 @@ export default async function handler(req, res) {
     }).filter(Boolean);
 
     const validIdSet = new Set(evidenceIds);
+    result.professionalSummary.alternatives = (result.professionalSummary.alternatives || []).map(function(value) {
+      return String(value || "").trim();
+    }).filter(Boolean).slice(0, 2);
+    result.professionalSummary.improvementTip = String(result.professionalSummary.improvementTip || "").trim();
+    result.optimizationSuggestions = (result.optimizationSuggestions || []).slice(0, 8);
+
     result.professionalSummary.sourceEvidenceIds = (result.professionalSummary.sourceEvidenceIds || []).filter(function(id) {
       return validIdSet.has(id);
     });
