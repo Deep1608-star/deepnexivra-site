@@ -1370,6 +1370,131 @@ async function scoreCurrentTailoredResume(options = {}) {
 }
 
 
+
+function graphEvidenceMatchesRole(record, role) {
+  if (!record || !role) return false;
+  const recordEmployer = normalize(record.employer || "");
+  const recordRole = normalize(record.role || "");
+  const roleEmployer = normalize(role.employer || "");
+  const roleTitle = normalize(role.title || "");
+
+  if (recordEmployer && roleEmployer && recordEmployer === roleEmployer) {
+    if (!recordRole || !roleTitle) return true;
+    return recordRole === roleTitle || recordRole.includes(roleTitle) || roleTitle.includes(recordRole);
+  }
+  if (!recordEmployer && recordRole && roleTitle) {
+    return recordRole === roleTitle || recordRole.includes(roleTitle) || roleTitle.includes(recordRole);
+  }
+  return false;
+}
+
+function coverageRelevance(text, scan) {
+  const target = normalize([
+    scan?.jobSnapshot || "",
+    ...(scan?.result?.keywords || []).map(item => item.keyword || ""),
+    ...(scan?.result?.requirements || []).map(item => item.requirement || "")
+  ].join(" "));
+  const terms = [...new Set(tokenize(text || ""))];
+  if (!terms.length) return 20;
+  let hits = 0;
+  terms.forEach(term => { if (target.includes(term)) hits += 1; });
+  return Math.max(20, Math.min(100, Math.round(30 + hits * 9)));
+}
+
+function buildCoverageBaselineDraft(scan, graph) {
+  graph = graph || ensureCareerGraphIds();
+  if (!scan || !graph) return null;
+
+  const experiences = [];
+  (graph.experience || []).forEach(role => {
+    const candidates = (graph.evidenceRecords || [])
+      .filter(record => graphEvidenceMatchesRole(record, role) && (record.text || record.sourceSnippet))
+      .map(record => ({
+        record,
+        priority: coverageRelevance(
+          [record.title, record.text, record.sourceSnippet].filter(Boolean).join(" "),
+          scan
+        )
+      }))
+      .sort((a,b) => b.priority - a.priority)
+      .slice(0, 8);
+
+    if (!candidates.length) return;
+
+    experiences.push({
+      roleId: role.roleId,
+      bullets: candidates.map((item,index) => ({
+        bulletId: role.roleId + "-P" + String(index + 1).padStart(2,"0"),
+        text: String(item.record.text || item.record.sourceSnippet || "").trim(),
+        sourceEvidenceIds: [item.record.evidenceId],
+        confidence: 100,
+        priority: item.priority,
+        rationale: "Preserved directly from uploaded resume evidence to protect requirement coverage.",
+        alternatives: [],
+        improvementTip: ""
+      }))
+    });
+  });
+
+  const skillRecords = (graph.evidenceRecords || [])
+    .filter(record => (record.category === "Skill" || record.category === "Tool") && record.evidenceId)
+    .map(record => ({
+      record,
+      priority: coverageRelevance([record.title, record.text].filter(Boolean).join(" "), scan)
+    }))
+    .sort((a,b) => b.priority - a.priority);
+
+  const seen = new Set();
+  const coreSkills = [];
+  skillRecords.forEach(item => {
+    const name = String(item.record.title || item.record.text || "").trim();
+    const key = normalize(name);
+    if (!name || !key || seen.has(key) || coreSkills.length >= 24) return;
+    seen.add(key);
+    coreSkills.push({
+      name,
+      sourceEvidenceIds: [item.record.evidenceId],
+      reason: "Preserved from uploaded resume evidence.",
+      selected: true
+    });
+  });
+
+  const topEvidenceIds = (graph.evidenceRecords || [])
+    .filter(record => record.evidenceId)
+    .sort((a,b) =>
+      coverageRelevance([b.title,b.text,b.sourceSnippet].filter(Boolean).join(" "), scan) -
+      coverageRelevance([a.title,a.text,a.sourceSnippet].filter(Boolean).join(" "), scan)
+    )
+    .slice(0, 3)
+    .map(record => record.evidenceId);
+
+  const baseline = {
+    documentTitle: (scan.result?.role || "Target Role") + " — Coverage-Preserving Resume",
+    targetRole: scan.result?.role || "Target Role",
+    professionalSummary: {
+      text: String(graph.profile?.professionalHeadline || "").trim(),
+      sourceEvidenceIds: topEvidenceIds,
+      alternatives: [],
+      improvementTip: ""
+    },
+    coreSkills,
+    experiences,
+    optimizationSuggestions: [],
+    warnings: ["Coverage-preserving baseline created from uploaded resume evidence."],
+    quality: {
+      groundingCoverage: experiences.length ? 100 : 0,
+      atsSafety: 95,
+      jobAlignment: 0,
+      notes: ["Preserves a broad set of source-backed evidence before further optimization."]
+    }
+  };
+
+  const hydrated = hydrateTailoredState(baseline, scan);
+  hydrated.fallbackUsed = true;
+  hydrated.coverageBaseline = true;
+  return boostSupportedJobTerms(hydrated, scan, graph);
+}
+
 function boostSupportedJobTerms(draft, scan, graph) {
   if (!draft || !scan || !graph) return draft;
 
@@ -1456,6 +1581,41 @@ async function maximizeTailoredMatch(options = {}) {
     Math.min(100, Math.round(Number(scan.result?.scores?.requirementMatch) || 0))
   );
   let passesUsed = 1;
+
+  if (bestMatch < originalMatch || bestSnapshot.fallbackUsed) {
+    const baselineDraft = buildCoverageBaselineDraft(scan, ensureCareerGraphIds());
+    if (baselineDraft?.experiences?.length) {
+      const previousSnapshot = bestSnapshot;
+      const previousAnalysis = currentAnalysis;
+      const previousMatch = bestMatch;
+
+      state.tailoredResume = baselineDraft;
+      persist();
+
+      try {
+        const baselineAnalysis = await scoreCurrentTailoredResume({quiet:true});
+        const baselineMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+        if (baselineMatch > bestMatch) {
+          bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
+          bestMatch = baselineMatch;
+          currentAnalysis = baselineAnalysis;
+        } else {
+          state.tailoredResume = previousSnapshot;
+          bestSnapshot = previousSnapshot;
+          bestMatch = previousMatch;
+          currentAnalysis = previousAnalysis;
+          persist();
+        }
+      } catch (baselineError) {
+        console.warn("Coverage baseline scoring failed:", baselineError);
+        state.tailoredResume = previousSnapshot;
+        bestSnapshot = previousSnapshot;
+        bestMatch = previousMatch;
+        currentAnalysis = previousAnalysis;
+        persist();
+      }
+    }
+  }
 
   while (passesUsed < maxTailorPasses && bestMatch < targetMatch) {
     const remaining = (currentAnalysis.requirements || []).some(item => item.status !== "direct");
