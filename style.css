@@ -664,3 +664,8 @@ body.simplified-product #jobInput{
 .scanner-suggestion-actions button{padding:6px 9px;border-radius:8px;font-size:.58rem;font-weight:750}
 @media(max-width:960px){.scanner-report-shell,.scanner-detail-grid{grid-template-columns:1fr}.scanner-score-panel{align-items:flex-start;text-align:left}.scanner-score-ring{align-self:center}.scanner-stat-row{max-width:420px}.scanner-keyword-row{grid-template-columns:26px minmax(140px,1fr) 52px 52px 58px}}
 @media(max-width:620px){.scanner-keyword-row{grid-template-columns:24px minmax(0,1fr) 52px}.scanner-keyword-metric:nth-of-type(2){display:none}.scanner-keyword-metric:nth-of-type(3){display:none}.keyword-exclude-btn{justify-self:end}.scanner-editor-footer{align-items:flex-start;flex-direction:column}}
+
+/* scanner-primary-score-cleanup */
+body.simplified-product #scanResults>.score-grid{display:none!important}
+body.simplified-product .result-summary{margin-top:16px}
+body.simplified-product #view-match .scanner-report-shell{margin-top:16px}
