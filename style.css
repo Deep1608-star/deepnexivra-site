@@ -620,7 +620,7 @@ body.simplified-product #jobInput{
 /* Scanner-first ATS architecture */
 .scanner-report-shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;margin-top:18px}
 .scanner-score-panel{display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px}
-.scanner-score-ring{--scan-score:0;width:176px;height:176px;border-radius:50%;display:grid;place-items:center;margin:14px 0;background:conic-gradient(#2563eb calc(var(--scan-score)*1%),#e8eef8 0);position:relative}
+.scanner-score-ring{--scan-score:0;width:176px;height:176px;border-radius:50%;display:grid;place-items:center;margin:14px 0;background:conic-gradient(#2563eb var(--scan-score),#e8eef8 0);position:relative}
 .scanner-score-ring:before{content:"";position:absolute;inset:13px;background:#fff;border-radius:50%;box-shadow:inset 0 0 0 1px #edf1f6}
 .scanner-score-ring>div{position:relative;z-index:1;display:flex;align-items:baseline;gap:3px}
 .scanner-score-ring strong{font-size:2.7rem;line-height:1;letter-spacing:-.07em;color:#172033}
