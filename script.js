@@ -1106,6 +1106,198 @@ function approvedResumePayload() {
 }
 
 
+
+function resumePayloadToAnalysisText(resume) {
+  if (!resume) return "";
+  const lines = [];
+  const profile = resume.profile || {};
+  if (profile.fullName) lines.push(profile.fullName);
+  if (resume.targetRole) lines.push("TARGET ROLE: " + resume.targetRole);
+  if (resume.summary) lines.push("\nPROFESSIONAL SUMMARY\n" + resume.summary);
+  if ((resume.skills || []).length) lines.push("\nCORE SKILLS\n" + resume.skills.join(" | "));
+
+  if ((resume.experiences || []).length) {
+    lines.push("\nPROFESSIONAL EXPERIENCE");
+    resume.experiences.forEach(exp => {
+      lines.push("\n" + [exp.title, exp.employer].filter(Boolean).join(" — "));
+      lines.push([exp.location, exp.startDate, exp.isCurrent ? "Present" : exp.endDate].filter(Boolean).join(" | "));
+      (exp.bullets || []).forEach(text => lines.push("• " + text));
+    });
+  }
+
+  if ((resume.education || []).length) {
+    lines.push("\nEDUCATION");
+    resume.education.forEach(item => {
+      lines.push([
+        item.credential,
+        item.field,
+        item.institution,
+        item.location,
+        item.endDate
+      ].filter(Boolean).join(" | "));
+    });
+  }
+
+  if ((resume.certifications || []).length) {
+    lines.push("\nCERTIFICATIONS");
+    resume.certifications.forEach(item => {
+      lines.push([item.name, item.issuer, item.date].filter(Boolean).join(" | "));
+    });
+  }
+
+  return lines.join("\n").trim();
+}
+
+function markTailoredMatchStale() {
+  const analysis = state.tailoredResume?.postTailorAnalysis;
+  if (!analysis) return;
+  analysis.stale = true;
+}
+
+function renderTailoredMatchScore() {
+  const scoreEl = $("tailoredMatchScore");
+  const metaEl = $("tailoredMatchMeta");
+  if (!scoreEl || !metaEl) return;
+
+  const analysis = state.tailoredResume?.postTailorAnalysis;
+  if (!analysis) {
+    scoreEl.textContent = "—";
+    metaEl.textContent = "Generate to score vs job";
+    scoreEl.className = "";
+    return;
+  }
+
+  const match = Math.max(0, Math.min(100, Math.round(Number(analysis.match) || 0)));
+  scoreEl.textContent = match + "%";
+  scoreEl.className = match >= 85 ? "match-strong" : match >= 70 ? "match-good" : "match-needs-work";
+
+  if (analysis.stale) {
+    metaEl.textContent = "Stale after edits · validate + re-score";
+    return;
+  }
+
+  const ats = Math.round(Number(analysis.scores?.atsReadability) || 0);
+  const readiness = Math.round(Number(analysis.scores?.readiness) || 0);
+  const source = analysis.analysisSource === "local" ? " · local fallback" : "";
+  metaEl.textContent = "ATS readability " + ats + "/100 · readiness " + readiness + "/100" + source;
+}
+
+async function scoreCurrentTailoredResume(options = {}) {
+  const quiet = !!options.quiet;
+  const scan = latestTargetScan();
+  const resume = approvedResumePayload();
+
+  if (!scan?.jobSnapshot) throw new Error("Target job description is missing");
+  if (!resume) throw new Error("Generate a tailored resume first");
+  if (currentIntegrityStatus() !== "valid") {
+    throw new Error("Validate resume edits before re-scoring match");
+  }
+
+  const resumeText = resumePayloadToAnalysisText(resume);
+  if (resumeText.length < 200) throw new Error("Tailored resume does not contain enough content to score");
+
+  const result = await deepAnalyze(resumeText, scan.jobSnapshot);
+  const scores = result.scores || {};
+  const match = Math.max(0, Math.min(100, Math.round(Number(scores.requirementMatch) || 0)));
+
+  state.tailoredResume.postTailorAnalysis = {
+    scannedAt: new Date().toISOString(),
+    match,
+    scores: {
+      requirementMatch: match,
+      evidenceStrength: Math.round(Number(scores.evidenceStrength) || 0),
+      atsReadability: Math.round(Number(scores.atsReadability) || 0),
+      recruiterQuality: Math.round(Number(scores.recruiterQuality) || 0),
+      readiness: Math.round(Number(scores.readiness) || 0)
+    },
+    requirements: (result.requirements || []).slice(0, 14),
+    keywords: (result.keywords || []).slice(0, 18),
+    atsIssues: (result.atsIssues || []).slice(0, 10),
+    rewrites: (result.rewrites || []).slice(0, 8),
+    nextActions: (result.nextActions || []).slice(0, 8),
+    summary: result.summary || "",
+    analysisSource: result.analysisSource || "ai",
+    stale: false
+  };
+
+  persist();
+  renderTailoredMatchScore();
+  if (!quiet) toast("Tailored resume match: " + match + "%");
+  return result;
+}
+
+function optimizationFeedbackFromAnalysis(result) {
+  return {
+    scores: result?.scores || {},
+    remainingRequirements: (result?.requirements || [])
+      .filter(item => item.status !== "direct")
+      .slice(0, 10),
+    missingSupportedTerms: (result?.keywords || [])
+      .filter(item => !item.present)
+      .slice(0, 12),
+    atsIssues: (result?.atsIssues || []).slice(0, 8),
+    rewriteOpportunities: (result?.rewrites || []).slice(0, 8),
+    nextActions: (result?.nextActions || []).slice(0, 8),
+    instruction: "Improve only where the Career Graph and cited evidence genuinely support a stronger match. Preserve true evidence gaps."
+  };
+}
+
+async function maximizeTailoredMatch(options = {}) {
+  const switchToTailor = options.switchToTailor !== false;
+  const scan = latestTargetScan();
+  const graph = ensureCareerGraphIds();
+  if (!scan) throw new Error("Run a Match Lab scan first");
+  if (!graph) throw new Error("Build your Career Graph first");
+
+  const firstDraft = await requestTailoredResume();
+  state.tailoredResume = firstDraft;
+  state.applicationPackage = null;
+  persist();
+
+  const firstAnalysis = await scoreCurrentTailoredResume({quiet:true});
+  const firstSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
+  const firstMatch = Number(firstSnapshot.postTailorAnalysis?.match) || 0;
+
+  let finalMatch = firstMatch;
+  let usedSecondPass = false;
+
+  const remaining = (firstAnalysis.requirements || []).some(item => item.status !== "direct");
+  if (firstMatch < 95 && remaining && firstAnalysis.analysisSource !== "local") {
+    const feedback = optimizationFeedbackFromAnalysis(firstAnalysis);
+    const secondDraft = await requestTailoredResume(feedback);
+    state.tailoredResume = secondDraft;
+    state.applicationPackage = null;
+    persist();
+
+    const secondAnalysis = await scoreCurrentTailoredResume({quiet:true});
+    const secondMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+
+    if (secondMatch >= firstMatch) {
+      finalMatch = secondMatch;
+      usedSecondPass = true;
+    } else {
+      state.tailoredResume = firstSnapshot;
+      finalMatch = firstMatch;
+      persist();
+    }
+  }
+
+  state.changeHistory = [];
+  state.historyIndex = -1;
+  recordTailorState(usedSecondPass ? "Auto-maximized tailored resume" : "Generated and scored tailored resume");
+  persist();
+  renderDashboard();
+  renderTailoredMatchScore();
+  if (switchToTailor) switchView("tailor");
+
+  toast(
+    (usedSecondPass ? "Maximize Match complete: " : "Best supported match: ") +
+    finalMatch + "%"
+  );
+
+  return finalMatch;
+}
+
 function tailorBulletById(roleId, bulletId) {
   const exp = (state.tailoredResume?.experiences || []).find(item => item.roleId === roleId);
   if (!exp) return null;
@@ -1619,6 +1811,7 @@ function renderTailorEditor() {
 function markTailoredDirty(reason) {
   if (!state.tailoredResume) return;
   state.tailoredResume.versionModified = true;
+  markTailoredMatchStale();
   state.tailoredResume.integrity = {
     status: "needs_review",
     checkedAt: null,
@@ -2329,6 +2522,7 @@ function renderTailorStudio() {
   $("tailorGraphStatus").textContent = graph ? ((graph.evidenceRecords || []).length + " evidence records") : "Not ready";
   $("acceptedBulletCount").textContent = countAcceptedBullets();
   $("tailorGrounding").textContent = draft?.quality?.groundingCoverage != null ? Math.round(draft.quality.groundingCoverage) + "%" : "—";
+  renderTailoredMatchScore();
 
   const empty = $("tailorEmpty");
   const workspace = $("tailorWorkspace");
