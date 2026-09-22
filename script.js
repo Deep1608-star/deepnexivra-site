@@ -2581,7 +2581,7 @@ function renderTailorStudio() {
 
   const empty = $("tailorEmpty");
   const workspace = $("tailorWorkspace");
-  const ready = !!scan && !!graph;
+  const ready = !!scan;
 
   if (!draft) {
     empty.classList.remove("hidden");
@@ -2589,11 +2589,11 @@ function renderTailorStudio() {
     const heading = empty.querySelector("h3");
     const text = empty.querySelector("p");
     if (ready) {
-      heading.textContent = "Your evidence and target job are ready.";
-      text.textContent = "Generate the first evidence-grounded version, then review each bullet before export.";
+      heading.textContent = "Your Deep Scan is ready.";
+      text.textContent = "Use Generate Tailored Resume in the result above. Deep Nexivra will prepare the supporting evidence automatically and build the strongest truthful version it can.";
     } else {
-      heading.textContent = "Run a job scan and build your Career Graph first.";
-      text.textContent = "Deep Nexivra needs both the target job and your source-backed career evidence before it will generate a tailored resume.";
+      heading.textContent = "Run a Deep Scan first.";
+      text.textContent = "Your tailored resume will appear here after you scan the current resume against a target job.";
     }
     return;
   }
