@@ -3514,6 +3514,51 @@ document.querySelectorAll(".scanner-filter").forEach(button => {
   });
 });
 
+
+async function exportScannerLiveResume(format) {
+  const text = String($("scannerLiveEditor")?.value || "").trim();
+  if (text.length < 100) throw new Error("Resume text is too short to export");
+
+  const structured = approvedResumePayload();
+  if (structured) {
+    const structuredText = resumePayloadToAnalysisText(structured);
+    if (scannerNormalize(structuredText) === scannerNormalize(text)) {
+      return exportResumePayload(format,structured,"Deep-Nexivra");
+    }
+  }
+
+  const scan = latestTargetScan();
+  const role = String(scan?.result?.role || "Resume").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"");
+  const response = await fetch("/api/export-resume", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      format,
+      rawText:text,
+      filename:"Deep-Nexivra-" + (role || "Resume")
+    })
+  });
+
+  if (!response.ok) {
+    let message = "Export failed";
+    try {
+      const data = await response.json();
+      message = data?.message || message;
+    } catch (_) {}
+    throw new Error(message);
+  }
+
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "Deep-Nexivra-" + (role || "Resume") + "." + format;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url),2000);
+}
+
 $("scannerLiveEditor")?.addEventListener("input", event => {
   clearTimeout(scannerLiveTimer);
   scannerLiveTimer = setTimeout(() => {
@@ -3546,6 +3591,39 @@ $("applyLiveEditorResume")?.addEventListener("click", () => {
   renderScannerKeywordReport(text);
   renderScannerChecks(text);
   toast("Edited resume is now the active version");
+});
+
+
+$("scannerExportDocx")?.addEventListener("click", async () => {
+  const btn = $("scannerExportDocx");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Exporting...";
+  try {
+    await exportScannerLiveResume("docx");
+    toast("DOCX exported");
+  } catch (error) {
+    toast(error.message || "DOCX export failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+$("scannerExportPdf")?.addEventListener("click", async () => {
+  const btn = $("scannerExportPdf");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Exporting...";
+  try {
+    await exportScannerLiveResume("pdf");
+    toast("PDF exported");
+  } catch (error) {
+    toast(error.message || "PDF export failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
 });
 
 $("scannerApplyAll")?.addEventListener("click", () => {
