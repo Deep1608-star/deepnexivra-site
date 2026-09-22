@@ -3477,6 +3477,62 @@ $("validateTailoredResume").addEventListener("click", async () => {
 });
 
 
+document.querySelectorAll(".scanner-filter").forEach(button => {
+  button.addEventListener("click", () => {
+    scannerKeywordFilter = button.dataset.keywordFilter || "all";
+    document.querySelectorAll(".scanner-filter").forEach(item => item.classList.toggle("active",item === button));
+    renderScannerKeywordReport(scannerCurrentResumeText());
+  });
+});
+
+$("scannerLiveEditor")?.addEventListener("input", event => {
+  clearTimeout(scannerLiveTimer);
+  scannerLiveTimer = setTimeout(() => {
+    const text = event.target.value;
+    renderScannerKeywordReport(text);
+    renderScannerChecks(text);
+  },100);
+});
+
+$("applyLiveEditorResume")?.addEventListener("click", () => {
+  const text = $("scannerLiveEditor").value.trim();
+  if (text.length < 200) return toast("Resume text is too short");
+  state.importedResumeText = text;
+  state.masterResume = text;
+  state.careerGraph = null;
+  state.tailoredResume = null;
+  const scan = latestTargetScan();
+  if (scan) {
+    scan.resumeSnapshot = text.slice(0,30000);
+    const model = scannerModelForText(text,scan.result?.keywords || []);
+    scan.result.keywords = model.items;
+    scan.result.keywordStats = {score:model.score,matched:model.matched,missing:model.missing,total:model.total,model:"weighted-keyword-v1"};
+    scan.result.scores = scan.result.scores || {};
+    scan.result.scores.requirementMatch = model.score;
+    state.latest = scan.result;
+    scannerApplyScoreModel(model);
+  }
+  persist();
+  renderDashboard();
+  renderScannerKeywordReport(text);
+  renderScannerChecks(text);
+  toast("Edited resume is now the active version");
+});
+
+$("scannerApplyAll")?.addEventListener("click", () => {
+  if (!state.tailoredResume) return;
+  (state.tailoredResume.experiences || []).forEach(exp => {
+    (exp.bullets || []).forEach(bullet => {
+      bullet.accepted = true;
+      bullet.editedText = bullet.text || bullet.editedText || "";
+    });
+  });
+  persist();
+  renderTailorStudio();
+  scheduleTailoredScannerScore();
+  toast("All supported optimized changes applied");
+});
+
 $("rescanTailoredMatch").addEventListener("click", async () => {
   const btn = $("rescanTailoredMatch");
   const old = btn.textContent;
