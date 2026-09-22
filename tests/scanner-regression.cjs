@@ -30,6 +30,8 @@ function setup(terms = 'Excel SQL') {
     state, editor, scan, saved, stages, console,
     $:id => id === 'scannerLiveEditor' ? editor : null,
     latestTargetScan:()=>scan,
+    latestScannerKeywords:(target=scan)=>target?.scoringModel?.keywords || target?.result?.keywords || [],
+    latestScannerJob:(target=scan)=>target?.scoringModel?.jobText || target?.jobSnapshot || '',
     scannerCurrentResumeText:()=>editor.value.trim(),
     ensureTailoringGraph:async()=>state.careerGraph,
     setAutoOptimizeStage:x=>stages.push(x),
@@ -38,12 +40,13 @@ function setup(terms = 'Excel SQL') {
     approvedResumePayload:(draft=state.tailoredResume)=>draft,
     resumePayloadToAnalysisText:x=>x.text,
     persist:()=>saved.push(state.tailoredResume),
+    captureAutomaticResumeVersion:()=>{},
     toast:()=>{}, renderScannerKeywordReport:()=>{},renderScannerChecks:()=>{},
     recordTailorState:()=>{}, renderDashboard:()=>{},renderTailoredMatchScore:()=>{},renderScannerSuggestions:()=>{},
     setTimeout:()=>{}
   };
   vm.createContext(c);
-  for (const name of ['scannerNormalize','scannerPhraseCount','scannerPhrasePresent','scannerKeywordPresent','scannerModelForText','maximizeTailoredMatch']) {
+  for (const name of ['scannerNormalize','scannerPhraseCount','scannerPhrasePresent','scannerKeywordPresent','stableFingerprint','analysisCacheKey','scannerModelForText','maximizeTailoredMatch']) {
     vm.runInContext(extract(source,name),c);
   }
   vm.runInContext(extract(server,'normalizeScanText','  ') + '\n' + extract(server,'phraseCount','  '),c);
@@ -69,6 +72,35 @@ test('score is repeatable, bounded, supports aliases/exclusion and ignores repet
   assert.equal(c.scannerModelForText('Excel SQL Python PowerBI.',keywords).score,100);
   assert.equal(c.scannerModelForText('Excel',[{...keywords[0]},{...keywords[1],excluded:true}]).score,100);
   assert.equal(c.scannerModelForText('',[]).score,0);
+});
+test('explicit frozen job text controls frequency even if the active job changes',()=>{
+  const c=setup();
+  c.scan.jobSnapshot='Excel only';
+  const model=c.scannerModelForText('SQL',[{keyword:'SQL',category:'hard_skill',importance:'high'}],'SQL SQL SQL');
+  assert.equal(model.items[0].frequency,3);
+  assert.equal(model.score,100);
+});
+test('analysis cache keys are deterministic and bind both resume and job',()=>{
+  const c=setup();
+  const key=c.analysisCacheKey('Resume text','Job text');
+  assert.equal(key,c.analysisCacheKey('Resume text','Job text'));
+  assert.notEqual(key,c.analysisCacheKey('Changed resume','Job text'));
+  assert.notEqual(key,c.analysisCacheKey('Resume text','Changed job'));
+});
+test('automatic checkpoints preserve text and retain only the newest 20',()=>{
+  const automatic=Array.from({length:25},(_,index)=>({id:'old-'+index,automatic:true}));
+  const state={resumeVersions:automatic,tailoredResume:{targetRole:'Analyst'},applicationPackage:null};
+  const c={
+    state, crypto:require('node:crypto').webcrypto,
+    approvedResumePayload:()=>({experiences:[]}), scannerCurrentResumeText:()=>resume('Excel SQL'),
+    latestTargetScan:()=>({id:'scan-1',result:{role:'Analyst'}}), persist:()=>{}, renderResumeVersions:()=>{}
+  };
+  vm.createContext(c);
+  vm.runInContext(extract(source,'captureAutomaticResumeVersion'),c);
+  c.captureAutomaticResumeVersion('test');
+  assert.equal(state.resumeVersions.filter(item=>item.automatic).length,20);
+  assert.equal(state.resumeVersions[0].resumeText,resume('Excel SQL'));
+  assert.match(state.resumeVersions[0].name,/test/);
 });
 test('candidate below live edits is discarded, despite exceeding old draft',async()=>{
   const c=setup('Excel SQL Python');
@@ -109,6 +141,14 @@ test('successful optimization uses live text and persists only improved candidat
   assert.equal(c.state.tailoredResume.postTailorAnalysis.match,75);
   assert.match(c.editor.value,/Excel SQL Python$/);
   assert.equal(c.saved.length,1);
+});
+test('one targeted retry can recover when the first candidate does not improve',async()=>{
+  const c=setup('Excel SQL Python');
+  let calls=0;
+  c.requestTailoredResume=async()=>({text:resume(++calls === 1 ? 'Excel SQL' : 'Excel SQL Python PowerBI')});
+  assert.equal(await c.maximizeTailoredMatch(),100);
+  assert.equal(calls,2);
+  assert.match(c.editor.value,/PowerBI$/);
 });
 test('edits made during generation are not overwritten',async()=>{
   const c=setup(); const previous=c.state.tailoredResume;
