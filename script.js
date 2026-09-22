@@ -361,11 +361,37 @@ function scannerKeywordPresent(text, item) {
 }
 
 function scannerModelForText(text, sourceKeywords) {
-  const items = (sourceKeywords || []).map(item => Object.assign({}, item, {
-    excluded: !!item.excluded,
-    present: scannerKeywordPresent(text, item),
-    points: Number(item.points || 0)
-  }));
+  const categoryBase = {
+    hard_skill:1.55, tool:1.55, certification:1.6, qualification:1.45,
+    responsibility:1.25, domain:1.15, soft_skill:.8
+  };
+  const importanceBase = {high:1.45,medium:1,low:.72};
+
+  const items = (sourceKeywords || []).map(item => {
+    const frequency = Math.max(1, Number(item.frequency || 1));
+    const rawWeight = Number(item.points || 0) > 0
+      ? 0
+      : (categoryBase[item.category] || 1) *
+        (importanceBase[item.importance] || 1) *
+        (1 + Math.min(Math.max(frequency - 1,0),5) * .2);
+    return Object.assign({}, item, {
+      excluded: !!item.excluded,
+      frequency,
+      present: scannerKeywordPresent(text, item),
+      points: Number(item.points || 0),
+      _rawWeight: rawWeight
+    });
+  });
+
+  const hasServerPoints = items.some(item => item.points > 0);
+  if (!hasServerPoints && items.length) {
+    const totalRaw = items.reduce((sum,item) => sum + item._rawWeight,0) || 1;
+    items.forEach(item => {
+      item.points = Math.max(.5, Math.round((item._rawWeight / totalRaw) * 1000) / 10);
+    });
+  }
+  items.forEach(item => delete item._rawWeight);
+
   const active = items.filter(item => !item.excluded);
   const totalPoints = active.reduce((sum,item) => sum + Number(item.points || 0), 0);
   const earnedPoints = active.reduce((sum,item) => sum + (item.present ? Number(item.points || 0) : 0), 0);
@@ -1585,44 +1611,33 @@ async function scoreCurrentTailoredResume(options = {}) {
 
   if (!scan?.jobSnapshot) throw new Error("Target job description is missing");
   if (!resume) throw new Error("Generate a tailored resume first");
-  if (currentIntegrityStatus() !== "valid") {
-    throw new Error("Validate resume edits before re-scoring match");
-  }
 
   const resumeText = resumePayloadToAnalysisText(resume);
   if (resumeText.length < 200) throw new Error("Tailored resume does not contain enough content to score");
 
-  const result = await deepAnalyze(resumeText, scan.jobSnapshot, {
-    analysisMode:"tailored-resume",
-    referenceRequirements: scan.result?.requirements || []
-  });
-  const scores = result.scores || {};
-  const match = Math.max(0, Math.min(100, Math.round(Number(scores.requirementMatch) || 0)));
+  const model = scannerModelForText(resumeText, scan.result?.keywords || []);
+  const match = model.score;
 
   state.tailoredResume.postTailorAnalysis = {
-    scannedAt: new Date().toISOString(),
+    scannedAt:new Date().toISOString(),
     match,
-    scores: {
-      requirementMatch: match,
-      evidenceStrength: Math.round(Number(scores.evidenceStrength) || 0),
-      atsReadability: Math.round(Number(scores.atsReadability) || 0),
-      recruiterQuality: Math.round(Number(scores.recruiterQuality) || 0),
-      readiness: Math.round(Number(scores.readiness) || 0)
-    },
-    requirements: (result.requirements || []).slice(0, 14),
-    keywords: (result.keywords || []).slice(0, 18),
-    atsIssues: (result.atsIssues || []).slice(0, 10),
-    rewrites: (result.rewrites || []).slice(0, 8),
-    nextActions: (result.nextActions || []).slice(0, 8),
-    summary: result.summary || "",
-    analysisSource: result.analysisSource || "ai",
-    stale: false
+    scores:{requirementMatch:match},
+    keywords:model.items,
+    summary:"Deterministic weighted keyword match against the original job scan.",
+    analysisSource:"weighted-keyword-v1",
+    stale:false,
+    validated:currentIntegrityStatus() === "valid"
   };
 
   persist();
   renderTailoredMatchScore();
   if (!quiet) toast("Tailored resume match: " + match + "%");
-  return result;
+  return {
+    scores:{requirementMatch:match},
+    keywords:model.items,
+    requirements:scan.result?.requirements || [],
+    analysisSource:"weighted-keyword-v1"
+  };
 }
 
 
@@ -1816,139 +1831,91 @@ async function maximizeTailoredMatch(options = {}) {
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
 
-  await ensureTailoringGraph();
-
+  const graph = await ensureTailoringGraph();
+  const sourceText = String(scan.resumeSnapshot || state.masterResume || state.importedResumeText || "");
+  const sourceModel = scannerModelForText(sourceText, scan.result?.keywords || []);
+  const originalMatch = sourceModel.score;
   const targetMatch = 94;
-  const maxTailorPasses = 4;
+
+  const firstMissing = sourceModel.items
+    .filter(item => !item.present && !item.excluded)
+    .sort((a,b) => Number(b.points || 0) - Number(a.points || 0))
+    .slice(0,15);
+
+  const firstFeedback = {
+    targetMatch,
+    missingSupportedTerms:firstMissing,
+    instruction:"Optimize the resume against these weighted job keywords. Surface exact job terminology only when the candidate evidence supports it. Preserve strong original content."
+  };
 
   state.tailoredResume = boostSupportedJobTerms(
-    await requestTailoredResume(),
+    await requestTailoredResume(firstFeedback),
     scan,
-    ensureCareerGraphIds()
+    graph
   );
   state.applicationPackage = null;
   persist();
 
-  let currentAnalysis = await scoreCurrentTailoredResume({quiet:true});
+  await scoreCurrentTailoredResume({quiet:true});
   let bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
   let bestMatch = Number(bestSnapshot.postTailorAnalysis?.match) || 0;
-  const originalMatch = Math.max(
-    0,
-    Math.min(100, Math.round(Number(scan.result?.scores?.requirementMatch) || 0))
-  );
-  let passesUsed = 1;
 
-  if (bestMatch < originalMatch || bestSnapshot.fallbackUsed) {
-    const baselineDraft = buildCoverageBaselineDraft(scan, ensureCareerGraphIds());
-    if (baselineDraft?.experiences?.length) {
-      const previousSnapshot = bestSnapshot;
-      const previousAnalysis = currentAnalysis;
-      const previousMatch = bestMatch;
+  const firstOptimizedText = resumePayloadToAnalysisText(approvedResumePayload());
+  const firstOptimizedModel = scannerModelForText(firstOptimizedText, scan.result?.keywords || []);
+  const remaining = firstOptimizedModel.items
+    .filter(item => !item.present && !item.excluded)
+    .sort((a,b) => Number(b.points || 0) - Number(a.points || 0));
 
-      state.tailoredResume = baselineDraft;
-      persist();
+  if (bestMatch < targetMatch && remaining.length) {
+    const secondFeedback = {
+      targetMatch,
+      missingSupportedTerms:remaining.slice(0,12),
+      instruction:"Second and final optimization pass. Focus on the highest-value missing terms that are genuinely supported by candidate evidence. Do not invent claims."
+    };
 
-      try {
-        const baselineAnalysis = await scoreCurrentTailoredResume({quiet:true});
-        const baselineMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
-        if (baselineMatch > bestMatch) {
-          bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
-          bestMatch = baselineMatch;
-          currentAnalysis = baselineAnalysis;
-        } else {
-          state.tailoredResume = previousSnapshot;
-          bestSnapshot = previousSnapshot;
-          bestMatch = previousMatch;
-          currentAnalysis = previousAnalysis;
-          persist();
-        }
-      } catch (baselineError) {
-        console.warn("Coverage baseline scoring failed:", baselineError);
-        state.tailoredResume = previousSnapshot;
-        bestSnapshot = previousSnapshot;
-        bestMatch = previousMatch;
-        currentAnalysis = previousAnalysis;
-        persist();
-      }
-    }
-  }
-
-  while (passesUsed < maxTailorPasses && bestMatch < targetMatch) {
-    const remaining = (currentAnalysis.requirements || []).some(item => item.status !== "direct");
-    if (!remaining || currentAnalysis.analysisSource === "local") break;
-
-    const feedback = optimizationFeedbackFromAnalysis(currentAnalysis);
-    feedback.targetMatch = targetMatch;
-    feedback.instruction =
-      "Push the resume as close to " + targetMatch +
-      "% as truthfully possible by improving supported wording, ordering, terminology, evidence placement, and ATS clarity. " +
-      "Never invent missing experience or qualifications.";
-
-    const nextDraft = boostSupportedJobTerms(
-      await requestTailoredResume(feedback),
+    const secondDraft = boostSupportedJobTerms(
+      await requestTailoredResume(secondFeedback),
       scan,
-      ensureCareerGraphIds()
+      graph
     );
-    state.tailoredResume = nextDraft;
-    state.applicationPackage = null;
+    state.tailoredResume = secondDraft;
     persist();
 
-    const nextAnalysis = await scoreCurrentTailoredResume({quiet:true});
-    const nextMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
-    passesUsed += 1;
-
-    if (nextMatch > bestMatch) {
-      bestMatch = nextMatch;
+    await scoreCurrentTailoredResume({quiet:true});
+    const secondMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+    if (secondMatch > bestMatch) {
+      bestMatch = secondMatch;
       bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
-      currentAnalysis = nextAnalysis;
     } else {
       state.tailoredResume = bestSnapshot;
       persist();
-      break;
     }
   }
 
   if (bestMatch <= originalMatch) {
     state.tailoredResume = null;
     state.applicationPackage = null;
-    state.changeHistory = [];
-    state.historyIndex = -1;
     persist();
-    renderDashboard();
     renderTailorStudio();
-
-    if (switchToTailor) switchView("match");
-
-    toast(
-      "No stronger truthful version was found · original resume remains best at " +
-      originalMatch + "%"
-    );
+    toast("No stronger supported version was found. Your current resume remains at " + originalMatch + "%.");
     return originalMatch;
   }
 
   state.tailoredResume = bestSnapshot;
   state.changeHistory = [];
   state.historyIndex = -1;
-  recordTailorState(
-    passesUsed > 1
-      ? "Generated and auto-optimized tailored resume"
-      : "Generated and scored tailored resume"
-  );
+  recordTailorState("Auto optimized resume");
   persist();
   renderDashboard();
   renderTailoredMatchScore();
+  renderScannerSuggestions();
 
   if (switchToTailor) {
     switchView("match");
-    setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth", block:"start"}), 60);
+    setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
 
-  toast(
-    bestMatch >= targetMatch
-      ? "Tailored resume ready · " + bestMatch + "% match"
-      : "Tailored resume ready · improved match " + bestMatch + "%"
-  );
-
+  toast("Auto Optimize complete · " + bestMatch + "% match");
   return bestMatch;
 }
 
