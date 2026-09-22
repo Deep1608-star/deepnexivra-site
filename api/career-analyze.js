@@ -286,8 +286,8 @@ export default async function handler(req, res) {
         "Authorization": "Bearer " + openAIKey()
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
-        reasoning: { effort: "high" },
+        model: process.env.OPENAI_SCAN_MODEL || process.env.OPENAI_CAREER_MODEL || "gpt-5.6-terra",
+        reasoning: { effort: "medium" },
         instructions: instructions,
         input: input,
         text: {
