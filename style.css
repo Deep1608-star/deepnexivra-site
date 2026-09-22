@@ -426,3 +426,32 @@ body{
   .guide-hero-actions{flex-direction:column}
   .guide-hero-actions button{width:100%}
 }
+
+
+/* Tailor Studio live editor + evidence-safe coaching */
+.live-edit-hint{display:block;margin-top:6px;color:#667085;font-size:.66rem;line-height:1.45}
+.live-edit-hint span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2563eb;margin-right:6px;box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+.resume-coach-panel{border-color:#dbe6fb;background:linear-gradient(180deg,#fff,#fbfdff)}
+.coach-suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.coach-suggestion{border:1px solid #e2e8f0;border-radius:12px;padding:12px;background:#fff}
+.coach-suggestion.high{border-left:3px solid #2563eb}.coach-suggestion.medium{border-left:3px solid #0f766e}.coach-suggestion.low{border-left:3px solid #94a3b8}
+.coach-suggestion-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.coach-suggestion-top strong{font-size:.72rem;color:#172033}
+.coach-priority{font-size:.56rem;text-transform:uppercase;letter-spacing:.06em;color:#667085;background:#f4f6f9;border-radius:999px;padding:4px 6px}
+.coach-issue{font-size:.66rem!important;line-height:1.45!important;margin:8px 0 0!important;color:#475467!important}
+.coach-recommendation{font-size:.66rem!important;line-height:1.5!important;margin:5px 0 0!important;color:#1d4ed8!important}
+.inline-suggestions{margin-top:7px}
+.suggestion-details,.bullet-suggestion-box{border:1px solid #dfe6ef;border-radius:10px;background:#f8fafc;padding:9px}
+.suggestion-details summary,.bullet-suggestion-box summary{cursor:pointer;color:#1d4ed8;font-size:.65rem;font-weight:750;list-style-position:inside}
+.suggestion-tip{font-size:.62rem!important;line-height:1.5!important;color:#667085!important;margin:8px 0!important}
+.rewrite-option{border-top:1px solid #e5eaf0;padding-top:8px;margin-top:8px}
+.rewrite-option p{font-size:.64rem!important;line-height:1.5!important;color:#344054!important;margin:0 0 7px!important}
+.suggestion-use-btn{border:1px solid #c8d7f5;background:#fff;color:#1d4ed8;border-radius:8px;padding:6px 8px;font-size:.59rem;font-weight:750}
+.suggestion-use-btn:hover{background:#eef4ff;border-color:#9db8ef}
+.bullet-suggestion-box{margin-top:9px;background:#fbfdff}
+.resume-live-edit{position:relative;border-radius:3px;outline:1px dashed transparent;outline-offset:3px;cursor:text;transition:outline-color .15s ease,background .15s ease}
+.resume-live-edit:hover{outline-color:#9ab7f4;background:#f5f8ff}
+.resume-live-edit:focus{outline:2px solid #4f7fe5;background:#f6f9ff;box-shadow:0 0 0 4px rgba(37,99,235,.08)}
+.resume-live-edit:focus:after{content:"Editing";position:absolute;right:0;top:-18px;background:#2563eb;color:#fff;border-radius:4px;padding:2px 5px;font:600 7px/1.2 Inter,Arial,sans-serif;letter-spacing:.02em}
+.resume-live-bullet{min-height:1em}
+@media(max-width:900px){.coach-suggestions{grid-template-columns:1fr}}
