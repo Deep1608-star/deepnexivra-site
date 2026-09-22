@@ -267,7 +267,40 @@ export default async function handler(req, res) {
       return Math.max(0, Math.min(100, Math.round(Number(n) || 0)));
     };
 
-    const requirementItems = Array.isArray(result.requirements) ? result.requirements : [];
+    let requirementItems = Array.isArray(result.requirements) ? result.requirements : [];
+
+    if (referenceRequirements.length) {
+      const normalizeRequirement = function(value) {
+        return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      };
+      const returned = requirementItems.slice();
+
+      requirementItems = referenceRequirements.map(function(reference, index) {
+        const key = normalizeRequirement(reference.requirement);
+        let matched = returned.find(function(item) {
+          return normalizeRequirement(item && item.requirement) === key;
+        });
+
+        if (!matched && returned[index]) matched = returned[index];
+
+        const status = matched && (
+          matched.status === "direct" ||
+          matched.status === "transferable" ||
+          matched.status === "gap"
+        ) ? matched.status : "gap";
+
+        return {
+          requirement: reference.requirement,
+          status: status,
+          evidence: matched && matched.evidence
+            ? String(matched.evidence)
+            : "No clear support was identified in this resume version."
+        };
+      });
+
+      result.requirements = requirementItems;
+    }
+
     if (requirementItems.length) {
       const coveragePoints = requirementItems.reduce(function(total, item) {
         if (item.status === "direct") return total + 100;
