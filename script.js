@@ -1127,7 +1127,7 @@ async function requestTailoredResume(optimizationFeedback = null) {
   const graph = await ensureTailoringGraph();
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 190000);
+  const timer = setTimeout(() => controller.abort(), 275000);
 
   try {
     const response = await fetch("/api/tailor-resume", {
@@ -1156,6 +1156,7 @@ async function requestTailoredResume(optimizationFeedback = null) {
 
     const draft = hydrateTailoredState(data.result, scan);
     draft.fallbackUsed = !!data.fallback;
+    draft.fallbackReason = String(data.fallbackReason || "");
     return draft;
   } catch (error) {
     if (error?.name === "AbortError") {
