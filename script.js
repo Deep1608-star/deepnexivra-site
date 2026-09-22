@@ -1906,6 +1906,13 @@ async function maximizeTailoredMatch(options = {}) {
   }
 
   state.tailoredResume = bestSnapshot;
+  const optimizedPayload = approvedResumePayload();
+  if (optimizedPayload) {
+    const optimizedText = resumePayloadToAnalysisText(optimizedPayload);
+    if ($("scannerLiveEditor")) $("scannerLiveEditor").value = optimizedText;
+    renderScannerKeywordReport(optimizedText);
+    renderScannerChecks(optimizedText);
+  }
   state.changeHistory = [];
   state.historyIndex = -1;
   recordTailorState("Auto optimized resume");
@@ -1976,7 +1983,17 @@ function scheduleTailoredScannerScore() {
   scannerLiveTimer = setTimeout(() => {
     if (!state.tailoredResume) return;
     scoreCurrentTailoredResume({quiet:true})
-      .then(() => { renderTailoredMatchScore(); renderScannerSuggestions(); })
+      .then(() => {
+        renderTailoredMatchScore();
+        renderScannerSuggestions();
+        const payload = approvedResumePayload();
+        if (payload) {
+          const text = resumePayloadToAnalysisText(payload);
+          if ($("scannerLiveEditor")) $("scannerLiveEditor").value = text;
+          renderScannerKeywordReport(text);
+          renderScannerChecks(text);
+        }
+      })
       .catch(error => console.warn("Live tailored score unavailable:",error));
   },140);
 }
@@ -3273,7 +3290,9 @@ function renderTailorStudio() {
 
   $("tailorTargetRole").textContent = scan?.result?.role || "No scan selected";
   if ($("currentResumeMatchInTailor")) {
-    const original = Math.max(0, Math.min(100, Math.round(Number(scan?.result?.scores?.requirementMatch) || 0)));
+    const original = Math.max(0, Math.min(100, Math.round(Number(
+      scan?.result?.originalKeywordScore ?? scan?.result?.scores?.requirementMatch
+    ) || 0)));
     $("currentResumeMatchInTailor").textContent = scan ? original + "%" : "—";
   }
   $("tailorGraphStatus").textContent = graph ? ((graph.evidenceRecords || []).length + " evidence records") : "Not ready";
