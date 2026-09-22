@@ -455,3 +455,16 @@ body{
 .resume-live-edit:focus:after{content:"Editing";position:absolute;right:0;top:-18px;background:#2563eb;color:#fff;border-radius:4px;padding:2px 5px;font:600 7px/1.2 Inter,Arial,sans-serif;letter-spacing:.02em}
 .resume-live-bullet{min-height:1em}
 @media(max-width:900px){.coach-suggestions{grid-template-columns:1fr}}
+
+
+/* Tailored Match scoring */
+.tailor-status-grid{grid-template-columns:repeat(5,1fr)}
+.match-score-card{border-color:#d7e3fb;background:linear-gradient(180deg,#ffffff,#f6f9ff)}
+.match-score-card strong{font-size:1.45rem!important}
+.match-score-card small{line-height:1.45}
+.match-strong{color:#087a55!important}
+.match-good{color:#1d4ed8!important}
+.match-needs-work{color:#9a6700!important}
+@media(max-width:1250px){.tailor-status-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.tailor-status-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.tailor-status-grid{grid-template-columns:1fr}}
