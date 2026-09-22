@@ -1400,6 +1400,7 @@ async function ensureTailoringGraph() {
 async function requestTailoredResume(optimizationFeedback = null) {
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
+  setAutoOptimizeStage("Preparing resume...");
   const graph = await ensureTailoringGraph();
 
   const controller = new AbortController();
@@ -1568,8 +1569,8 @@ function resumePayloadToAnalysisText(resume) {
 
 function markTailoredMatchStale() {
   const analysis = state.tailoredResume?.postTailorAnalysis;
-  if (!analysis) return;
-  analysis.stale = true;
+  if (analysis) analysis.stale = true;
+  scheduleTailoredScannerScore();
 }
 
 function renderTailoredMatchScore() {
@@ -1848,6 +1849,7 @@ async function maximizeTailoredMatch(options = {}) {
     instruction:"Optimize the resume against these weighted job keywords. Surface exact job terminology only when the candidate evidence supports it. Preserve strong original content."
   };
 
+  setAutoOptimizeStage("Writing optimized resume...");
   state.tailoredResume = boostSupportedJobTerms(
     await requestTailoredResume(firstFeedback),
     scan,
@@ -1856,6 +1858,7 @@ async function maximizeTailoredMatch(options = {}) {
   state.applicationPackage = null;
   persist();
 
+  setAutoOptimizeStage("Scoring optimized resume...");
   await scoreCurrentTailoredResume({quiet:true});
   let bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
   let bestMatch = Number(bestSnapshot.postTailorAnalysis?.match) || 0;
@@ -1867,6 +1870,7 @@ async function maximizeTailoredMatch(options = {}) {
     .sort((a,b) => Number(b.points || 0) - Number(a.points || 0));
 
   if (bestMatch < targetMatch && remaining.length) {
+    setAutoOptimizeStage("Improving remaining gaps...");
     const secondFeedback = {
       targetMatch,
       missingSupportedTerms:remaining.slice(0,12),
@@ -1915,6 +1919,7 @@ async function maximizeTailoredMatch(options = {}) {
     setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
 
+  setAutoOptimizeStage("Optimization complete");
   toast("Auto Optimize complete · " + bestMatch + "% match");
   return bestMatch;
 }
@@ -1966,6 +1971,84 @@ function applyBulletSuggestion(roleId, bulletId, text) {
   toast("Stronger bullet applied · validate before export");
 }
 
+function scheduleTailoredScannerScore() {
+  clearTimeout(scannerLiveTimer);
+  scannerLiveTimer = setTimeout(() => {
+    if (!state.tailoredResume) return;
+    scoreCurrentTailoredResume({quiet:true})
+      .then(() => { renderTailoredMatchScore(); renderScannerSuggestions(); })
+      .catch(error => console.warn("Live tailored score unavailable:",error));
+  },140);
+}
+
+function setAutoOptimizeStage(text) {
+  const btn = $("maximizeMatchFromScan");
+  if (btn && btn.disabled) btn.textContent = text;
+  if ($("scanStatus")) $("scanStatus").textContent = text;
+}
+
+function renderScannerSuggestions() {
+  const panel = $("scannerAiPanel");
+  const root = $("scannerSuggestionList");
+  if (!panel || !root) return;
+  const draft = state.tailoredResume;
+  if (!draft) { panel.classList.add("hidden"); root.innerHTML = ""; return; }
+
+  const rows = [];
+  (draft.experiences || []).forEach(exp => {
+    (exp.bullets || []).forEach(bullet => {
+      const optimized = String(bullet.editedText || bullet.text || "").trim();
+      const evidence = (bullet.sourceEvidenceIds || []).map(id => evidenceById(id)).find(Boolean);
+      const original = String(evidence?.sourceSnippet || evidence?.text || "").trim();
+      if (!optimized) return;
+      if (original && scannerNormalize(original) === scannerNormalize(optimized)) return;
+      rows.push({exp,bullet,original,optimized});
+    });
+  });
+
+  if (!rows.length) { panel.classList.add("hidden"); root.innerHTML = ""; return; }
+  panel.classList.remove("hidden");
+  root.innerHTML = "";
+
+  rows.slice(0,16).forEach(item => {
+    const card = document.createElement("div");
+    card.className = "scanner-suggestion-card";
+    const label = document.createElement("div");
+    label.className = "suggestion-label";
+    const role = roleById(item.exp.roleId);
+    label.textContent = role?.title || "Experience bullet";
+
+    const original = document.createElement("div");
+    original.className = "scanner-suggestion-original";
+    original.textContent = item.original ? "Original: " + item.original : "Original wording is preserved in the uploaded resume evidence.";
+    const optimized = document.createElement("div");
+    optimized.className = "scanner-suggestion-new";
+    optimized.textContent = "Optimized: " + item.optimized;
+
+    const actions = document.createElement("div");
+    actions.className = "scanner-suggestion-actions";
+    const keep = document.createElement("button");
+    keep.type = "button"; keep.className = "primary-btn"; keep.textContent = "Keep optimized";
+    keep.addEventListener("click",() => {
+      item.bullet.editedText = item.optimized;
+      item.bullet.accepted = true;
+      persist(); renderTailorStudio(); scheduleTailoredScannerScore();
+    });
+    const revert = document.createElement("button");
+    revert.type = "button"; revert.className = "secondary-btn"; revert.textContent = "Use original";
+    revert.disabled = !item.original;
+    revert.addEventListener("click",() => {
+      if (!item.original) return;
+      item.bullet.editedText = item.original;
+      item.bullet.accepted = true;
+      markTailoredDirty("Reverted an optimized bullet to its uploaded source wording.");
+      persist(); renderTailorStudio(); scheduleTailoredScannerScore();
+    });
+    actions.append(keep,revert);
+    card.append(label,original,optimized,actions);
+    root.appendChild(card);
+  });
+}
 function renderResumeCoach() {
   const root = $("resumeCoachSuggestions");
   const summaryRoot = $("tailorSummarySuggestions");
@@ -3230,6 +3313,7 @@ function renderTailorStudio() {
   $("onePageMode").checked = !!draft.onePageMode;
   renderTailorEditor();
   renderResumeCoach();
+  renderScannerSuggestions();
   renderTailorPreview();
   renderTailorAudit();
   renderIntegrityGate();
