@@ -615,3 +615,64 @@ body.simplified-product #jobInput{
     grid-template-columns:minmax(0,1fr)!important;
   }
 }
+
+
+/* Scanner-first ATS architecture */
+.scanner-report-shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;margin-top:18px}
+.scanner-score-panel{display:flex;flex-direction:column;align-items:center;text-align:center;padding:24px}
+.scanner-score-ring{--scan-score:0;width:176px;height:176px;border-radius:50%;display:grid;place-items:center;margin:14px 0;background:conic-gradient(#2563eb var(--scan-score),#e8eef8 0);position:relative}
+.scanner-score-ring:before{content:"";position:absolute;inset:13px;background:#fff;border-radius:50%;box-shadow:inset 0 0 0 1px #edf1f6}
+.scanner-score-ring>div{position:relative;z-index:1;display:flex;align-items:baseline;gap:3px}
+.scanner-score-ring strong{font-size:2.7rem;line-height:1;letter-spacing:-.07em;color:#172033}
+.scanner-score-ring span{font-size:.72rem;color:#667085;font-weight:700}
+.scanner-score-panel>p{font-size:.72rem;color:#667085;line-height:1.5;max-width:230px}
+.scanner-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:100%;margin-top:14px}
+.scanner-stat-row>div{padding:9px 5px;border:1px solid #e5eaf1;border-radius:10px;background:#fafbfc}
+.scanner-stat-row strong{display:block;font-size:1rem;color:#172033}
+.scanner-stat-row span{display:block;margin-top:2px;font-size:.55rem;color:#667085;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.scanner-target-note{margin-top:12px;font-size:.65rem;color:#667085}.scanner-target-note strong{color:#087a55}
+.scanner-heading{align-items:flex-start}
+.scanner-filters{display:flex;gap:6px;flex-wrap:wrap}
+.scanner-filter{border:1px solid #dce4ef;background:#fff;color:#475467;border-radius:999px;padding:6px 9px;font-size:.61rem;font-weight:750}
+.scanner-filter.active{background:#172033;color:#fff;border-color:#172033}
+.scanner-panel-copy{font-size:.67rem!important;color:#667085!important;line-height:1.5!important;margin:0 0 10px!important}
+.scanner-keyword-report{display:flex;flex-direction:column;border-top:1px solid #edf0f5}
+.scanner-keyword-row{display:grid;grid-template-columns:28px minmax(180px,1fr) 64px 64px 64px;gap:10px;align-items:center;padding:11px 2px;border-bottom:1px solid #edf0f5}
+.scanner-keyword-status{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;font-size:.65rem;font-weight:900}
+.scanner-keyword-row.found .scanner-keyword-status{background:#e7f8f0;color:#087a55}
+.scanner-keyword-row.missing .scanner-keyword-status{background:#fff3df;color:#9a6700}
+.scanner-keyword-row.excluded{opacity:.52}
+.scanner-keyword-main strong{display:block;font-size:.72rem;color:#172033}
+.scanner-keyword-main small{display:block;margin-top:2px;font-size:.56rem;color:#667085;text-transform:capitalize}
+.scanner-keyword-metric{text-align:center}.scanner-keyword-metric strong{display:block;font-size:.68rem;color:#344054}.scanner-keyword-metric span{display:block;font-size:.5rem;color:#98a2b3;text-transform:uppercase}
+.keyword-exclude-btn{border:0;background:transparent;color:#667085;font-size:.56rem;text-decoration:underline;padding:4px;cursor:pointer}
+.scanner-detail-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:16px;margin-top:16px}
+.scanner-check-row{display:grid;grid-template-columns:26px minmax(0,1fr);gap:9px;padding:9px 0;border-bottom:1px solid #edf0f5}
+.scanner-check-icon{width:21px;height:21px;display:grid;place-items:center;border-radius:50%;font-size:.6rem;font-weight:900}
+.scanner-check-row.pass .scanner-check-icon{background:#e7f8f0;color:#087a55}.scanner-check-row.warn .scanner-check-icon{background:#fff3df;color:#9a6700}
+.scanner-check-row strong{display:block;font-size:.66rem;color:#172033}.scanner-check-row small{display:block;margin-top:2px;font-size:.57rem;line-height:1.45;color:#667085}
+.live-score-pill{display:flex;align-items:center;gap:7px;background:#eef4ff;border:1px solid #d4e2fc;border-radius:999px;padding:6px 9px}.live-score-pill span{font-size:.55rem;color:#667085}.live-score-pill strong{font-size:.72rem;color:#1d4ed8}
+.scanner-live-editor{width:100%;min-height:420px;resize:vertical;border:1px solid #dce4ef;border-radius:12px;background:#fbfcfe;padding:16px;font:500 .69rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#27364a}
+.scanner-live-editor:focus{outline:2px solid rgba(37,99,235,.16);border-color:#8fb0ef;background:#fff}
+.scanner-editor-footer{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-top:10px}.scanner-editor-footer small{max-width:620px;color:#667085;font-size:.58rem;line-height:1.45}
+.scanner-ai-panel{margin-top:16px}.scanner-ai-panel.hidden{display:none!important}
+.scanner-suggestion-card{border:1px solid #dfe6ef;border-radius:12px;padding:12px;margin-top:10px;background:#fff}
+.scanner-suggestion-card .suggestion-label{font-size:.54rem;text-transform:uppercase;letter-spacing:.06em;font-weight:800;color:#667085}
+.scanner-suggestion-original,.scanner-suggestion-new{font-size:.64rem;line-height:1.5;padding:9px;border-radius:8px;margin-top:6px}
+.scanner-suggestion-original{background:#f8fafc;color:#667085}.scanner-suggestion-new{background:#f1f7ff;color:#163a72}
+.scanner-suggestion-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.scanner-suggestion-actions button{padding:6px 9px;border-radius:8px;font-size:.58rem;font-weight:750}
+@media(max-width:960px){.scanner-report-shell,.scanner-detail-grid{grid-template-columns:1fr}.scanner-score-panel{align-items:flex-start;text-align:left}.scanner-score-ring{align-self:center}.scanner-stat-row{max-width:420px}.scanner-keyword-row{grid-template-columns:26px minmax(140px,1fr) 52px 52px 58px}}
+@media(max-width:620px){.scanner-keyword-row{grid-template-columns:24px minmax(0,1fr) 52px}.scanner-keyword-metric:nth-of-type(2){display:none}.scanner-keyword-metric:nth-of-type(3){display:none}.keyword-exclude-btn{justify-self:end}.scanner-editor-footer{align-items:flex-start;flex-direction:column}}
+
+/* scanner-primary-score-cleanup */
+body.simplified-product #scanResults>.score-grid{display:none!important}
+body.simplified-product .result-summary{margin-top:16px}
+body.simplified-product #view-match .scanner-report-shell{margin-top:16px}
+
+.scanner-editor-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.scanner-editor-actions button{white-space:nowrap}
+@media(max-width:620px){
+  .scanner-editor-actions{width:100%;justify-content:stretch}
+  .scanner-editor-actions button{flex:1 1 calc(50% - 7px)}
+}

@@ -57,8 +57,12 @@ export default async function handler(req, res) {
     "Treat keyword presence as insufficient by itself for direct evidence.",
     "Use the Career Graph to find stronger source-backed relationships across roles, tools, achievements, education, and projects, but never treat graph structure as permission to add a claim that is not supported by candidate evidence.",
     "In evidence, paraphrase the actual supporting candidate fact.",
-    "Return 10-18 high-value role terms, tools, competencies, certifications, or domain phrases.",
-    "present=true only when candidate material genuinely contains or clearly supports the concept.",
+    "Return 18-30 high-value ATS search terms from the job posting. Prefer concrete tools, hard skills, certifications, qualifications, domain terms, named responsibilities, and genuinely meaningful soft skills.",
+    "For every keyword classify category as hard_skill, tool, certification, qualification, responsibility, soft_skill, or domain.",
+    "For every keyword classify importance as high, medium, or low based on whether it is a must-have, repeated core responsibility, preferred requirement, or incidental phrase.",
+    "Provide 0-4 common aliases or equivalent spellings only when they genuinely refer to the same concept.",
+    "Do not use generic filler terms such as team, work, role, candidate, company, opportunity, environment, responsibilities, or experience as keywords.",
+    "The server will calculate frequency, weighted points, and exact resume presence deterministically after extraction.",
     "Give 4-8 rewrite recommendations. When evidence is missing, make the recommendation conditional instead of inventing content.",
     "Generate 6-10 interview questions based on key responsibilities, gaps, and claims likely to be tested.",
     "Score requirementMatch from supported job requirement coverage.",
@@ -143,10 +147,16 @@ export default async function handler(req, res) {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["keyword","present"],
+          required: ["keyword","present","category","importance","aliases"],
           properties: {
             keyword: { type: "string" },
-            present: { type: "boolean" }
+            present: { type: "boolean" },
+            category: {
+              type: "string",
+              enum: ["hard_skill","tool","certification","qualification","responsibility","soft_skill","domain"]
+            },
+            importance: { type: "string", enum: ["high","medium","low"] },
+            aliases: { type: "array", items: { type: "string" }, maxItems: 4 }
           }
         }
       },
@@ -191,6 +201,83 @@ export default async function handler(req, res) {
     }
   };
 
+  function normalizeScanText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[’\']/g, "")
+      .replace(/[^a-z0-9+#.]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function phraseCount(text, phrase) {
+    const hay = " " + normalizeScanText(text) + " ";
+    const needle = normalizeScanText(phrase);
+    if (!needle) return 0;
+    const token = " " + needle + " ";
+    let count = 0;
+    let from = 0;
+    while (true) {
+      const index = hay.indexOf(token, from);
+      if (index < 0) break;
+      count += 1;
+      from = index + token.length - 1;
+    }
+    return count;
+  }
+
+  function termPresent(text, keyword, aliases) {
+    const terms = [keyword].concat(Array.isArray(aliases) ? aliases : []).filter(Boolean);
+    return terms.some(function(term) { return phraseCount(text, term) > 0; });
+  }
+
+  function keywordRawWeight(item) {
+    const categoryBase = {
+      hard_skill: 1.55, tool: 1.55, certification: 1.6, qualification: 1.45,
+      responsibility: 1.25, domain: 1.15, soft_skill: 0.8
+    };
+    const importanceBase = { high: 1.45, medium: 1, low: 0.72 };
+    const frequencyBoost = 1 + Math.min(Math.max((item.frequency || 1) - 1, 0), 5) * 0.2;
+    return (categoryBase[item.category] || 1) * (importanceBase[item.importance] || 1) * frequencyBoost;
+  }
+
+  function enrichKeywordModel(items) {
+    const seen = new Set();
+    const cleaned = (Array.isArray(items) ? items : []).map(function(item) {
+      const keyword = String(item && item.keyword || "").trim();
+      const key = normalizeScanText(keyword);
+      if (!keyword || !key || seen.has(key)) return null;
+      seen.add(key);
+      const aliases = (Array.isArray(item.aliases) ? item.aliases : [])
+        .map(function(value) { return String(value || "").trim(); })
+        .filter(Boolean)
+        .slice(0, 4);
+      let frequency = phraseCount(jobDescription, keyword);
+      aliases.forEach(function(alias) { frequency = Math.max(frequency, phraseCount(jobDescription, alias)); });
+      frequency = Math.max(1, frequency);
+      return {
+        keyword: keyword, category: item.category || "domain", importance: item.importance || "medium",
+        aliases: aliases, frequency: frequency, present: termPresent(resume, keyword, aliases),
+        excluded: false, rawWeight: 0, points: 0
+      };
+    }).filter(Boolean).slice(0, 30);
+
+    cleaned.forEach(function(item) { item.rawWeight = keywordRawWeight(item); });
+    const total = cleaned.reduce(function(sum,item) { return sum + item.rawWeight; }, 0) || 1;
+    cleaned.forEach(function(item) {
+      item.points = Math.max(0.5, Math.round((item.rawWeight / total) * 1000) / 10);
+      delete item.rawWeight;
+    });
+    return cleaned;
+  }
+
+  function keywordScore(items) {
+    const active = (items || []).filter(function(item) { return !item.excluded; });
+    const total = active.reduce(function(sum,item) { return sum + Number(item.points || 0); }, 0);
+    if (!total) return 0;
+    const earned = active.reduce(function(sum,item) { return sum + (item.present ? Number(item.points || 0) : 0); }, 0);
+    return Math.max(0, Math.min(100, Math.round((earned / total) * 100)));
+  }
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -199,8 +286,8 @@ export default async function handler(req, res) {
         "Authorization": "Bearer " + openAIKey()
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
-        reasoning: { effort: "high" },
+        model: process.env.OPENAI_SCAN_MODEL || process.env.OPENAI_CAREER_MODEL || "gpt-5.6-terra",
+        reasoning: { effort: "medium" },
         instructions: instructions,
         input: input,
         text: {
@@ -235,6 +322,14 @@ export default async function handler(req, res) {
     }
 
     const result = JSON.parse(outputText);
+    result.keywords = enrichKeywordModel(result.keywords);
+    result.keywordStats = {
+      score: keywordScore(result.keywords),
+      matched: result.keywords.filter(function(item) { return item.present; }).length,
+      missing: result.keywords.filter(function(item) { return !item.present; }).length,
+      total: result.keywords.length,
+      model: "weighted-keyword-v1"
+    };
 
     if (referenceRequirements.length) {
       const normalizeRequirement = function(value) {
@@ -301,7 +396,9 @@ export default async function handler(req, res) {
       result.requirements = requirementItems;
     }
 
-    if (requirementItems.length) {
+    if (result.keywordStats && result.keywordStats.total) {
+      result.scores.requirementMatch = clamp(result.keywordStats.score);
+    } else if (requirementItems.length) {
       const coveragePoints = requirementItems.reduce(function(total, item) {
         if (item.status === "direct") return total + 100;
         if (item.status === "transferable") return total + 55;

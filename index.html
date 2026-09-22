@@ -42,7 +42,7 @@
         <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
         <div>
           <p class="kicker">RESUME MATCH & TAILORING</p>
-          <h1 id="viewTitle">Resume Match</h1>
+          <h1 id="viewTitle">ATS Resume Scanner</h1>
         </div>
         <nav class="top-quick-nav simplified-top-copy" aria-label="Primary workflow">
           <span>Scan your resume. Tailor it. Re-score it.</span>
@@ -299,7 +299,7 @@
 
         <section class="view active" id="view-match">
           <div class="section-intro">
-            <div><span class="eyebrow">Step 1</span><h2>Match your resume to a job</h2><p>Upload your resume, paste the target job description, and run one Deep Scan. Deep Nexivra handles resume parsing and preparation automatically in the background.</p></div>
+            <div><span class="eyebrow">Smart Scan</span><h2>Scan your resume against this job</h2><p>Upload your resume and paste the exact job description. Deep Nexivra extracts the posting's important keywords, weights them by importance and repetition, and shows what your resume is missing.</p></div>
             <button class="secondary-btn hidden-support-control" id="loadMasterIntoScan">Use saved resume</button>
           </div>
 
@@ -314,8 +314,8 @@
                 <small><span id="jobChars">0</span> characters</small>
               </div>
               <div class="scan-actions">
-                <button class="primary-btn wide" id="runScan">Run Deep Scan</button>
-                <span id="scanStatus" class="scan-status">Ready</span>
+                <button class="primary-btn wide" id="runScan">Scan Resume</button>
+                <span id="scanStatus" class="scan-status">Ready to scan</span>
               </div>
             </article>
 
@@ -343,10 +343,75 @@
             <div class="panel result-summary">
               <div><span class="eyebrow">Your result</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p><p id="matchRecommendation" class="match-recommendation"></p></div>
               <div class="row-actions result-actions">
-                <button class="primary-btn generate-tailored-cta" id="maximizeMatchFromScan">Generate Tailored Resume</button>
+                <button class="primary-btn generate-tailored-cta" id="maximizeMatchFromScan">Auto Optimize Resume</button>
                 <button class="secondary-btn hidden-support-control" id="saveApplication">Save application</button>
               </div>
             </div>
+
+            <div class="scanner-report-shell">
+              <article class="panel scanner-score-panel">
+                <span class="eyebrow">Job Match Score</span>
+                <div class="scanner-score-ring" id="scannerScoreRing" style="--scan-score:0">
+                  <div><strong id="scannerScoreValue">0</strong><span>/100</span></div>
+                </div>
+                <p id="scannerScoreLabel">Run a scan to calculate your weighted keyword match.</p>
+                <div class="scanner-stat-row">
+                  <div><strong id="scannerMatchedCount">0</strong><span>Matched</span></div>
+                  <div><strong id="scannerMissingCount">0</strong><span>Missing</span></div>
+                  <div><strong id="scannerKeywordCount">0</strong><span>Keywords</span></div>
+                </div>
+                <div class="scanner-target-note">Recommended target: <strong>80+</strong></div>
+              </article>
+
+              <article class="panel scanner-keyword-panel">
+                <div class="panel-heading scanner-heading">
+                  <div><span class="eyebrow">Keyword Analysis</span><h3>What the job is asking for</h3></div>
+                  <div class="scanner-filters">
+                    <button type="button" class="scanner-filter active" data-keyword-filter="all">All</button>
+                    <button type="button" class="scanner-filter" data-keyword-filter="missing">Missing</button>
+                    <button type="button" class="scanner-filter" data-keyword-filter="found">Found</button>
+                  </div>
+                </div>
+                <p class="scanner-panel-copy">Higher-frequency and higher-importance terms are worth more points. Exclude a term if it genuinely does not apply to the role or to you.</p>
+                <div id="scannerKeywordReport" class="scanner-keyword-report"></div>
+              </article>
+            </div>
+
+            <div class="scanner-detail-grid">
+              <article class="panel scanner-checks-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Resume Checks</span><h3>ATS & recruiter checks</h3></div>
+                  <span class="tag" id="scannerCheckSummary">—</span>
+                </div>
+                <div id="scannerChecks"></div>
+              </article>
+
+              <article class="panel scanner-editor-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Live Edit</span><h3>Edit and watch the score move</h3></div>
+                  <div class="live-score-pill"><span>Live match</span><strong id="scannerLiveScore">0%</strong></div>
+                </div>
+                <textarea id="scannerLiveEditor" class="scanner-live-editor" spellcheck="true" placeholder="Your parsed resume will appear here after the scan."></textarea>
+                <div class="scanner-editor-footer">
+                  <small>Score updates locally as you edit. This does not claim to reproduce any employer's private ATS algorithm.</small>
+                  <div class="scanner-editor-actions">
+                    <button type="button" class="secondary-btn" id="applyLiveEditorResume">Use edited resume</button>
+                    <button type="button" class="secondary-btn" id="scannerExportDocx">Export DOCX</button>
+                    <button type="button" class="primary-btn" id="scannerExportPdf">Export PDF</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <article class="panel scanner-ai-panel hidden" id="scannerAiPanel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">AI Optimization</span><h3>Review optimized changes</h3></div>
+                <div class="row-actions">
+                  <button type="button" class="secondary-btn" id="scannerApplyAll">Apply all supported changes</button>
+                </div>
+              </div>
+              <div id="scannerSuggestionList"></div>
+            </article>
 
             <div class="analysis-grid simplified-hidden">
               <article class="panel"><div class="panel-heading"><h3>Requirement evidence map</h3><span class="tag">Core</span></div><div id="gapTable"></div></article>
@@ -423,7 +488,7 @@
 
         <section class="view active" id="view-tailor">
           <div class="section-intro">
-            <div><span class="eyebrow">Step 2</span><h2>Your tailored resume</h2><p>One click generates, optimizes, re-scores, and prepares the strongest truthful resume Deep Nexivra can build for this job.</p></div>
+            <div><span class="eyebrow">Optimized Resume</span><h2>Your job-targeted resume</h2><p>Review the optimized version, compare its weighted match against the original, edit anything you want, and export when ready.</p></div>
             <div class="row-actions section-actions simplified-hidden">
               <button class="secondary-btn jump-btn" data-target="match">Change target job</button>
               <button class="primary-btn" id="generateTailoredResume">Generate tailored resume</button>
@@ -432,7 +497,7 @@
 
           <div class="tailor-status-grid">
             <article class="metric-card match-score-card original-match-card"><span>Original Resume Match</span><strong id="currentResumeMatchInTailor">—</strong><small>before tailoring</small></article>
-            <article class="metric-card match-score-card"><span>Tailored Resume Match</span><strong id="tailoredMatchScore">—</strong><small id="tailoredMatchMeta">Generate to score vs job</small></article>
+            <article class="metric-card match-score-card"><span>Optimized Resume Match</span><strong id="tailoredMatchScore">—</strong><small id="tailoredMatchMeta">Auto Optimize to score vs job</small></article>
             <article class="metric-card support-metric"><span>Target role</span><strong id="tailorTargetRole">No scan selected</strong><small>Uses your latest Match Lab scan</small></article>
             <article class="metric-card support-metric"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Background evidence engine</small></article>
             <article class="metric-card support-metric"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>

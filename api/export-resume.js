@@ -314,6 +314,111 @@ async function makePdf(resume) {
   return Buffer.from(doc.output("arraybuffer"));
 }
 
+
+async function makeRawDocx(rawText) {
+  const docx = await import("docx");
+  const { Document, Packer, Paragraph, TextRun } = docx;
+  const lines = String(rawText || "").replace(/\r/g, "").split("\n");
+  const knownHeadings = new Set([
+    "professional summary","summary","core skills","skills","technical skills",
+    "professional experience","experience","work experience","employment",
+    "projects","education","certifications","certificates"
+  ]);
+
+  const children = [];
+  lines.forEach(function(line, index) {
+    const value = String(line || "").trimEnd();
+    if (!value.trim()) {
+      children.push(new Paragraph({ spacing:{after:50}, children:[] }));
+      return;
+    }
+    const trimmed = value.trim();
+    const normalized = trimmed.toLowerCase().replace(/[:]+$/,"");
+    const bullet = /^[•*\-]\s+/.test(trimmed);
+    const text = bullet ? trimmed.replace(/^[•*\-]\s+/,"") : trimmed;
+    const heading = knownHeadings.has(normalized) ||
+      (trimmed.length <= 42 && /^[A-Z][A-Z\s/&-]+$/.test(trimmed));
+    const nameLine = index === lines.findIndex(function(v) { return String(v || "").trim(); });
+
+    children.push(new Paragraph({
+      bullet: bullet ? {level:0} : undefined,
+      spacing:{after:heading ? 55 : 38,line:230},
+      children:[new TextRun({
+        text: clean(text),
+        font:"Arial",
+        size:nameLine ? 28 : heading ? 20 : 19,
+        bold:nameLine || heading
+      })]
+    }));
+  });
+
+  const document = new Document({
+    creator:"Deep Nexivra",
+    title:"Resume",
+    description:"ATS-friendly resume exported from Deep Nexivra Live Edit",
+    sections:[{
+      properties:{page:{margin:{top:620,right:620,bottom:620,left:620}}},
+      children
+    }]
+  });
+  return Packer.toBuffer(document);
+}
+
+async function makeRawPdf(rawText) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF({unit:"pt",format:"letter",orientation:"portrait"});
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 46;
+  const width = pageWidth - margin * 2;
+  let y = 52;
+
+  const knownHeadings = new Set([
+    "professional summary","summary","core skills","skills","technical skills",
+    "professional experience","experience","work experience","employment",
+    "projects","education","certifications","certificates"
+  ]);
+
+  function ensure(height) {
+    if (y + height > pageHeight - 44) {
+      doc.addPage();
+      y = 52;
+    }
+  }
+
+  const lines = String(rawText || "").replace(/\r/g, "").split("\n");
+  const firstContent = lines.findIndex(function(v) { return String(v || "").trim(); });
+
+  lines.forEach(function(line,index) {
+    const trimmed = String(line || "").trim();
+    if (!trimmed) {
+      y += 6;
+      return;
+    }
+
+    const bullet = /^[•*\-]\s+/.test(trimmed);
+    const text = bullet ? trimmed.replace(/^[•*\-]\s+/,"") : trimmed;
+    const normalized = trimmed.toLowerCase().replace(/[:]+$/,"");
+    const heading = knownHeadings.has(normalized) ||
+      (trimmed.length <= 42 && /^[A-Z][A-Z\s/&-]+$/.test(trimmed));
+    const nameLine = index === firstContent;
+
+    const fontSize = nameLine ? 15 : heading ? 10 : 9;
+    const lineHeight = nameLine ? 18 : heading ? 13 : 11.4;
+    const prefix = bullet ? "• " : "";
+    const wrapped = doc.splitTextToSize(prefix + clean(text), bullet ? width - 10 : width);
+    ensure(wrapped.length * lineHeight + 5);
+
+    doc.setFont("helvetica",(nameLine || heading) ? "bold" : "normal");
+    doc.setFontSize(fontSize);
+    doc.setTextColor(25,32,45);
+    doc.text(wrapped,bullet ? margin + 8 : margin,y);
+    y += wrapped.length * lineHeight + (heading ? 4 : 2);
+  });
+
+  return Buffer.from(doc.output("arraybuffer"));
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
@@ -322,23 +427,41 @@ export default async function handler(req, res) {
   const body = req.body || {};
   const format = body.format;
   const resume = body.resume;
-  const validationError = validateResume(resume);
+  const rawText = typeof body.rawText === "string" ? body.rawText.trim() : "";
 
-  if (validationError) {
-    return res.status(400).json({ ok: false, message: validationError });
-  }
   if (format !== "docx" && format !== "pdf") {
     return res.status(400).json({ ok: false, message: "Format must be docx or pdf" });
   }
 
   try {
-    const buffer = format === "docx" ? await makeDocx(resume) : await makePdf(resume);
+    let buffer;
+    let filename;
+
+    if (rawText) {
+      if (rawText.length < 100) {
+        return res.status(400).json({ ok:false, message:"Resume text is too short to export" });
+      }
+      if (rawText.length > 50000) {
+        return res.status(413).json({ ok:false, message:"Resume text is too large to export" });
+      }
+      buffer = format === "docx" ? await makeRawDocx(rawText) : await makeRawPdf(rawText);
+      filename = clean(body.filename || "Deep-Nexivra-Resume")
+        .replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").slice(0,100) || "Deep-Nexivra-Resume";
+    } else {
+      const validationError = validateResume(resume);
+      if (validationError) {
+        return res.status(400).json({ ok:false, message:validationError });
+      }
+      buffer = format === "docx" ? await makeDocx(resume) : await makePdf(resume);
+      filename = filenameBase(resume);
+    }
+
     const mime = format === "docx"
       ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       : "application/pdf";
 
     res.setHeader("Content-Type", mime);
-    res.setHeader("Content-Disposition", 'attachment; filename="' + filenameBase(resume) + "." + format + '"');
+    res.setHeader("Content-Disposition", 'attachment; filename="' + filename + "." + format + '"');
     res.setHeader("Cache-Control", "no-store");
     return res.status(200).send(buffer);
   } catch (error) {
