@@ -227,7 +227,7 @@ export default async function handler(req, res) {
     "OPTIMIZATION FEEDBACK FROM POST-TAILOR RESCAN:",
     optimizationFeedback ? JSON.stringify(optimizationFeedback).slice(0, 12000) : "No post-tailor optimization feedback supplied.",
     "",
-    "ROLE CATALOG (metadata is immutable):"
+    "ROLE CATALOG (metadata is immutable):",
     JSON.stringify(roleCatalog.slice(0, 15)),
     "",
     "EVIDENCE CATALOG (all generated claims must cite IDs from here):",
