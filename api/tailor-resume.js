@@ -200,13 +200,13 @@ export default async function handler(req, res) {
     "- alternatives must improve clarity, job relevance, ATS retrieval, specificity, action/result structure, or recruiter scanability without adding unsupported facts.",
     "- improvementTip should briefly explain what would make the line stronger (for example: lead with outcome, reduce filler, surface a supported tool, or move the strongest phrase earlier).",
     "- optimizationSuggestions should identify the highest-value resume-level improvements for this target job. Focus on relevance, evidence placement, section order, missing proof, ATS clarity, and recruiter readability.",
-    "- Never suggest deception, fake metrics, title inflation, hidden keywords, unsupported credentials, or claims designed only to bypass screening."
+    "- Never suggest deception, fake metrics, title inflation, hidden keywords, unsupported credentials, or claims designed only to bypass screening.",
     "",
     "TARGETING:",
     "- Use the supplied job analysis to prioritize must-have responsibilities and proven transferable strengths.",
     "- Optimize relevance for a human recruiter and text-based ATS retrieval separately from visual design.",
     "- Front-load the strongest supported evidence for the target role and prefer wording that a recruiter can understand in a 10-15 second first scan.",
-    "- Use important target-job terminology when and only when the evidence genuinely supports that concept."
+    "- Use important target-job terminology when and only when the evidence genuinely supports that concept.",
     "- Do not claim knowledge of an employer's internal ATS score.",
     "",
     "Return structured data only."
