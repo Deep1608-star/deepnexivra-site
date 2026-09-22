@@ -1675,6 +1675,7 @@ function renderTailorEditor() {
     btn.textContent = skill.name;
     btn.addEventListener("click", () => {
       skill.selected = skill.selected === false;
+      markTailoredMatchStale();
       if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
       recordTailorState("Toggle skill: " + skill.name);
       state.applicationPackage = null;
@@ -1722,6 +1723,7 @@ function renderTailorEditor() {
       reject.className = bullet.accepted === false ? "active-reject" : "";
       accept.addEventListener("click", () => {
         bullet.accepted = true;
+        markTailoredMatchStale();
         if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
         recordTailorState("Accept resume bullet");
         state.applicationPackage = null;
@@ -1729,6 +1731,7 @@ function renderTailorEditor() {
       });
       reject.addEventListener("click", () => {
         bullet.accepted = false;
+        markTailoredMatchStale();
         if (state.tailoredResume?.versionLoaded) state.tailoredResume.versionModified = true;
         recordTailorState("Reject resume bullet");
         state.applicationPackage = null;
@@ -2616,7 +2619,16 @@ $("generateTailoredResume").addEventListener("click", async () => {
     recordTailorState("Generated tailored resume");
     persist();
     renderDashboard();
-    toast(state.tailoredResume?.fallbackUsed ? "Tailored resume created in evidence-safe fallback mode" : "Tailored resume generated");
+    btn.textContent = "Scoring generated resume...";
+    try {
+      await scoreCurrentTailoredResume({quiet:true});
+      renderTailorStudio();
+      toast("Tailored resume generated · match " + (state.tailoredResume?.postTailorAnalysis?.match ?? "—") + "%");
+    } catch (scoreError) {
+      console.warn("Post-tailor scoring failed:", scoreError);
+      renderTailorStudio();
+      toast("Resume generated · match score unavailable");
+    }
   } catch (error) {
     console.error(error);
     toast(error.message || "Tailored resume generation failed");
@@ -2647,6 +2659,7 @@ $("resumeTemplate").addEventListener("change", event => {
 $("onePageMode").addEventListener("change", event => {
   if (!state.tailoredResume) return;
   state.tailoredResume.onePageMode = event.target.checked;
+  markTailoredMatchStale();
   if (state.tailoredResume.versionLoaded) state.tailoredResume.versionModified = true;
   recordTailorState(event.target.checked ? "Enable one-page mode" : "Disable one-page mode");
   state.applicationPackage = null;
@@ -2668,6 +2681,56 @@ $("validateTailoredResume").addEventListener("click", async () => {
     toast(result.status === "valid" ? "All accepted claims validated" : "Validation found claims that need correction");
   } catch (error) {
     toast(error.message || "Validation failed");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+
+$("rescanTailoredMatch").addEventListener("click", async () => {
+  const btn = $("rescanTailoredMatch");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Scoring...";
+  try {
+    await scoreCurrentTailoredResume();
+    renderTailorStudio();
+  } catch (error) {
+    toast(error.message || "Unable to score tailored resume");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+$("maximizeTailoredMatch").addEventListener("click", async () => {
+  const btn = $("maximizeTailoredMatch");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Maximizing...";
+  try {
+    await maximizeTailoredMatch({switchToTailor:false});
+    renderTailorStudio();
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Unable to maximize tailored match");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+});
+
+$("maximizeMatchFromScan").addEventListener("click", async () => {
+  const btn = $("maximizeMatchFromScan");
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Generating + optimizing...";
+  try {
+    await maximizeTailoredMatch({switchToTailor:true});
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Unable to maximize resume match");
   } finally {
     btn.disabled = false;
     btn.textContent = old;
