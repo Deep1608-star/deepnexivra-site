@@ -1696,12 +1696,22 @@ async function maximizeTailoredMatch(options = {}) {
     }
   }
 
-  if (bestMatch < originalMatch) {
-    bestSnapshot.postTailorAnalysis = Object.assign({}, bestSnapshot.postTailorAnalysis || {}, {
-      match: bestMatch,
-      belowOriginal: true,
-      originalMatch
-    });
+  if (bestMatch <= originalMatch) {
+    state.tailoredResume = null;
+    state.applicationPackage = null;
+    state.changeHistory = [];
+    state.historyIndex = -1;
+    persist();
+    renderDashboard();
+    renderTailorStudio();
+
+    if (switchToTailor) switchView("match");
+
+    toast(
+      "No stronger truthful version was found · original resume remains best at " +
+      originalMatch + "%"
+    );
+    return originalMatch;
   }
 
   state.tailoredResume = bestSnapshot;
@@ -1722,11 +1732,9 @@ async function maximizeTailoredMatch(options = {}) {
   }
 
   toast(
-    bestMatch < originalMatch
-      ? "No stronger truthful version found yet · original remains better at " + originalMatch + "%"
-      : bestMatch >= targetMatch
-        ? "Tailored resume ready · " + bestMatch + "% match"
-        : "Tailored resume ready · best truthful match " + bestMatch + "%"
+    bestMatch >= targetMatch
+      ? "Tailored resume ready · " + bestMatch + "% match"
+      : "Tailored resume ready · improved match " + bestMatch + "%"
   );
 
   return bestMatch;
