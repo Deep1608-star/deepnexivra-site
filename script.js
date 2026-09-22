@@ -4175,7 +4175,6 @@ $("runScan").addEventListener("click", async () => {
     result.keywords = frozenModel.items;
     result.keywordStats = {score:frozenModel.score, matched:frozenModel.matched, missing:frozenModel.missing, total:frozenModel.total, model:"weighted-keyword-v1"};
     result.scores = Object.assign({}, result.scores, {requirementMatch:frozenModel.score});
-    renderScan(result);
     state.tailoredResume = null;
     state.applicationPackage = null;
     const scanRecord = {
@@ -4190,6 +4189,7 @@ $("runScan").addEventListener("click", async () => {
     };
     state.scans.unshift(scanRecord);
     state.scans = state.scans.slice(0,30);
+    renderScan(result);
     persist(); renderDashboard();
     $("scanStatus").textContent = "Scan complete";
     toast("Deep Scan complete");
