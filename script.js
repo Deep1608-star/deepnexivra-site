@@ -263,6 +263,40 @@ function localAnalysis(resume, job, options = {}) {
   };
 }
 
+
+function localCanonicalAnalysis(resume, job, referenceRequirements) {
+  const base = localAnalysis(resume, job);
+  const refs = (referenceRequirements || []).filter(item => item && item.requirement);
+  if (!refs.length) return base;
+
+  const requirements = refs.map(item => {
+    const score = sentenceMatchScore(item.requirement, resume);
+    const status = score >= 62 ? "direct" : score >= 32 ? "transferable" : "gap";
+    return {
+      requirement: item.requirement,
+      status,
+      evidence: status === "direct"
+        ? "The tailored resume contains strong textual support for this requirement."
+        : status === "transferable"
+          ? "The tailored resume contains related transferable language but not full direct coverage."
+          : "This requirement is not clearly supported in the tailored resume."
+    };
+  });
+
+  const coveragePoints = requirements.reduce((total,item) => {
+    if (item.status === "direct") return total + 100;
+    if (item.status === "transferable") return total + 55;
+    return total;
+  }, 0);
+
+  base.requirements = requirements;
+  base.scores = base.scores || {};
+  base.scores.requirementMatch = requirements.length
+    ? Math.round(coveragePoints / requirements.length)
+    : 0;
+  return base;
+}
+
 async function deepAnalyze(resume, job, options = {}) {
   const vault = state.evidence.slice(0,30);
   try {
