@@ -453,8 +453,8 @@ export default async function handler(req, res) {
     try {
       attempt = await callTailorModel(
         process.env.OPENAI_TAILOR_MODEL || process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
-        "high",
-        140000
+        "medium",
+        80000
       );
       if (!attempt.response.ok) {
         failureReasons.push(
@@ -478,7 +478,7 @@ export default async function handler(req, res) {
         const backup = await callTailorModel(
           process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-terra",
           "medium",
-          105000
+          60000
         );
         if (backup.response.ok) {
           attempt = backup;
