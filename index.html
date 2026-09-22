@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f7f9fc" />
-  <title>Deep Nexivra | Career Intelligence OS</title>
+  <title>Deep Nexivra | Resume Match</title>
   <meta name="description" content="A private AI career intelligence workspace for evidence-based resume tailoring, job matching, ATS checks, application tracking, and interview preparation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,39 +22,9 @@
         </div>
       </div>
 
-      <nav class="side-nav" aria-label="Workspace navigation">
-        <button class="nav-item active" data-view="command">
-          <span class="nav-icon">⌂</span><span>Command Center</span>
-        </button>
-        <button class="nav-item" data-view="match">
-          <span class="nav-icon">◎</span><span>Match Lab</span>
-        </button>
-        <button class="nav-item" data-view="resume">
-          <span class="nav-icon">▤</span><span>Resume Studio</span>
-        </button>
-        <button class="nav-item" data-view="guides">
-          <span class="nav-icon">◫</span><span>Resume Guides</span>
-        </button>
-        <button class="nav-item" data-view="tailor">
-          <span class="nav-icon">✎</span><span>Tailor Studio</span>
-        </button>
-        <button class="nav-item" data-view="evidence">
-          <span class="nav-icon">◇</span><span>Evidence Vault</span>
-        </button>
-        <button class="nav-item" data-view="graph">
-          <span class="nav-icon">⌘</span><span>Career Graph</span>
-        </button>
-        <button class="nav-item" data-view="applications">
-          <span class="nav-icon">▦</span><span>Applications</span>
-        </button>
-        <button class="nav-item" data-view="interview">
-          <span class="nav-icon">✦</span><span>Interview Lab</span>
-        </button>
-        <button class="nav-item" data-view="package">
-          <span class="nav-icon">▣</span><span>Application Package</span>
-        </button>
-        <button class="nav-item" data-view="agent">
-          <span class="nav-icon">⌁</span><span>Career Agent</span>
+      <nav class="side-nav simplified-nav" aria-label="Workspace navigation">
+        <button class="nav-item active" data-view="match">
+          <span class="nav-icon">◎</span><span>Resume Match</span>
         </button>
       </nav>
 
@@ -71,14 +41,11 @@
       <header class="topbar">
         <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
         <div>
-          <p class="kicker">PERSONAL CAREER OPERATING SYSTEM</p>
-          <h1 id="viewTitle">Command Center</h1>
+          <p class="kicker">RESUME MATCH & TAILORING</p>
+          <h1 id="viewTitle">Resume Match</h1>
         </div>
-        <nav class="top-quick-nav" aria-label="Quick navigation">
-          <button class="jump-btn top-link" data-target="resume">Resume Studio</button>
-          <button class="jump-btn top-link" data-target="match">Job Scan</button>
-          <button class="jump-btn top-link" data-target="tailor">Tailor Resume</button>
-          <button class="jump-btn top-link top-link-featured" data-target="guides">Resume Guides</button>
+        <nav class="top-quick-nav simplified-top-copy" aria-label="Primary workflow">
+          <span>Scan your resume. Tailor it. Re-score it.</span>
         </nav>
         <div class="top-actions">
           <span class="model-pill"><span></span> Evidence-first AI</span>
@@ -332,15 +299,16 @@
 
         <section class="view" id="view-match">
           <div class="section-intro">
-            <div><span class="eyebrow">Deep Match Engine</span><h2>Resume × Job Description</h2><p>The score is Deep Nexivra's analysis model — not a claim about an employer's internal ATS score.</p></div>
-            <button class="secondary-btn" id="loadMasterIntoScan">Use master resume</button>
+            <div><span class="eyebrow">Step 1</span><h2>Match your resume to a job</h2><p>Upload or paste your resume, paste the target job description, and get one clear match percentage.</p></div>
+            <button class="secondary-btn hidden-support-control" id="loadMasterIntoScan">Use saved resume</button>
           </div>
 
-          <div class="scan-grid">
+          <div id="matchResumeUpload" class="match-upload-mount"></div>
+          <div class="scan-grid simplified-scan-grid">
             <article class="panel input-panel">
               <div class="field">
-                <label for="resumeInput">Resume / career evidence</label>
-                <textarea id="resumeInput" placeholder="Paste your resume text here. In the next phase this will support direct PDF/DOCX parsing."></textarea>
+                <label for="resumeInput">Resume text</label>
+                <textarea id="resumeInput" placeholder="Upload your resume above or paste the complete resume text here."></textarea>
                 <small><span id="resumeChars">0</span> characters</small>
               </div>
               <div class="field">
@@ -354,7 +322,7 @@
               </div>
             </article>
 
-            <aside class="panel methodology">
+            <aside class="panel methodology simplified-hidden">
               <span class="eyebrow">Guardrails</span>
               <h3>Truth-preserving optimization</h3>
               <ul>
@@ -368,35 +336,34 @@
 
           <div id="scanResults" class="results hidden">
             <div class="score-grid">
-              <article class="score-card"><span>Requirement Match</span><strong id="scoreRequirement">0</strong><small>/100</small></article>
-              <article class="score-card"><span>Evidence Strength</span><strong id="scoreEvidence">0</strong><small>/100</small></article>
-              <article class="score-card"><span>ATS Readability</span><strong id="scoreAts">0</strong><small>/100</small></article>
-              <article class="score-card"><span>Recruiter Quality</span><strong id="scoreRecruiter">0</strong><small>/100</small></article>
-              <article class="score-card emphasis"><span>Readiness</span><strong id="scoreReadiness">0</strong><small>/100</small></article>
+              <article class="score-card current-match-card"><span>Current Resume Match</span><strong id="scoreRequirement">0%</strong><small>vs target job description</small></article>
+              <article class="score-card secondary-score"><span>Evidence Strength</span><strong id="scoreEvidence">0</strong><small>/100</small></article>
+              <article class="score-card secondary-score"><span>ATS Readability</span><strong id="scoreAts">0</strong><small>/100</small></article>
+              <article class="score-card secondary-score"><span>Recruiter Quality</span><strong id="scoreRecruiter">0</strong><small>/100</small></article>
+              <article class="score-card emphasis secondary-score"><span>Readiness</span><strong id="scoreReadiness">0</strong><small>/100</small></article>
             </div>
 
             <div class="panel result-summary">
-              <div><span class="eyebrow">Analysis</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p></div>
+              <div><span class="eyebrow">Your result</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p><p id="matchRecommendation" class="match-recommendation"></p></div>
               <div class="row-actions result-actions">
-                <button class="secondary-btn jump-btn" data-target="tailor">Build tailored resume</button>
-                <button class="primary-btn" id="maximizeMatchFromScan">Maximize Match</button>
-                <button class="secondary-btn" id="saveApplication">Save application</button>
+                <button class="primary-btn generate-tailored-cta" id="maximizeMatchFromScan">Generate Tailored Resume</button>
+                <button class="secondary-btn hidden-support-control" id="saveApplication">Save application</button>
               </div>
             </div>
 
-            <div class="analysis-grid">
+            <div class="analysis-grid simplified-hidden">
               <article class="panel"><div class="panel-heading"><h3>Requirement evidence map</h3><span class="tag">Core</span></div><div id="gapTable"></div></article>
               <article class="panel"><div class="panel-heading"><h3>Priority keywords</h3><span class="tag">Contextual</span></div><div id="keywordList" class="chip-list"></div></article>
               <article class="panel"><div class="panel-heading"><h3>ATS & structure risks</h3><span class="tag">Parser</span></div><div id="atsIssues"></div></article>
               <article class="panel"><div class="panel-heading"><h3>Strongest signals</h3><span class="tag">Recruiter</span></div><div id="strengthList"></div></article>
             </div>
 
-            <article class="panel">
+            <article class="panel simplified-hidden">
               <div class="panel-heading"><div><span class="eyebrow">Evidence-safe rewrite lab</span><h3>Suggested improvements</h3></div></div>
               <div id="rewriteList"></div>
             </article>
 
-            <article class="panel">
+            <article class="panel simplified-hidden">
               <div class="panel-heading"><div><span class="eyebrow">Execution</span><h3>Next actions</h3></div></div>
               <div id="nextActions"></div>
             </article>
@@ -459,33 +426,34 @@
 
         <section class="view" id="view-tailor">
           <div class="section-intro">
-            <div><span class="eyebrow">Resume Studio Pro</span><h2>Evidence-grounded Tailoring</h2><p>Generate a job-specific resume from your Career Graph. Every proposed bullet must cite verified evidence before it can appear in the document.</p></div>
-            <div class="row-actions section-actions">
+            <div><span class="eyebrow">Step 2</span><h2>Your tailored resume</h2><p>Generate a stronger version targeted to the same job, then compare its match percentage with your original resume.</p></div>
+            <div class="row-actions section-actions simplified-hidden">
               <button class="secondary-btn jump-btn" data-target="match">Change target job</button>
               <button class="primary-btn" id="generateTailoredResume">Generate tailored resume</button>
             </div>
           </div>
 
           <div class="tailor-status-grid">
-            <article class="metric-card"><span>Target role</span><strong id="tailorTargetRole">No scan selected</strong><small>Uses your latest Match Lab scan</small></article>
-            <article class="metric-card"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Required for grounded generation</small></article>
-            <article class="metric-card"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>
-            <article class="metric-card"><span>Grounding</span><strong id="tailorGrounding">—</strong><small>Evidence-linked output</small></article>
-            <article class="metric-card match-score-card"><span>Tailored Match</span><strong id="tailoredMatchScore">—</strong><small id="tailoredMatchMeta">Generate to score vs job</small></article>
+            <article class="metric-card match-score-card original-match-card"><span>Original Resume Match</span><strong id="currentResumeMatchInTailor">—</strong><small>before tailoring</small></article>
+            <article class="metric-card match-score-card"><span>Tailored Resume Match</span><strong id="tailoredMatchScore">—</strong><small id="tailoredMatchMeta">Generate to score vs job</small></article>
+            <article class="metric-card support-metric"><span>Target role</span><strong id="tailorTargetRole">No scan selected</strong><small>Uses your latest Match Lab scan</small></article>
+            <article class="metric-card support-metric"><span>Evidence graph</span><strong id="tailorGraphStatus">Not ready</strong><small>Background evidence engine</small></article>
+            <article class="metric-card support-metric"><span>Accepted bullets</span><strong id="acceptedBulletCount">0</strong><small>Included in exports</small></article>
+            <article class="metric-card support-metric"><span>Grounding</span><strong id="tailorGrounding">—</strong><small>Evidence-linked output</small></article>
           </div>
 
           <div id="tailorEmpty" class="panel tailor-empty">
             <span class="eyebrow">Ready when your data is ready</span>
-            <h3>Run a job scan and build your Career Graph first.</h3>
-            <p>Deep Nexivra needs both the target job and your source-backed career evidence before it will generate a tailored resume.</p>
-            <div class="row-actions">
+            <h3>Your tailored resume will appear here.</h3>
+            <p>Run a Deep Scan above, review your current match percentage, then choose Generate Tailored Resume.</p>
+            <div class="row-actions simplified-hidden">
               <button class="secondary-btn jump-btn" data-target="resume">Import resume</button>
               <button class="primary-btn jump-btn" data-target="match">Analyze target job</button>
             </div>
           </div>
 
           <div id="tailorWorkspace" class="tailor-workspace hidden">
-            <aside class="panel tailor-controls">
+            <aside class="panel tailor-controls simplified-hidden">
               <div class="panel-heading">
                 <div><span class="eyebrow">Document controls</span><h3>Application version</h3></div>
                 <span class="tag" id="tailorVersionTag">Draft</span>
@@ -517,7 +485,7 @@
                   <small class="live-edit-hint"><span></span> Click the summary or any bullet on the resume to edit it directly.</small>
                 </div>
                 <div class="tailor-toolbar-actions">
-                  <div class="template-controls">
+                  <div class="template-controls simplified-hidden">
                     <label for="resumeTemplate">Template</label>
                     <select id="resumeTemplate">
                       <option value="classic">Classic ATS</option>
@@ -528,19 +496,19 @@
                     <span class="tag" id="pageFitStatus">Fit not measured</span>
                   </div>
                   <div class="row-actions export-actions">
-                    <button class="secondary-btn" id="undoTailor">Undo</button>
-                    <button class="secondary-btn" id="redoTailor">Redo</button>
+                    <button class="secondary-btn simplified-hidden" id="undoTailor">Undo</button>
+                    <button class="secondary-btn simplified-hidden" id="redoTailor">Redo</button>
                     <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
-                    <button class="secondary-btn" id="rescanTailoredMatch">Re-score match</button>
-                    <button class="primary-btn" id="maximizeTailoredMatch">Maximize Match</button>
-                    <button class="secondary-btn" id="saveResumeVersion">Save version</button>
+                    <button class="secondary-btn" id="rescanTailoredMatch">Re-score</button>
+                    <button class="primary-btn" id="maximizeTailoredMatch">Improve Match</button>
+                    <button class="secondary-btn simplified-hidden" id="saveResumeVersion">Save version</button>
                     <button class="secondary-btn" id="exportDocx">Export DOCX</button>
                     <button class="secondary-btn" id="exportPdf">Export PDF</button>
                   </div>
                 </div>
               </article>
 
-              <article class="panel resume-coach-panel">
+              <article class="panel resume-coach-panel simplified-hidden">
                 <div class="panel-heading">
                   <div><span class="eyebrow">Resume Coach</span><h3>High-impact improvements</h3></div>
                   <span class="tag">Evidence-safe suggestions</span>
@@ -552,7 +520,7 @@
                 <div class="resume-paper-empty">Generate a tailored resume to see the document preview.</div>
               </article>
 
-              <article class="panel change-history-panel">
+              <article class="panel change-history-panel simplified-hidden">
                 <div class="panel-heading">
                   <div><span class="eyebrow">Change history</span><h3>Recent resume edits</h3></div>
                   <span class="tag" id="historyCountTag">0 changes</span>
@@ -560,7 +528,7 @@
                 <div id="tailorChangeHistory" class="empty-state">Resume edits will appear here and can be undone/redone.</div>
               </article>
 
-              <article class="panel integrity-panel">
+              <article class="panel integrity-panel simplified-hidden">
                 <div class="panel-heading">
                   <div><span class="eyebrow">Integrity Gate</span><h3>Manual-edit validation</h3></div>
                   <span class="tag" id="integrityStatusTag">Generated draft</span>
@@ -569,7 +537,7 @@
                 <div id="integrityFindings"></div>
               </article>
 
-              <article class="panel evidence-audit-panel">
+              <article class="panel evidence-audit-panel simplified-hidden">
                 <div class="panel-heading">
                   <div><span class="eyebrow">Evidence audit</span><h3>Why each change is allowed</h3></div>
                   <span class="tag" id="auditTag">0 grounded bullets</span>
@@ -579,7 +547,7 @@
             </section>
           </div>
 
-          <article class="panel version-library-panel">
+          <article class="panel version-library-panel simplified-hidden">
             <div class="panel-heading">
               <div><span class="eyebrow">Version history</span><h3>Saved application resumes</h3></div>
               <span class="tag" id="versionCountTag">0 versions</span>
