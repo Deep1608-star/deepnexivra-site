@@ -1102,6 +1102,133 @@ function approvedResumePayload() {
   };
 }
 
+
+function tailorBulletById(roleId, bulletId) {
+  const exp = (state.tailoredResume?.experiences || []).find(item => item.roleId === roleId);
+  if (!exp) return null;
+  return (exp.bullets || []).find(item => item.bulletId === bulletId) || null;
+}
+
+function cleanResumeEditText(value) {
+  return String(value || "").replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function setLiveEditDirty(reason) {
+  if (!state.tailoredResume) return;
+  if (currentIntegrityStatus() !== "needs_review") {
+    markTailoredDirty(reason);
+  } else {
+    state.tailoredResume.versionModified = true;
+    state.applicationPackage = null;
+  }
+}
+
+function syncBulletEditorValue(bulletId, value) {
+  const editor = document.querySelector('.bullet-editor[data-bullet-id="' + CSS.escape(String(bulletId || "")) + '"]');
+  if (editor && editor !== document.activeElement) editor.value = value;
+}
+
+function applySummarySuggestion(text) {
+  if (!state.tailoredResume?.professionalSummary) return;
+  state.tailoredResume.professionalSummary.text = String(text || "").trim();
+  setLiveEditDirty("A suggested professional summary was applied and must be revalidated against its cited evidence.");
+  recordTailorState("Apply stronger professional summary");
+  persist();
+  renderTailorStudio();
+  toast("Stronger summary applied · validate before export");
+}
+
+function applyBulletSuggestion(roleId, bulletId, text) {
+  const bullet = tailorBulletById(roleId, bulletId);
+  if (!bullet) return;
+  bullet.editedText = String(text || "").trim();
+  bullet.accepted = true;
+  setLiveEditDirty("A suggested bullet rewrite was applied and must be revalidated against its cited evidence.");
+  recordTailorState("Apply stronger resume bullet");
+  persist();
+  renderTailorStudio();
+  toast("Stronger bullet applied · validate before export");
+}
+
+function renderResumeCoach() {
+  const root = $("resumeCoachSuggestions");
+  const summaryRoot = $("tailorSummarySuggestions");
+  if (!root || !summaryRoot) return;
+
+  root.innerHTML = "";
+  summaryRoot.innerHTML = "";
+  const draft = state.tailoredResume;
+  if (!draft) {
+    root.className = "coach-suggestions empty-state";
+    root.textContent = "Generate a tailored resume to see recruiter and ATS improvement suggestions.";
+    return;
+  }
+
+  const summary = draft.professionalSummary || {};
+  if (summary.improvementTip || (summary.alternatives || []).length) {
+    const details = document.createElement("details");
+    details.className = "suggestion-details";
+    const summaryEl = document.createElement("summary");
+    summaryEl.textContent = "Improve this summary";
+    details.appendChild(summaryEl);
+
+    if (summary.improvementTip) {
+      const tip = document.createElement("p");
+      tip.className = "suggestion-tip";
+      tip.textContent = summary.improvementTip;
+      details.appendChild(tip);
+    }
+
+    (summary.alternatives || []).forEach((text,index) => {
+      const option = document.createElement("div");
+      option.className = "rewrite-option";
+      const copy = document.createElement("p");
+      copy.textContent = text;
+      const use = document.createElement("button");
+      use.type = "button";
+      use.className = "suggestion-use-btn";
+      use.textContent = "Use option " + (index + 1);
+      use.addEventListener("click", () => applySummarySuggestion(text));
+      option.append(copy,use);
+      details.appendChild(option);
+    });
+    summaryRoot.appendChild(details);
+  }
+
+  const suggestions = (draft.optimizationSuggestions || []).slice().sort((a,b) => {
+    const rank = {high:0,medium:1,low:2};
+    return (rank[a.priority] ?? 9) - (rank[b.priority] ?? 9);
+  });
+
+  if (!suggestions.length) {
+    root.className = "coach-suggestions empty-state";
+    root.textContent = "No additional resume-level recommendations were returned. Review the line-by-line alternatives beside each bullet.";
+    return;
+  }
+
+  root.className = "coach-suggestions";
+  suggestions.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "coach-suggestion " + (item.priority || "medium");
+    const top = document.createElement("div");
+    top.className = "coach-suggestion-top";
+    const section = document.createElement("strong");
+    section.textContent = item.section || "Resume";
+    const priority = document.createElement("span");
+    priority.className = "coach-priority";
+    priority.textContent = (item.priority || "medium") + " priority";
+    top.append(section,priority);
+    const issue = document.createElement("p");
+    issue.className = "coach-issue";
+    issue.textContent = item.issue || "";
+    const recommendation = document.createElement("p");
+    recommendation.className = "coach-recommendation";
+    recommendation.textContent = item.recommendation || "";
+    card.append(top,issue,recommendation);
+    root.appendChild(card);
+  });
+}
+
 function renderTailorPreview() {
   const paper = $("tailoredResumePreview");
   if (!paper) return;
@@ -1348,6 +1475,8 @@ function renderTailorEditor() {
 
       const textarea = document.createElement("textarea");
       textarea.className = "bullet-editor";
+      textarea.dataset.roleId = exp.roleId || "";
+      textarea.dataset.bulletId = bullet.bulletId || "";
       textarea.value = bullet.editedText || bullet.text || "";
       textarea.addEventListener("input", () => {
         bullet.editedText = textarea.value;
@@ -2127,6 +2256,7 @@ function renderTailorStudio() {
   $("resumeTemplate").value = draft.template || "classic";
   $("onePageMode").checked = !!draft.onePageMode;
   renderTailorEditor();
+  renderResumeCoach();
   renderTailorPreview();
   renderTailorAudit();
   renderIntegrityGate();
