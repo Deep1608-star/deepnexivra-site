@@ -299,18 +299,15 @@
 
         <section class="view active" id="view-match">
           <div class="section-intro">
-            <div><span class="eyebrow">Step 1</span><h2>Match your resume to a job</h2><p>Upload or paste your resume, paste the target job description, and get one clear match percentage. This is Deep Nexivra's resume-to-job estimate, not an employer's private ATS score.</p></div>
+            <div><span class="eyebrow">Step 1</span><h2>Match your resume to a job</h2><p>Upload your resume, paste the target job description, and run one Deep Scan. Deep Nexivra handles resume parsing and preparation automatically in the background.</p></div>
             <button class="secondary-btn hidden-support-control" id="loadMasterIntoScan">Use saved resume</button>
           </div>
 
           <div id="matchResumeUpload" class="match-upload-mount"></div>
           <div class="scan-grid simplified-scan-grid">
             <article class="panel input-panel">
-              <div class="field">
-                <label for="resumeInput">Resume text</label>
-                <textarea id="resumeInput" placeholder="Upload your resume above or paste the complete resume text here."></textarea>
-                <small><span id="resumeChars">0</span> characters</small>
-              </div>
+              <textarea id="resumeInput" class="simplified-hidden" aria-hidden="true" tabindex="-1"></textarea>
+              <span id="resumeChars" class="simplified-hidden">0</span>
               <div class="field">
                 <label for="jobInput">Target job description</label>
                 <textarea id="jobInput" placeholder="Paste the complete job posting here — responsibilities, qualifications, tools, education, and preferred requirements."></textarea>
@@ -426,7 +423,7 @@
 
         <section class="view active" id="view-tailor">
           <div class="section-intro">
-            <div><span class="eyebrow">Step 2</span><h2>Your tailored resume</h2><p>Generate a stronger ATS-friendly version targeted to the same job, then compare its Deep Nexivra match percentage with your original resume.</p></div>
+            <div><span class="eyebrow">Step 2</span><h2>Your tailored resume</h2><p>One click generates, optimizes, re-scores, and prepares the strongest truthful resume Deep Nexivra can build for this job.</p></div>
             <div class="row-actions section-actions simplified-hidden">
               <button class="secondary-btn jump-btn" data-target="match">Change target job</button>
               <button class="primary-btn" id="generateTailoredResume">Generate tailored resume</button>
@@ -498,9 +495,9 @@
                   <div class="row-actions export-actions">
                     <button class="secondary-btn simplified-hidden" id="undoTailor">Undo</button>
                     <button class="secondary-btn simplified-hidden" id="redoTailor">Redo</button>
-                    <button class="secondary-btn" id="validateTailoredResume">Validate edits</button>
-                    <button class="secondary-btn" id="rescanTailoredMatch">Re-score</button>
-                    <button class="primary-btn" id="maximizeTailoredMatch">Improve Match</button>
+                    <button class="secondary-btn simplified-hidden" id="validateTailoredResume">Validate edits</button>
+                    <button class="secondary-btn simplified-hidden" id="rescanTailoredMatch">Re-score</button>
+                    <button class="primary-btn simplified-hidden" id="maximizeTailoredMatch">Improve Match</button>
                     <button class="secondary-btn simplified-hidden" id="saveResumeVersion">Save version</button>
                     <button class="secondary-btn" id="exportDocx">Export DOCX</button>
                     <button class="secondary-btn" id="exportPdf">Export PDF</button>
