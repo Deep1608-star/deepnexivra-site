@@ -17,6 +17,9 @@ export default async function handler(req, res) {
   const graph = body.careerGraph;
   const jobDescription = typeof body.jobDescription === "string" ? body.jobDescription.trim() : "";
   const jobAnalysis = body.jobAnalysis && typeof body.jobAnalysis === "object" ? body.jobAnalysis : {};
+  const optimizationFeedback = body.optimizationFeedback && typeof body.optimizationFeedback === "object"
+    ? body.optimizationFeedback
+    : null;
 
   if (!graph || !Array.isArray(graph.experience) || !Array.isArray(graph.evidenceRecords)) {
     return res.status(400).json({ ok: false, message: "A structured Career Graph is required" });
@@ -207,6 +210,8 @@ export default async function handler(req, res) {
     "- Optimize relevance for a human recruiter and text-based ATS retrieval separately from visual design.",
     "- Front-load the strongest supported evidence for the target role and prefer wording that a recruiter can understand in a 10-15 second first scan.",
     "- Use important target-job terminology when and only when the evidence genuinely supports that concept.",
+    "- When OPTIMIZATION FEEDBACK is supplied, improve the resume specifically against the remaining supported gaps, missing supported terms, weak evidence placement, and recruiter/ATS weaknesses identified there.",
+    "- Never try to eliminate a true evidence gap by inventing a claim. If the candidate does not support a requirement, preserve it as a gap rather than forcing the resume toward 100%.",
     "- Do not claim knowledge of an employer's internal ATS score.",
     "",
     "Return structured data only."
@@ -219,7 +224,10 @@ export default async function handler(req, res) {
     "PREVIOUS JOB ANALYSIS:",
     JSON.stringify(jobAnalysis).slice(0, 12000),
     "",
-    "ROLE CATALOG (metadata is immutable):",
+    "OPTIMIZATION FEEDBACK FROM POST-TAILOR RESCAN:",
+    optimizationFeedback ? JSON.stringify(optimizationFeedback).slice(0, 12000) : "No post-tailor optimization feedback supplied.",
+    "",
+    "ROLE CATALOG (metadata is immutable):"
     JSON.stringify(roleCatalog.slice(0, 15)),
     "",
     "EVIDENCE CATALOG (all generated claims must cite IDs from here):",
