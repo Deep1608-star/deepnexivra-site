@@ -492,7 +492,8 @@
               <div class="field">
                 <label for="tailorSummary">Professional summary</label>
                 <textarea id="tailorSummary" class="summary-editor" placeholder="Generated summary"></textarea>
-                <small>Editable. Keep changes truthful and supported by your Career Graph.</small>
+                <small>Editable here or directly on the resume page. Manual changes are revalidated before export.</small>
+                <div id="tailorSummarySuggestions" class="inline-suggestions"></div>
               </div>
 
               <div class="tailor-subsection">
@@ -509,8 +510,9 @@
             <section class="tailor-output-column">
               <article class="panel tailor-toolbar">
                 <div>
-                  <span class="eyebrow">Live ATS-safe preview</span>
+                  <span class="eyebrow">Live ATS-safe editor</span>
                   <h3 id="tailorDocumentTitle">Tailored Resume</h3>
+                  <small class="live-edit-hint"><span></span> Click the summary or any bullet on the resume to edit it directly.</small>
                 </div>
                 <div class="tailor-toolbar-actions">
                   <div class="template-controls">
@@ -532,6 +534,14 @@
                     <button class="secondary-btn" id="exportPdf">Export PDF</button>
                   </div>
                 </div>
+              </article>
+
+              <article class="panel resume-coach-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Resume Coach</span><h3>High-impact improvements</h3></div>
+                  <span class="tag">Evidence-safe suggestions</span>
+                </div>
+                <div id="resumeCoachSuggestions" class="coach-suggestions empty-state">Generate a tailored resume to see recruiter and ATS improvement suggestions.</div>
               </article>
 
               <article class="resume-paper" id="tailoredResumePreview">
