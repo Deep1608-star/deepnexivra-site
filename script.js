@@ -1440,7 +1440,7 @@ async function requestTailoredResume(optimizationFeedback = null) {
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
         careerGraph: graph,
-        masterResume: state.masterResume,
+        masterResume: scannerCurrentResumeText() || state.masterResume,
         jobDescription: scan.jobSnapshot || "",
         jobAnalysis: scan.result || {},
         optimizationFeedback
@@ -1464,10 +1464,10 @@ async function requestTailoredResume(optimizationFeedback = null) {
     return draft;
   } catch (error) {
     if (error?.name === "AbortError") {
-      throw new Error("Tailor Studio took too long. Please try again; Deep Nexivra now uses a faster path and evidence-safe fallback.");
+      throw new Error("Auto Optimize took too long. Please try again.");
     }
     if (/load failed|failed to fetch|network/i.test(String(error?.message || error))) {
-      throw new Error("The tailoring request was interrupted. Please tap Generate tailored resume again.");
+      throw new Error("The optimization request was interrupted. Please tap Auto Optimize Resume again.");
     }
     throw error;
   } finally {
