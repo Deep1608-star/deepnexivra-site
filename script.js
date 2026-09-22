@@ -1061,7 +1061,8 @@ function approvedResumePayload() {
       .map(b => ({
         text: String(b.editedText || b.text || "").trim(),
         confidence: Number(b.confidence) || 0,
-        priority: Number(b.priority) || 0
+        priority: Number(b.priority) || 0,
+        bulletId: b.bulletId || ""
       }));
 
     if (draft.onePageMode) {
@@ -1076,7 +1077,9 @@ function approvedResumePayload() {
       startDate: sourceRole.startDate || "",
       endDate: sourceRole.endDate || "",
       isCurrent: !!sourceRole.isCurrent,
-      bullets: bullets.map(b => b.text)
+      bullets: bullets.map(b => b.text),
+      _roleId: exp.roleId,
+      _bulletIds: bullets.map(b => b.bulletId)
     });
   });
 
