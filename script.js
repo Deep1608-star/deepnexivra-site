@@ -443,7 +443,9 @@ function scannerApplyScoreModel(model, options = {}) {
     state.latest.scores = state.latest.scores || {};
     state.latest.scores.requirementMatch = score;
     const scan = latestTargetScan();
-    if (scan?.result) scan.result = state.latest;
+    if (scan?.result === state.latest) {
+      scan.result = state.latest;
+    }
     persist();
   }
 }
