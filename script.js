@@ -20,6 +20,9 @@ const state = {
   latest: null
 };
 
+let resumePreparationPromise = null;
+let resumePreparationFingerprint = "";
+
 const stopWords = new Set([
   "the","and","for","with","that","this","from","your","you","our","are","will","have","has","had","into","their","they",
   "who","what","when","where","how","but","not","all","any","can","may","job","role","work","working","team","teams",
@@ -691,6 +694,67 @@ function renderImportPreview(text) {
   else tag.textContent = "Low-text extraction";
 }
 
+
+function resumePreparationKey(text) {
+  const value = String(text || "");
+  return [
+    value.length,
+    normalize(value.slice(0, 700)),
+    normalize(value.slice(-700))
+  ].join("|");
+}
+
+async function prepareResumeForTailoring(rawText) {
+  const text = String(rawText || "").trim();
+  if (text.length < 200) throw new Error("The uploaded resume does not contain enough readable text.");
+
+  const key = resumePreparationKey(text);
+  if (state.careerGraph && state.resumeSource?.preparationKey === key) {
+    return state.careerGraph;
+  }
+  if (resumePreparationPromise && resumePreparationFingerprint === key) {
+    return resumePreparationPromise;
+  }
+
+  resumePreparationFingerprint = key;
+  const promise = (async () => {
+    const graph = await ingestCareerGraph(text);
+    if (!graph || !Array.isArray(graph.experience) || !Array.isArray(graph.evidenceRecords)) {
+      throw new Error("Deep Nexivra could not structure this resume for tailoring.");
+    }
+
+    state.careerGraph = graph;
+    state.masterResume = text;
+    state.resumeSource = Object.assign({}, state.resumeSource || {}, {
+      name: state.importedFile?.name || state.resumeSource?.name || "Uploaded resume",
+      size: state.importedFile?.size || state.resumeSource?.size || null,
+      type: state.importedFile?.type || state.resumeSource?.type || "",
+      importedAt: state.resumeSource?.importedAt || new Date().toISOString(),
+      parseConfidence: graph?.resumeQuality?.parseConfidence ?? null,
+      preparationKey: key
+    });
+    graphEvidenceToVault(graph);
+    persist();
+    return graph;
+  })();
+
+  resumePreparationPromise = promise;
+  try {
+    return await promise;
+  } catch (error) {
+    if (resumePreparationFingerprint === key) {
+      resumePreparationPromise = null;
+    }
+    throw error;
+  }
+}
+
+function primeResumePreparation(rawText) {
+  prepareResumeForTailoring(rawText).catch(error => {
+    console.warn("Background resume preparation will retry when tailoring is requested:", error);
+  });
+}
+
 async function handleResumeFile(file) {
   if (!file) return;
   state.importedFile = {
@@ -727,7 +791,18 @@ async function handleResumeFile(file) {
       state.careerGraph = null;
       state.tailoredResume = null;
       state.applicationPackage = null;
+      state.evidence = [];
+      resumePreparationPromise = null;
+      resumePreparationFingerprint = "";
     }
+    state.resumeSource = {
+      name: state.importedFile?.name || "Uploaded resume",
+      size: state.importedFile?.size || null,
+      type: state.importedFile?.type || "",
+      importedAt: new Date().toISOString(),
+      parseConfidence: null,
+      preparationKey: null
+    };
     if ($("resumeInput")) {
       $("resumeInput").value = text;
       $("resumeChars").textContent = text.length;
@@ -735,11 +810,12 @@ async function handleResumeFile(file) {
     $("scanResults")?.classList.add("hidden");
     renderImportPreview(text);
     persist();
-    setParserProgress(100, "Extraction complete · ready for evidence structuring");
+    setParserProgress(100, "Resume ready");
     status.textContent = "Ready";
     meta.classList.add("import-success");
     $("buildCareerGraph").disabled = false;
-    toast("Resume extracted successfully");
+    primeResumePreparation(text);
+    toast("Resume uploaded and ready to scan");
   } catch (error) {
     console.error(error);
     state.importedResumeText = "";
@@ -769,19 +845,19 @@ async function ingestCareerGraph(rawText) {
     try {
       data = await response.json();
     } catch (_) {
-      throw new Error("The Career Graph service returned an unreadable response. Please retry.");
+      throw new Error("The resume preparation service returned an unreadable response. Please retry.");
     }
 
     if (!response.ok || !data?.ok || !data?.result) {
-      throw new Error(data?.message || "Career Graph generation failed");
+      throw new Error(data?.message || "Resume preparation failed");
     }
     return data.result;
   } catch (error) {
     if (error?.name === "AbortError") {
-      throw new Error("Career Graph generation took too long. Please retry; Deep Nexivra now uses a faster extraction path.");
+      throw new Error("Resume preparation took too long. Please try again.");
     }
     if (/load failed|failed to fetch|network/i.test(String(error?.message || error))) {
-      throw new Error("The AI request was interrupted by the network or server. Please tap Build Career Graph again.");
+      throw new Error("The resume preparation request was interrupted. Please try again.");
     }
     throw error;
   } finally {
@@ -1023,21 +1099,23 @@ function hydrateTailoredState(result, scan) {
 
 async function ensureTailoringGraph() {
   const scan = latestTargetScan();
-  const existing = ensureCareerGraphIds();
-  if (existing) return existing;
+  const resumeText = String(
+    state.importedResumeText ||
+    state.masterResume ||
+    scan?.resumeSnapshot ||
+    ""
+  ).trim();
 
-  const resumeText = String(state.masterResume || scan?.resumeSnapshot || "").trim();
   if (resumeText.length < 200) {
-    throw new Error("Upload or paste your complete resume before generating a tailored version");
+    throw new Error("Upload your resume before generating a tailored version.");
   }
 
-  toast("Preparing resume evidence in the background...");
-  const graph = await ingestCareerGraph(resumeText);
-  state.careerGraph = graph;
-  state.masterResume = resumeText;
-  graphEvidenceToVault(graph);
-  persist();
-  return ensureCareerGraphIds();
+  try {
+    return await prepareResumeForTailoring(resumeText);
+  } catch (error) {
+    console.error("Automatic resume preparation failed:", error);
+    throw new Error("Deep Nexivra could not prepare this resume for tailoring. Please click Generate Tailored Resume again.");
+  }
 }
 
 async function requestTailoredResume(optimizationFeedback = null) {
@@ -3050,6 +3128,12 @@ fileInput.addEventListener("change", event => handleResumeFile(event.target.file
 $("clearImportedResume").addEventListener("click", () => {
   state.importedResumeText = "";
   state.importedFile = null;
+  state.masterResume = "";
+  state.careerGraph = null;
+  state.tailoredResume = null;
+  state.evidence = [];
+  resumePreparationPromise = null;
+  resumePreparationFingerprint = "";
   fileInput.value = "";
   $("fileMeta").classList.add("hidden");
   $("parserProgress").classList.add("hidden");
@@ -3124,9 +3208,9 @@ $("addEvidence").addEventListener("click", () => {
 });
 
 $("runScan").addEventListener("click", async () => {
-  const resume = $("resumeInput").value.trim();
+  const resume = String(state.importedResumeText || state.masterResume || $("resumeInput").value || "").trim();
   const job = $("jobInput").value.trim();
-  if (resume.length < 200) return toast("Paste more resume content first");
+  if (resume.length < 200) return toast("Upload your resume first");
   if (job.length < 250) return toast("Paste the full job description first");
 
   const btn = $("runScan");
@@ -3143,6 +3227,7 @@ $("runScan").addEventListener("click", async () => {
       state.tailoredResume = null;
       state.applicationPackage = null;
     }
+    primeResumePreparation(resume);
     const result = await deepAnalyze(resume, job);
     renderScan(result);
     state.tailoredResume = null;
@@ -3204,10 +3289,10 @@ function initializeSimplifiedWorkflow() {
     const zoneStrong = uploadPanel.querySelector(".upload-zone strong");
     const zoneSmall = uploadPanel.querySelector(".upload-zone small");
     if (eyebrow) eyebrow.textContent = "Resume";
-    if (heading) heading.textContent = "Upload PDF, DOCX, or TXT";
-    if (tag) tag.textContent = "Optional — you can paste below";
+    if (heading) heading.textContent = "Upload your resume";
+    if (tag) tag.textContent = "Required";
     if (zoneStrong) zoneStrong.textContent = "Drop your resume here or choose a file";
-    if (zoneSmall) zoneSmall.textContent = "Your resume text is extracted and placed directly into Match Lab.";
+    if (zoneSmall) zoneSmall.textContent = "PDF, DOCX, or TXT · Deep Nexivra extracts it automatically.";
     uploadMount.appendChild(uploadPanel);
   }
 
