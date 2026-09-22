@@ -1,3 +1,9 @@
+function openAIKey() {
+  return String(process.env.OPENAI_API_KEY || "")
+    .trim()
+    .replace(/^["']|["']$/g, "");
+}
+
 function isPrivateIp(address) {
   const value = String(address || "").toLowerCase();
   if (!value) return true;
@@ -221,7 +227,7 @@ export default async function handler(req, res) {
       method:"POST",
       headers:{
         "Content-Type":"application/json",
-        "Authorization":"Bearer " + process.env.OPENAI_API_KEY
+        "Authorization":"Bearer " + openAIKey()
       },
       body:JSON.stringify({
         model:process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
