@@ -560,3 +560,58 @@ body.simplified-product #view-tailor .tailor-empty{display:none!important}
 body.simplified-product .match-upload-panel .upload-zone{min-height:150px}
 body.simplified-product .match-upload-panel .upload-zone strong{font-size:.86rem}
 body.simplified-product .match-upload-panel .upload-zone small{max-width:520px}
+
+
+/* Simplified production shell layout hotfix */
+body.simplified-product .app-shell{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:100vh;
+}
+body.simplified-product .workspace{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+}
+body.simplified-product .topbar{
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  width:100%!important;
+  max-width:none!important;
+}
+body.simplified-product .main{
+  width:100%!important;
+  max-width:1180px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+body.simplified-product .match-upload-mount,
+body.simplified-product .simplified-scan-grid,
+body.simplified-product .input-panel,
+body.simplified-product #scanResults{
+  width:100%!important;
+  min-width:0!important;
+}
+body.simplified-product .simplified-scan-grid .input-panel{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+}
+body.simplified-product .match-upload-panel{
+  width:100%!important;
+  min-height:auto!important;
+}
+body.simplified-product .match-upload-panel .upload-zone{
+  width:100%!important;
+}
+body.simplified-product #jobInput{
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:820px){
+  body.simplified-product .topbar{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+}
