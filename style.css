@@ -468,3 +468,86 @@ body{
 @media(max-width:1250px){.tailor-status-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:800px){.tailor-status-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.tailor-status-grid{grid-template-columns:1fr}}
+
+
+/* Deep Nexivra simplified product: Match -> Tailor */
+body.simplified-product .sidebar{display:none!important}
+body.simplified-product .workspace{margin-left:0!important;width:100%!important;min-width:0}
+body.simplified-product .mobile-menu{display:none!important}
+body.simplified-product .topbar{left:0!important;padding-left:clamp(18px,4vw,54px);padding-right:clamp(18px,4vw,54px);grid-template-columns:auto 1fr;gap:24px}
+body.simplified-product .topbar>div:first-of-type{min-width:max-content}
+body.simplified-product .simplified-top-copy{display:flex!important;align-items:center;justify-content:center;color:#667085;font-size:.78rem;font-weight:650;letter-spacing:.01em}
+body.simplified-product .model-pill{display:none!important}
+body.simplified-product .top-actions{display:none!important}
+body.simplified-product .main{max-width:1180px;margin:0 auto;padding-left:clamp(18px,4vw,42px);padding-right:clamp(18px,4vw,42px)}
+body.simplified-product .view{display:none!important}
+body.simplified-product #view-match.active,
+body.simplified-product #view-tailor.active{display:block!important}
+body.simplified-product #view-tailor{margin-top:26px;padding-top:28px;border-top:1px solid #e8edf5}
+body.simplified-product .simplified-hidden,
+body.simplified-product .hidden-support-control,
+body.simplified-product .support-metric,
+body.simplified-product .secondary-score{display:none!important}
+
+body.simplified-product #view-match .section-intro,
+body.simplified-product #view-tailor .section-intro{align-items:flex-end}
+body.simplified-product #view-match .section-intro h2,
+body.simplified-product #view-tailor .section-intro h2{font-size:clamp(1.65rem,3vw,2.35rem);letter-spacing:-.035em}
+body.simplified-product #view-match .section-intro p,
+body.simplified-product #view-tailor .section-intro p{max-width:720px;color:#667085}
+
+body.simplified-product .match-upload-mount{margin-bottom:14px}
+body.simplified-product .match-upload-panel{box-shadow:none;border:1px solid #dce5f1}
+body.simplified-product .match-upload-panel .panel-heading{margin-bottom:12px}
+body.simplified-product .match-upload-panel #buildCareerGraph{display:none!important}
+body.simplified-product .match-upload-panel .row-actions{justify-content:flex-end}
+body.simplified-product .match-upload-panel .upload-zone{min-height:132px}
+body.simplified-product .simplified-scan-grid{grid-template-columns:1fr!important}
+body.simplified-product .simplified-scan-grid .input-panel{max-width:none}
+body.simplified-product #resumeInput{min-height:240px}
+body.simplified-product #jobInput{min-height:260px}
+body.simplified-product .scan-actions{margin-top:4px}
+body.simplified-product #runScan{min-height:48px;font-size:.82rem}
+
+body.simplified-product #scanResults{margin-top:20px}
+body.simplified-product #scanResults .score-grid{grid-template-columns:minmax(250px,390px)!important;justify-content:start}
+body.simplified-product .current-match-card{padding:22px 24px;background:linear-gradient(180deg,#fff,#f7faff);border:1px solid #cdddf8}
+body.simplified-product .current-match-card span{font-size:.72rem;font-weight:760;color:#475467}
+body.simplified-product .current-match-card strong{display:block;font-size:3rem!important;line-height:1;margin:10px 0 8px;color:#1d4ed8!important;letter-spacing:-.06em}
+body.simplified-product .current-match-card small{display:block!important;font-size:.68rem!important;color:#667085}
+body.simplified-product .result-summary{margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;border-color:#dde6f3}
+body.simplified-product .result-summary #resultSummary{max-width:720px}
+body.simplified-product .match-recommendation{margin-top:10px!important;font-weight:700!important;color:#1d4ed8!important;font-size:.75rem!important}
+body.simplified-product .generate-tailored-cta{min-height:46px;padding-left:20px;padding-right:20px;white-space:nowrap}
+
+body.simplified-product #view-tailor .tailor-status-grid{display:grid!important;grid-template-columns:repeat(2,minmax(220px,1fr))!important;gap:12px}
+body.simplified-product #view-tailor .match-score-card{display:block!important;padding:20px 22px}
+body.simplified-product #view-tailor .match-score-card strong{font-size:2.35rem!important;letter-spacing:-.05em}
+body.simplified-product #view-tailor .original-match-card{background:#fafbfc;border-color:#e1e6ee}
+body.simplified-product #view-tailor .original-match-card strong{color:#475467!important}
+body.simplified-product #view-tailor .match-score-card:not(.original-match-card){background:linear-gradient(180deg,#fff,#f5fbf8);border-color:#cfe9dd}
+body.simplified-product #view-tailor .match-score-card:not(.original-match-card) strong{color:#087a55!important}
+body.simplified-product #view-tailor .tailor-empty{margin-top:14px;text-align:left;min-height:0;padding:22px}
+body.simplified-product #view-tailor .tailor-workspace{grid-template-columns:1fr!important}
+body.simplified-product #view-tailor .tailor-output-column{width:min(100%,900px);margin:0 auto}
+body.simplified-product #view-tailor .tailor-toolbar{position:sticky;top:84px;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px}
+body.simplified-product #view-tailor .tailor-toolbar-actions{margin-left:auto}
+body.simplified-product #view-tailor .export-actions{gap:8px;flex-wrap:wrap;justify-content:flex-end}
+body.simplified-product #view-tailor .resume-paper{margin-top:14px}
+body.simplified-product #view-tailor .live-edit-hint{max-width:460px}
+
+@media(max-width:820px){
+  body.simplified-product .topbar{grid-template-columns:1fr}
+  body.simplified-product .simplified-top-copy{display:none!important}
+  body.simplified-product .result-summary{grid-template-columns:1fr}
+  body.simplified-product .result-actions{justify-content:flex-start}
+  body.simplified-product #view-tailor .tailor-status-grid{grid-template-columns:1fr!important}
+  body.simplified-product #view-tailor .tailor-toolbar{position:static;align-items:flex-start;flex-direction:column}
+  body.simplified-product #view-tailor .tailor-toolbar-actions{margin-left:0;width:100%}
+}
+@media(max-width:520px){
+  body.simplified-product .top-actions #clearLocalData{font-size:.62rem;padding:7px 8px}
+  body.simplified-product .current-match-card strong{font-size:2.55rem!important}
+  body.simplified-product #view-tailor .export-actions{justify-content:stretch}
+  body.simplified-product #view-tailor .export-actions button{flex:1 1 calc(50% - 8px)}
+}

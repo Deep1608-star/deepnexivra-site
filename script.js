@@ -55,12 +55,17 @@ function switchView(name) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(v => v.classList.remove("active"));
   const view = $("view-" + name);
-  if (view) view.classList.add("active");
+  if (name === "match") {
+    $("view-match")?.classList.add("active");
+    $("view-tailor")?.classList.add("active");
+  } else if (view) {
+    view.classList.add("active");
+  }
   const nav = document.querySelector('.nav-item[data-view="' + name + '"]');
   if (nav) nav.classList.add("active");
   const titleMap = {
     command: "Command Center",
-    match: "Match Lab",
+    match: "Resume Match",
     resume: "Resume Studio",
     guides: "Resume Guides",
     tailor: "Tailor Studio",
@@ -290,13 +295,22 @@ function createTextBlock(parent, className, text) {
 function renderScan(result) {
   state.latest = result;
   $("scanResults").classList.remove("hidden");
-  $("scoreRequirement").textContent = result.scores?.requirementMatch ?? 0;
+  const currentMatch = Math.max(0, Math.min(100, Math.round(Number(result.scores?.requirementMatch) || 0)));
+  $("scoreRequirement").textContent = currentMatch + "%";
   $("scoreEvidence").textContent = result.scores?.evidenceStrength ?? 0;
   $("scoreAts").textContent = result.scores?.atsReadability ?? 0;
   $("scoreRecruiter").textContent = result.scores?.recruiterQuality ?? 0;
   $("scoreReadiness").textContent = result.scores?.readiness ?? 0;
   $("resultRole").textContent = result.role || "Target role";
   $("resultSummary").textContent = result.summary || "";
+  const recommendation = $("matchRecommendation");
+  if (recommendation) {
+    recommendation.textContent = currentMatch >= 90
+      ? "Strong match. You can still generate a tailored version to tighten wording and relevance."
+      : currentMatch >= 75
+        ? "Good foundation. Generate a tailored resume to improve alignment with this job."
+        : "Your current resume is leaving meaningful alignment on the table. Generate a tailored resume to strengthen the supported match.";
+  }
 
   const gapTable = $("gapTable");
   gapTable.innerHTML = "";
@@ -707,7 +721,20 @@ async function handleResumeFile(file) {
       throw new Error("Very little selectable text was found. This may be a scanned/image-only PDF; OCR is not enabled in this phase.");
     }
     state.importedResumeText = text;
+    const previousResume = state.masterResume || "";
+    state.masterResume = text;
+    if (normalize(previousResume) !== normalize(text)) {
+      state.careerGraph = null;
+      state.tailoredResume = null;
+      state.applicationPackage = null;
+    }
+    if ($("resumeInput")) {
+      $("resumeInput").value = text;
+      $("resumeChars").textContent = text.length;
+    }
+    $("scanResults")?.classList.add("hidden");
     renderImportPreview(text);
+    persist();
     setParserProgress(100, "Extraction complete · ready for evidence structuring");
     status.textContent = "Ready";
     meta.classList.add("import-success");
@@ -993,11 +1020,30 @@ function hydrateTailoredState(result, scan) {
   return result;
 }
 
+
+async function ensureTailoringGraph() {
+  const scan = latestTargetScan();
+  const existing = ensureCareerGraphIds();
+  if (existing) return existing;
+
+  const resumeText = String(state.masterResume || scan?.resumeSnapshot || "").trim();
+  if (resumeText.length < 200) {
+    throw new Error("Upload or paste your complete resume before generating a tailored version");
+  }
+
+  toast("Preparing resume evidence in the background...");
+  const graph = await ingestCareerGraph(resumeText);
+  state.careerGraph = graph;
+  state.masterResume = resumeText;
+  graphEvidenceToVault(graph);
+  persist();
+  return ensureCareerGraphIds();
+}
+
 async function requestTailoredResume(optimizationFeedback = null) {
   const scan = latestTargetScan();
-  const graph = ensureCareerGraphIds();
-  if (!scan) throw new Error("Run a Match Lab scan first");
-  if (!graph) throw new Error("Build your Career Graph first");
+  if (!scan) throw new Error("Run a Deep Scan first");
+  const graph = await ensureTailoringGraph();
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 190000);
@@ -1177,10 +1223,9 @@ function renderTailoredMatchScore() {
     return;
   }
 
-  const ats = Math.round(Number(analysis.scores?.atsReadability) || 0);
-  const readiness = Math.round(Number(analysis.scores?.readiness) || 0);
-  const source = analysis.analysisSource === "local" ? " · local fallback" : "";
-  metaEl.textContent = "ATS readability " + ats + "/100 · readiness " + readiness + "/100" + source;
+  metaEl.textContent = analysis.analysisSource === "local"
+    ? "Generated resume vs job description · local fallback"
+    : "Generated resume vs job description";
 }
 
 async function scoreCurrentTailoredResume(options = {}) {
@@ -1246,9 +1291,8 @@ function optimizationFeedbackFromAnalysis(result) {
 async function maximizeTailoredMatch(options = {}) {
   const switchToTailor = options.switchToTailor !== false;
   const scan = latestTargetScan();
-  const graph = ensureCareerGraphIds();
-  if (!scan) throw new Error("Run a Match Lab scan first");
-  if (!graph) throw new Error("Build your Career Graph first");
+  if (!scan) throw new Error("Run a Deep Scan first");
+  await ensureTailoringGraph();
 
   const firstDraft = await requestTailoredResume();
   state.tailoredResume = firstDraft;
@@ -1289,7 +1333,10 @@ async function maximizeTailoredMatch(options = {}) {
   persist();
   renderDashboard();
   renderTailoredMatchScore();
-  if (switchToTailor) switchView("tailor");
+  if (switchToTailor) {
+    switchView("match");
+    setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth", block:"start"}), 60);
+  }
 
   toast(
     (usedSecondPass ? "Maximize Match complete: " : "Best supported match: ") +
@@ -2523,6 +2570,10 @@ function renderTailorStudio() {
   }
 
   $("tailorTargetRole").textContent = scan?.result?.role || "No scan selected";
+  if ($("currentResumeMatchInTailor")) {
+    const original = Math.max(0, Math.min(100, Math.round(Number(scan?.result?.scores?.requirementMatch) || 0)));
+    $("currentResumeMatchInTailor").textContent = scan ? original + "%" : "—";
+  }
   $("tailorGraphStatus").textContent = graph ? ((graph.evidenceRecords || []).length + " evidence records") : "Not ready";
   $("acceptedBulletCount").textContent = countAcceptedBullets();
   $("tailorGrounding").textContent = draft?.quality?.groundingCoverage != null ? Math.round(draft.quality.groundingCoverage) + "%" : "—";
@@ -2530,7 +2581,7 @@ function renderTailorStudio() {
 
   const empty = $("tailorEmpty");
   const workspace = $("tailorWorkspace");
-  const ready = !!scan && !!graph;
+  const ready = !!scan;
 
   if (!draft) {
     empty.classList.remove("hidden");
@@ -2538,11 +2589,11 @@ function renderTailorStudio() {
     const heading = empty.querySelector("h3");
     const text = empty.querySelector("p");
     if (ready) {
-      heading.textContent = "Your evidence and target job are ready.";
-      text.textContent = "Generate the first evidence-grounded version, then review each bullet before export.";
+      heading.textContent = "Your Deep Scan is ready.";
+      text.textContent = "Use Generate Tailored Resume in the result above. Deep Nexivra will prepare the supporting evidence automatically and build the strongest truthful version it can.";
     } else {
-      heading.textContent = "Run a job scan and build your Career Graph first.";
-      text.textContent = "Deep Nexivra needs both the target job and your source-backed career evidence before it will generate a tailored resume.";
+      heading.textContent = "Run a Deep Scan first.";
+      text.textContent = "Your tailored resume will appear here after you scan the current resume against a target job.";
     }
     return;
   }
@@ -2737,7 +2788,7 @@ $("maximizeMatchFromScan").addEventListener("click", async () => {
   const btn = $("maximizeMatchFromScan");
   const old = btn.textContent;
   btn.disabled = true;
-  btn.textContent = "Generating + optimizing...";
+  btn.textContent = "Building tailored resume...";
   try {
     await maximizeTailoredMatch({switchToTailor:true});
   } catch (error) {
@@ -3085,6 +3136,13 @@ $("runScan").addEventListener("click", async () => {
   $("scanStatus").textContent = "Mapping requirements to evidence";
 
   try {
+    const resumeChanged = normalize(state.masterResume || "") !== normalize(resume);
+    if (resumeChanged) {
+      state.masterResume = resume;
+      state.careerGraph = null;
+      state.tailoredResume = null;
+      state.applicationPackage = null;
+    }
     const result = await deepAnalyze(resume, job);
     renderScan(result);
     state.tailoredResume = null;
@@ -3093,8 +3151,8 @@ $("runScan").addEventListener("click", async () => {
       id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       createdAt:new Date().toISOString(),
       result,
-      resumeSnapshot: resume.slice(0,12000),
-      jobSnapshot: job.slice(0,12000)
+      resumeSnapshot: resume.slice(0,30000),
+      jobSnapshot: job.slice(0,30000)
     });
     state.scans = state.scans.slice(0,30);
     persist(); renderDashboard();
@@ -3132,5 +3190,30 @@ $("clearLocalData").addEventListener("click", () => {
   persist(); renderDashboard(); toast("Local data reset");
 });
 
+
+function initializeSimplifiedWorkflow() {
+  document.body.classList.add("simplified-product");
+
+  const uploadMount = $("matchResumeUpload");
+  const uploadPanel = document.querySelector("#view-resume .upload-panel");
+  if (uploadMount && uploadPanel && uploadPanel.parentElement !== uploadMount) {
+    uploadPanel.classList.add("match-upload-panel");
+    const eyebrow = uploadPanel.querySelector(".eyebrow");
+    const heading = uploadPanel.querySelector("h3");
+    const tag = uploadPanel.querySelector(".tag");
+    const zoneStrong = uploadPanel.querySelector(".upload-zone strong");
+    const zoneSmall = uploadPanel.querySelector(".upload-zone small");
+    if (eyebrow) eyebrow.textContent = "Resume";
+    if (heading) heading.textContent = "Upload PDF, DOCX, or TXT";
+    if (tag) tag.textContent = "Optional — you can paste below";
+    if (zoneStrong) zoneStrong.textContent = "Drop your resume here or choose a file";
+    if (zoneSmall) zoneSmall.textContent = "Your resume text is extracted and placed directly into Match Lab.";
+    uploadMount.appendChild(uploadPanel);
+  }
+
+  switchView("match");
+}
+
+initializeSimplifiedWorkflow();
 renderDashboard();
 refreshCloudStatus();
