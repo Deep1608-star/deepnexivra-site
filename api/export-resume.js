@@ -121,30 +121,6 @@ async function makeDocx(resume) {
     });
   }
 
-  const projects = safeArray(resume.projects, 10);
-  if (projects.length) {
-    section("Projects");
-    projects.forEach(function(item) {
-      const title = [clean(item.name), clean(item.role)].filter(Boolean).join(" — ") || "Project";
-      drawLines(title, { fontSize: 9.5, bold: true, lineHeight: 12, after: 1 });
-      if (clean(item.description)) drawLines(item.description, { fontSize: compact ? 8.5 : 9, lineHeight: compact ? 10.5 : 11.5, after: 2 });
-      const tools = safeArray(item.tools, 20).map(clean).filter(Boolean);
-      const skills = safeArray(item.skills, 20).map(clean).filter(Boolean);
-      if (tools.length) drawLines("Tools: " + tools.join(" | "), { fontSize: compact ? 8 : 8.5, lineHeight: 10.5, after: 1 });
-      if (skills.length) drawLines("Skills: " + skills.join(" | "), { fontSize: compact ? 8 : 8.5, lineHeight: 10.5, after: 1 });
-      safeArray(item.outcomes, 10).forEach(function(outcome) {
-        const text = "• " + clean(outcome);
-        const lines = doc.splitTextToSize(text, contentWidth - 10);
-        ensureSpace(lines.length * 11 + 2);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(compact ? 8.2 : 8.8);
-        doc.text(lines, margin + 8, y);
-        y += lines.length * (compact ? 10.2 : 11) + 2;
-      });
-      y += 3;
-    });
-  }
-
   const education = safeArray(resume.education, 10);
   if (education.length) {
     section("Education");
@@ -278,6 +254,30 @@ async function makePdf(resume) {
     });
     y += 3;
   });
+
+  const projects = safeArray(resume.projects, 10);
+  if (projects.length) {
+    section("Projects");
+    projects.forEach(function(item) {
+      const title = [clean(item.name), clean(item.role)].filter(Boolean).join(" — ") || "Project";
+      drawLines(title, { fontSize: 9.5, bold: true, lineHeight: 12, after: 1 });
+      if (clean(item.description)) drawLines(item.description, { fontSize: compact ? 8.5 : 9, lineHeight: compact ? 10.5 : 11.5, after: 2 });
+      const tools = safeArray(item.tools, 20).map(clean).filter(Boolean);
+      const skills = safeArray(item.skills, 20).map(clean).filter(Boolean);
+      if (tools.length) drawLines("Tools: " + tools.join(" | "), { fontSize: compact ? 8 : 8.5, lineHeight: 10.5, after: 1 });
+      if (skills.length) drawLines("Skills: " + skills.join(" | "), { fontSize: compact ? 8 : 8.5, lineHeight: 10.5, after: 1 });
+      safeArray(item.outcomes, 10).forEach(function(outcome) {
+        const text = "• " + clean(outcome);
+        const lines = doc.splitTextToSize(text, contentWidth - 10);
+        ensureSpace(lines.length * 11 + 2);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(compact ? 8.2 : 8.8);
+        doc.text(lines, margin + 8, y);
+        y += lines.length * (compact ? 10.2 : 11) + 2;
+      });
+      y += 3;
+    });
+  }
 
   const education = safeArray(resume.education, 10);
   if (education.length) {
