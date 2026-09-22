@@ -235,7 +235,7 @@ export default async function handler(req, res) {
     "ORIGINAL RESUME TEXT (preserve relevant supported coverage; do not create claims from text that cannot be tied back to supplied evidence IDs):",
     masterResume || "Original resume text unavailable.",
     "",
-    "ROLE CATALOG (metadata is immutable):"
+    "ROLE CATALOG (metadata is immutable):",
     JSON.stringify(roleCatalog.slice(0, 15)),
     "",
     "EVIDENCE CATALOG (all generated claims must cite IDs from here):",
