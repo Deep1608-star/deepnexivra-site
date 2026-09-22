@@ -423,7 +423,7 @@ function scannerApplyScoreModel(model, options = {}) {
   const score = Math.round(Number(model?.score) || 0);
   if ($("scannerScoreValue")) $("scannerScoreValue").textContent = score;
   if ($("scannerLiveScore")) $("scannerLiveScore").textContent = score + "%";
-  if ($("scannerScoreRing")) $("scannerScoreRing").style.setProperty("--scan-score", score);
+  if ($("scannerScoreRing")) $("scannerScoreRing").style.setProperty("--scan-score", score + "%");
   if ($("scannerMatchedCount")) $("scannerMatchedCount").textContent = model?.matched ?? 0;
   if ($("scannerMissingCount")) $("scannerMissingCount").textContent = model?.missing ?? 0;
   if ($("scannerKeywordCount")) $("scannerKeywordCount").textContent = model?.total ?? 0;
