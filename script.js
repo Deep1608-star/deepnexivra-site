@@ -452,7 +452,7 @@ function renderScannerKeywordReport(text) {
   const root = $("scannerKeywordReport");
   if (!root || !state.latest) return;
   const model = scannerModelForText(text, state.latest.keywords || []);
-  scannerApplyScoreModel(model);
+  scannerApplyScoreModel(model,{updateResult:true});
   root.innerHTML = "";
 
   const filtered = model.items
