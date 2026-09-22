@@ -336,6 +336,217 @@ function createTextBlock(parent, className, text) {
   return div;
 }
 
+let scannerKeywordFilter = "all";
+let scannerLiveTimer = null;
+
+function scannerNormalize(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[’\']/g, "")
+    .replace(/[^a-z0-9+#.]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function scannerPhrasePresent(text, phrase) {
+  const needle = scannerNormalize(phrase);
+  if (!needle) return false;
+  const hay = " " + scannerNormalize(text) + " ";
+  return hay.includes(" " + needle + " ");
+}
+
+function scannerKeywordPresent(text, item) {
+  const terms = [item?.keyword].concat(Array.isArray(item?.aliases) ? item.aliases : []).filter(Boolean);
+  return terms.some(term => scannerPhrasePresent(text, term));
+}
+
+function scannerModelForText(text, sourceKeywords) {
+  const items = (sourceKeywords || []).map(item => Object.assign({}, item, {
+    excluded: !!item.excluded,
+    present: scannerKeywordPresent(text, item),
+    points: Number(item.points || 0)
+  }));
+  const active = items.filter(item => !item.excluded);
+  const totalPoints = active.reduce((sum,item) => sum + Number(item.points || 0), 0);
+  const earnedPoints = active.reduce((sum,item) => sum + (item.present ? Number(item.points || 0) : 0), 0);
+  const score = totalPoints ? Math.max(0, Math.min(100, Math.round((earnedPoints / totalPoints) * 100))) : 0;
+  return {
+    items,
+    score,
+    matched: active.filter(item => item.present).length,
+    missing: active.filter(item => !item.present).length,
+    total: active.length
+  };
+}
+
+function scannerCategoryLabel(value) {
+  const map = {
+    hard_skill:"Hard skill", tool:"Tool", certification:"Certification", qualification:"Qualification",
+    responsibility:"Responsibility", soft_skill:"Soft skill", domain:"Domain"
+  };
+  return map[value] || "Keyword";
+}
+
+function scannerCurrentResumeText() {
+  const editor = $("scannerLiveEditor");
+  if (editor && editor.value.trim()) return editor.value.trim();
+  return String(state.importedResumeText || state.masterResume || latestTargetScan()?.resumeSnapshot || "").trim();
+}
+
+function scannerApplyScoreModel(model, options = {}) {
+  const score = Math.round(Number(model?.score) || 0);
+  if ($("scannerScoreValue")) $("scannerScoreValue").textContent = score;
+  if ($("scannerLiveScore")) $("scannerLiveScore").textContent = score + "%";
+  if ($("scannerScoreRing")) $("scannerScoreRing").style.setProperty("--scan-score", score);
+  if ($("scannerMatchedCount")) $("scannerMatchedCount").textContent = model?.matched ?? 0;
+  if ($("scannerMissingCount")) $("scannerMissingCount").textContent = model?.missing ?? 0;
+  if ($("scannerKeywordCount")) $("scannerKeywordCount").textContent = model?.total ?? 0;
+  if ($("scoreRequirement")) $("scoreRequirement").textContent = score + "%";
+  if ($("scannerScoreLabel")) {
+    $("scannerScoreLabel").textContent = score >= 90
+      ? "Excellent keyword alignment for this posting."
+      : score >= 80
+        ? "Strong alignment. Review the remaining high-value gaps."
+        : score >= 60
+          ? "Good foundation, but important job language is still missing."
+          : "The resume is missing several high-value terms from this posting.";
+  }
+  if (options.updateResult && state.latest) {
+    state.latest.keywords = model.items;
+    state.latest.keywordStats = { score, matched:model.matched, missing:model.missing, total:model.total, model:"weighted-keyword-v1" };
+    state.latest.scores = state.latest.scores || {};
+    state.latest.scores.requirementMatch = score;
+    const scan = latestTargetScan();
+    if (scan?.result) scan.result = state.latest;
+    persist();
+  }
+}
+
+function renderScannerKeywordReport(text) {
+  const root = $("scannerKeywordReport");
+  if (!root || !state.latest) return;
+  const model = scannerModelForText(text, state.latest.keywords || []);
+  scannerApplyScoreModel(model);
+  root.innerHTML = "";
+
+  const filtered = model.items
+    .filter(item => scannerKeywordFilter === "all" || (scannerKeywordFilter === "missing" ? !item.present : item.present))
+    .sort((a,b) => {
+      if (a.present !== b.present) return a.present ? 1 : -1;
+      return Number(b.points || 0) - Number(a.points || 0);
+    });
+
+  if (!filtered.length) {
+    root.className = "scanner-keyword-report empty-state";
+    root.textContent = "No keywords in this filter.";
+    return;
+  }
+  root.className = "scanner-keyword-report";
+
+  filtered.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "scanner-keyword-row" + (item.present ? " found" : " missing") + (item.excluded ? " excluded" : "");
+
+    const status = document.createElement("span");
+    status.className = "scanner-keyword-status";
+    status.textContent = item.present ? "✓" : "!";
+
+    const main = document.createElement("div");
+    main.className = "scanner-keyword-main";
+    const strong = document.createElement("strong");
+    strong.textContent = item.keyword || "";
+    const meta = document.createElement("small");
+    meta.textContent = scannerCategoryLabel(item.category) + " · " + (item.importance || "medium") + " priority";
+    main.append(strong,meta);
+
+    const frequency = document.createElement("div");
+    frequency.className = "scanner-keyword-metric";
+    frequency.innerHTML = "<strong>" + (item.frequency || 1) + "×</strong><span>in job</span>";
+
+    const points = document.createElement("div");
+    points.className = "scanner-keyword-metric";
+    points.innerHTML = "<strong>" + Number(item.points || 0).toFixed(1) + "</strong><span>points</span>";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "keyword-exclude-btn";
+    toggle.textContent = item.excluded ? "Include" : "Exclude";
+    toggle.addEventListener("click", () => {
+      const source = (state.latest.keywords || []).find(k => scannerNormalize(k.keyword) === scannerNormalize(item.keyword));
+      if (source) source.excluded = !source.excluded;
+      const updated = scannerModelForText(scannerCurrentResumeText(), state.latest.keywords || []);
+      scannerApplyScoreModel(updated,{updateResult:true});
+      renderScannerKeywordReport(scannerCurrentResumeText());
+    });
+
+    row.append(status,main,frequency,points,toggle);
+    root.appendChild(row);
+  });
+}
+
+function scannerResumeChecks(text) {
+  const value = String(text || "");
+  const normalized = scannerNormalize(value);
+  const words = normalized.split(" ").filter(Boolean);
+  const numberCount = (value.match(/\b\d+(?:[.,]\d+)?%?\b/g) || []).length;
+  const firstPerson = /\b(i|me|my|mine|we|our)\b/i.test(value);
+  const weakPhrases = (value.match(/\b(responsible for|helped with|worked on|duties included)\b/gi) || []).length;
+  const actionVerbs = (value.match(/\b(led|managed|built|created|implemented|improved|reduced|increased|coordinated|analyzed|developed|delivered|optimized|resolved|trained|supported|streamlined)\b/gi) || []).length;
+  const hasExperience = /\b(experience|employment|professional experience|work history)\b/i.test(value);
+  const hasEducation = /\beducation\b/i.test(value);
+  const hasSkills = /\b(skills|core skills|technical skills|competencies)\b/i.test(value);
+  const hasEmail = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(value);
+  const hasPhone = /(?:\+?\d[\d\s().-]{7,}\d)/.test(value);
+  const sensibleLength = words.length >= 250 && words.length <= 1100;
+  const metricsHealthy = numberCount >= Math.max(2, Math.round(words.length / 180));
+  const actionHealthy = actionVerbs >= Math.max(3, Math.round(words.length / 140));
+
+  return [
+    {pass:hasExperience,label:"Standard Experience heading",detail:hasExperience ? "Experience section is easy to identify." : "Use a standard heading such as Professional Experience."},
+    {pass:hasEducation,label:"Education section",detail:hasEducation ? "Education section detected." : "Add a clear Education heading when applicable."},
+    {pass:hasSkills,label:"Skills section",detail:hasSkills ? "Skills section detected." : "A focused Skills section can improve keyword retrieval."},
+    {pass:hasEmail,label:"Email detected",detail:hasEmail ? "Contact email is present." : "Add a professional contact email."},
+    {pass:hasPhone,label:"Phone detected",detail:hasPhone ? "Phone number is present." : "Add a reachable phone number."},
+    {pass:sensibleLength,label:"Resume length",detail:sensibleLength ? "Text length is within a practical ATS/recruiter range." : "Resume may be unusually short or long; review content density."},
+    {pass:metricsHealthy,label:"Measurable impact",detail:metricsHealthy ? "Resume contains a useful amount of quantified evidence." : "Add truthful metrics where you actually have them."},
+    {pass:actionHealthy,label:"Action-oriented bullets",detail:actionHealthy ? "Strong action verbs are present." : "Lead more bullets with clear action verbs."},
+    {pass:!firstPerson,label:"Professional resume voice",detail:!firstPerson ? "No unnecessary first-person pronouns detected." : "Remove first-person pronouns from resume bullets."},
+    {pass:weakPhrases <= 1,label:"Weak phrasing",detail:weakPhrases <= 1 ? "Little or no weak duty phrasing detected." : "Replace phrases like responsible for with stronger action language."}
+  ];
+}
+
+function renderScannerChecks(text) {
+  const root = $("scannerChecks");
+  if (!root) return;
+  const checks = scannerResumeChecks(text);
+  root.innerHTML = "";
+  checks.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "scanner-check-row " + (item.pass ? "pass" : "warn");
+    const icon = document.createElement("span");
+    icon.className = "scanner-check-icon";
+    icon.textContent = item.pass ? "✓" : "!";
+    const body = document.createElement("div");
+    const strong = document.createElement("strong");
+    strong.textContent = item.label;
+    const small = document.createElement("small");
+    small.textContent = item.detail;
+    body.append(strong,small);
+    row.append(icon,body);
+    root.appendChild(row);
+  });
+  const passed = checks.filter(item => item.pass).length;
+  if ($("scannerCheckSummary")) $("scannerCheckSummary").textContent = passed + "/" + checks.length + " passed";
+}
+
+function renderScannerWorkspace(result, resumeText) {
+  if (!result) return;
+  if (result.originalKeywordScore == null) result.originalKeywordScore = result.scores?.requirementMatch ?? 0;
+  const text = String(resumeText || scannerCurrentResumeText() || "");
+  if ($("scannerLiveEditor")) $("scannerLiveEditor").value = text;
+  renderScannerKeywordReport(text);
+  renderScannerChecks(text);
+}
 function renderScan(result) {
   state.latest = result;
   $("scanResults").classList.remove("hidden");
@@ -347,6 +558,7 @@ function renderScan(result) {
   $("scoreReadiness").textContent = result.scores?.readiness ?? 0;
   $("resultRole").textContent = result.role || "Target role";
   $("resultSummary").textContent = result.summary || "";
+  renderScannerWorkspace(result, String(state.importedResumeText || state.masterResume || ""));
   const recommendation = $("matchRecommendation");
   if (recommendation) {
     recommendation.textContent = currentMatch >= 90
