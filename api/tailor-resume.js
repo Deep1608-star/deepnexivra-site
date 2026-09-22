@@ -210,6 +210,10 @@ export default async function handler(req, res) {
     "- Optimize relevance for a human recruiter and text-based ATS retrieval separately from visual design.",
     "- Front-load the strongest supported evidence for the target role and prefer wording that a recruiter can understand in a 10-15 second first scan.",
     "- Use important target-job terminology when and only when the evidence genuinely supports that concept.",
+    "- Treat the previous job analysis as a coverage checklist: every direct or transferable requirement that has supporting evidence should be represented somewhere in the resume unless doing so would duplicate stronger wording.",
+    "- Preserve relevant source-backed duties, projects, tools, certifications, and accomplishments from the original evidence. Do not make the tailored resume less complete than the source when that content helps the target role.",
+    "- Prefer the exact terminology used by the job posting when the supplied evidence explicitly supports the same concept. This is wording alignment, not permission to create new experience.",
+    "- For supported requirements, make the evidence easy to find in the first scan: summary, core skills, and the most relevant role bullets should carry the strongest target-language coverage.",
     "- When OPTIMIZATION FEEDBACK is supplied, improve the resume specifically against the remaining supported gaps, missing supported terms, weak evidence placement, and recruiter/ATS weaknesses identified there.",
     "- Never try to eliminate a true evidence gap by inventing a claim. If the candidate does not support a requirement, preserve it as a gap rather than forcing the resume toward 100%.",
     "- Do not claim knowledge of an employer's internal ATS score.",
@@ -284,7 +288,7 @@ export default async function handler(req, res) {
           record: record,
           priority: relevanceScore((record.title || "") + " " + (record.text || "") + " " + (record.sourceSnippet || ""))
         };
-      }).sort(function(a,b) { return b.priority - a.priority; }).slice(0, 4);
+      }).sort(function(a,b) { return b.priority - a.priority; }).slice(0, 8);
 
       if (!candidates.length) return;
 
@@ -320,7 +324,7 @@ export default async function handler(req, res) {
     skillCandidates.forEach(function(item) {
       const name = String(item.record.title || item.record.text || "").trim();
       const key = norm(name);
-      if (!name || !key || seenSkills.has(key) || coreSkills.length >= 12) return;
+      if (!name || !key || seenSkills.has(key) || coreSkills.length >= 24) return;
       seenSkills.add(key);
       usedEvidence.add(item.record.evidenceId);
       coreSkills.push({
@@ -329,6 +333,39 @@ export default async function handler(req, res) {
         reason: "Source-backed capability relevant to the target role."
       });
     });
+
+    const summaryCandidates = roles.map(function(role) {
+      const roleEvidence = evidence.filter(function(record) {
+        return evidenceMatchesRole(record, role) && (record.text || record.sourceSnippet);
+      }).sort(function(a,b) {
+        return relevanceScore((b.title || "") + " " + (b.text || "")) -
+          relevanceScore((a.title || "") + " " + (a.text || ""));
+      });
+      return {
+        role: role,
+        evidence: roleEvidence,
+        score: roleEvidence.length
+          ? relevanceScore((role.title || "") + " " + (role.summary || "") + " " + (roleEvidence[0].text || ""))
+          : 0
+      };
+    }).filter(function(item) { return item.evidence.length; })
+      .sort(function(a,b) { return b.score - a.score; });
+
+    let fallbackSummaryText = "";
+    let fallbackSummaryEvidence = [];
+    if (summaryCandidates.length) {
+      const best = summaryCandidates[0];
+      fallbackSummaryEvidence = best.evidence.slice(0, 3).map(function(record) { return record.evidenceId; });
+      const sourceSummary = String(best.role.summary || "").trim();
+      if (sourceSummary) {
+        fallbackSummaryText = sourceSummary;
+      } else {
+        const snippets = best.evidence.slice(0, 2).map(function(record) {
+          return String(record.text || record.sourceSnippet || "").trim();
+        }).filter(Boolean);
+        fallbackSummaryText = snippets.join(" ");
+      }
+    }
 
     const priorities = [];
     experiences.forEach(function(exp) {
@@ -342,10 +379,10 @@ export default async function handler(req, res) {
       documentTitle: (jobAnalysis.role || "Target Role") + " — Tailored Resume",
       targetRole: jobAnalysis.role || "Target Role",
       professionalSummary: {
-        text: "",
-        sourceEvidenceIds: [],
+        text: fallbackSummaryText,
+        sourceEvidenceIds: fallbackSummaryEvidence,
         alternatives: [],
-        improvementTip: "Add a concise evidence-backed summary that leads with the strongest target-role proof."
+        improvementTip: "Fallback mode preserved a source-backed summary from the uploaded resume evidence."
       },
       coreSkills: coreSkills,
       experiences: experiences,
@@ -365,7 +402,7 @@ export default async function handler(req, res) {
         groundingCoverage: experiences.length ? 100 : 0,
         atsSafety: 92,
         jobAlignment: avgPriority,
-        notes: ["Fallback mode prioritized same-role evidence by target-job relevance."]
+        notes: ["Fallback mode preserved a broader set of same-role evidence and source-backed skills instead of compressing the resume."]
       }
     };
   }
@@ -411,18 +448,18 @@ export default async function handler(req, res) {
 
     try {
       attempt = await callTailorModel(
-        process.env.OPENAI_TAILOR_MODEL || "gpt-5.6-terra",
-        "medium",
-        100000
+        process.env.OPENAI_TAILOR_MODEL || process.env.OPENAI_CAREER_MODEL || "gpt-5.6-sol",
+        "high",
+        140000
       );
     } catch (error) {
       if (error && error.name !== "AbortError") throw error;
       fallbackReason = "primary tailoring request timed out";
       try {
         attempt = await callTailorModel(
-          process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-luna",
-          "low",
-          70000
+          process.env.OPENAI_TAILOR_FALLBACK_MODEL || "gpt-5.6-terra",
+          "medium",
+          105000
         );
       } catch (fallbackError) {
         const result = safeFallback(fallbackReason + "; fallback model was unavailable");
