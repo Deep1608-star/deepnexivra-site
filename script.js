@@ -351,6 +351,7 @@ function scannerNormalize(value) {
     .toLowerCase()
     .replace(/[’\']/g, "")
     .replace(/[^a-z0-9+#.]+/g, " ")
+    .replace(/\.+(?=\s|$)/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -1424,11 +1425,11 @@ async function ensureTailoringGraph() {
   }
 }
 
-async function requestTailoredResume(optimizationFeedback = null) {
+async function requestTailoredResume(optimizationFeedback = null, context = {}) {
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
-  setAutoOptimizeStage("Preparing resume...");
-  const graph = await ensureTailoringGraph();
+  const graph = context.graph || await ensureTailoringGraph();
+  setAutoOptimizeStage("Writing optimized resume...");
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 155000);
@@ -1440,7 +1441,7 @@ async function requestTailoredResume(optimizationFeedback = null) {
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
         careerGraph: graph,
-        masterResume: scannerCurrentResumeText() || state.masterResume,
+        masterResume: context.sourceText ?? (scannerCurrentResumeText() || state.masterResume),
         jobDescription: scan.jobSnapshot || "",
         jobAnalysis: scan.result || {},
         optimizationFeedback
@@ -1479,9 +1480,8 @@ function skillSelectedCount() {
   return (state.tailoredResume?.coreSkills || []).filter(s => s.selected !== false).length;
 }
 
-function approvedResumePayload() {
+function approvedResumePayload(draft = state.tailoredResume) {
   const graph = ensureCareerGraphIds();
-  const draft = state.tailoredResume;
   if (!draft) return null;
   if (draft.versionLoaded && draft.versionApprovedResume && !draft.versionModified) {
     return JSON.parse(JSON.stringify(draft.versionApprovedResume));
@@ -1859,20 +1859,15 @@ async function maximizeTailoredMatch(options = {}) {
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
 
-  const previousTailored = state.tailoredResume
-    ? JSON.parse(JSON.stringify(state.tailoredResume))
-    : null;
-
-  setAutoOptimizeStage("Preparing resume...");
-  const graph = await ensureTailoringGraph();
-
-  let sourceText = String(scan.resumeSnapshot || state.masterResume || state.importedResumeText || "");
-  if (previousTailored) {
-    const existingPayload = approvedResumePayload();
-    if (existingPayload) sourceText = resumePayloadToAnalysisText(existingPayload);
-  } else if ($("scannerLiveEditor")?.value.trim()) {
-    sourceText = $("scannerLiveEditor").value.trim();
-  }
+  // Snapshot the actual editor before any asynchronous work. Never compare a
+  // new candidate to an older structured draft when live edits are visible.
+  const editor = $("scannerLiveEditor");
+  const editorSnapshot = editor ? editor.value : null;
+  const sourceText = editor ? editor.value.trim() : scannerCurrentResumeText();
+  if (sourceText.length < 200) throw new Error("Resume text is too short to optimize. Your edits were kept.");
+  const previousTailored = state.tailoredResume;
+  const draftSnapshot = JSON.stringify(previousTailored);
+  const keywordSnapshot = JSON.stringify(scan.result?.keywords || []);
 
   const sourceModel = scannerModelForText(sourceText, scan.result?.keywords || []);
   const baselineMatch = sourceModel.score;
@@ -1883,6 +1878,7 @@ async function maximizeTailoredMatch(options = {}) {
     .slice(0,18);
 
   if (!missing.length) {
+    setAutoOptimizeStage("Complete — no missing weighted keywords");
     toast("No missing weighted keywords remain in the current resume.");
     return baselineMatch;
   }
@@ -1893,32 +1889,49 @@ async function maximizeTailoredMatch(options = {}) {
     instruction:"Optimize this resume against the weighted missing job terms. Preserve strong existing content. Use exact job terminology only when candidate evidence supports the same concept. Return one stronger optimized version for review."
   };
 
-  setAutoOptimizeStage("Writing optimized resume...");
-  state.tailoredResume = boostSupportedJobTerms(
-    await requestTailoredResume(feedback),
+  setAutoOptimizeStage("Preparing resume...");
+  const graph = await ensureTailoringGraph();
+  const candidate = boostSupportedJobTerms(
+    await requestTailoredResume(feedback, {graph, sourceText}),
     scan,
     graph
   );
-  state.applicationPackage = null;
-  persist();
-
   setAutoOptimizeStage("Scoring optimized resume...");
-  await scoreCurrentTailoredResume({quiet:true});
-  const optimizedMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+  // Score without mutating or persisting active state. Failure leaves the
+  // previous draft, application package, history and live editor untouched.
+  const optimizedPayload = approvedResumePayload(candidate);
+  if (!optimizedPayload) throw new Error("The optimized resume could not be scored. Your current resume was kept.");
+  const optimizedText = resumePayloadToAnalysisText(optimizedPayload);
+  if (optimizedText.length < 200) throw new Error("The optimized resume is incomplete. Your current resume was kept.");
+  const optimizedModel = scannerModelForText(optimizedText, sourceModel.items);
+  const optimizedMatch = optimizedModel.score;
+
+  if (latestTargetScan() !== scan || state.tailoredResume !== previousTailored ||
+      JSON.stringify(state.tailoredResume) !== draftSnapshot ||
+      state.careerGraph !== graph ||
+      (editor && editor.value !== editorSnapshot) ||
+      JSON.stringify(scan.result?.keywords || []) !== keywordSnapshot) {
+    setAutoOptimizeStage("Resume or scan changed — current work kept. Run Auto Optimize again.");
+    toast("Your work changed during optimization. Current edits were kept.");
+    return baselineMatch;
+  }
 
   if (optimizedMatch <= baselineMatch) {
-    state.tailoredResume = previousTailored;
-    state.applicationPackage = null;
-    persist();
-    renderTailorStudio();
-    setAutoOptimizeStage("Current resume remains stronger");
+    setAutoOptimizeStage("Complete — current " + baselineMatch + "% kept; generated version scored " + optimizedMatch + "%. No supported score increase found.");
     toast("No further supported improvement was found. Your current " + baselineMatch + "% version was kept.");
     return baselineMatch;
   }
 
-  const optimizedPayload = approvedResumePayload();
-  if (optimizedPayload) {
-    const optimizedText = resumePayloadToAnalysisText(optimizedPayload);
+  candidate.postTailorAnalysis = {
+    scannedAt:new Date().toISOString(), match:optimizedMatch,
+    scores:{requirementMatch:optimizedMatch}, keywords:optimizedModel.items,
+    summary:"Deterministic weighted keyword match against the original job scan.",
+    analysisSource:"weighted-keyword-v1", stale:false,
+    validated:candidate.integrity?.status === "valid"
+  };
+  state.tailoredResume = candidate;
+  state.applicationPackage = null;
+  {
     if ($("scannerLiveEditor")) $("scannerLiveEditor").value = optimizedText;
     renderScannerKeywordReport(optimizedText);
     renderScannerChecks(optimizedText);
@@ -3522,7 +3535,7 @@ async function exportScannerLiveResume(format) {
   const structured = approvedResumePayload();
   if (structured) {
     const structuredText = resumePayloadToAnalysisText(structured);
-    if (scannerNormalize(structuredText) === scannerNormalize(text)) {
+    if (structuredText.trim() === text) {
       return exportResumePayload(format,structured,"Deep-Nexivra");
     }
   }
@@ -3683,6 +3696,7 @@ $("maximizeMatchFromScan").addEventListener("click", async () => {
   } catch (error) {
     console.error(error);
     toast(error.message || "Unable to maximize resume match");
+    setAutoOptimizeStage("Optimization failed — " + (error.message || "Please retry. Your current resume was kept."));
   } finally {
     btn.disabled = false;
     btn.textContent = old;
