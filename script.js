@@ -251,7 +251,7 @@ function localAnalysis(resume, job) {
   };
 }
 
-async function deepAnalyze(resume, job) {
+async function deepAnalyze(resume, job, options = {}) {
   const vault = state.evidence.slice(0,30);
   try {
     const response = await fetch("/api/career-analyze", {
@@ -261,7 +261,8 @@ async function deepAnalyze(resume, job) {
         resume,
         jobDescription: job,
         evidenceVault: vault,
-        careerGraph: state.careerGraph
+        careerGraph: state.careerGraph,
+        analysisMode: options.analysisMode || "candidate-fit"
       })
     });
     if (!response.ok) throw new Error("AI endpoint unavailable");
@@ -1196,7 +1197,7 @@ async function scoreCurrentTailoredResume(options = {}) {
   const resumeText = resumePayloadToAnalysisText(resume);
   if (resumeText.length < 200) throw new Error("Tailored resume does not contain enough content to score");
 
-  const result = await deepAnalyze(resumeText, scan.jobSnapshot);
+  const result = await deepAnalyze(resumeText, scan.jobSnapshot, {analysisMode:"tailored-resume"});
   const scores = result.scores || {};
   const match = Math.max(0, Math.min(100, Math.round(Number(scores.requirementMatch) || 0)));
 
