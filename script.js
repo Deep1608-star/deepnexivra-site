@@ -1270,8 +1270,36 @@ function renderTailorPreview() {
     section.className = "resume-section";
     section.appendChild(sectionTitle("Professional Summary"));
     const p = document.createElement("div");
-    p.className = "resume-summary";
+    p.className = "resume-summary resume-live-edit";
     p.textContent = resume.summary;
+    p.contentEditable = "true";
+    p.spellcheck = true;
+    p.setAttribute("role","textbox");
+    p.setAttribute("aria-label","Edit professional summary");
+    p.title = "Click to edit professional summary";
+    p.addEventListener("input", () => {
+      if (!state.tailoredResume?.professionalSummary) return;
+      state.tailoredResume.professionalSummary.text = p.innerText;
+      const side = $("tailorSummary");
+      if (side && side !== document.activeElement) side.value = p.innerText;
+      setLiveEditDirty("The professional summary was edited directly on the resume and must be revalidated.");
+      scheduleTailorHistory("Live edit professional summary");
+      persist();
+    });
+    p.addEventListener("blur", () => {
+      if (!state.tailoredResume?.professionalSummary) return;
+      const cleaned = cleanResumeEditText(p.innerText);
+      state.tailoredResume.professionalSummary.text = cleaned;
+      p.textContent = cleaned;
+      const side = $("tailorSummary");
+      if (side) side.value = cleaned;
+      persist();
+      renderTailorAudit();
+      measureResumeFit();
+    });
+    p.addEventListener("keydown", event => {
+      if (event.key === "Escape") p.blur();
+    });
     section.appendChild(p);
     paper.appendChild(section);
   }
@@ -1309,9 +1337,50 @@ function renderTailorPreview() {
         job.appendChild(meta);
       }
       const ul = document.createElement("ul");
-      exp.bullets.forEach(text => {
+      exp.bullets.forEach((text,index) => {
         const li = document.createElement("li");
         li.textContent = text;
+        const roleId = exp._roleId || "";
+        const bulletId = (exp._bulletIds || [])[index] || "";
+        if (roleId && bulletId) {
+          li.className = "resume-live-edit resume-live-bullet";
+          li.contentEditable = "true";
+          li.spellcheck = true;
+          li.dataset.roleId = roleId;
+          li.dataset.bulletId = bulletId;
+          li.setAttribute("role","textbox");
+          li.setAttribute("aria-label","Edit resume bullet");
+          li.title = "Click to edit this bullet";
+          li.addEventListener("input", () => {
+            const bullet = tailorBulletById(roleId, bulletId);
+            if (!bullet) return;
+            bullet.editedText = li.innerText;
+            bullet.accepted = true;
+            syncBulletEditorValue(bulletId, li.innerText);
+            setLiveEditDirty("A resume bullet was edited directly on the resume and must be revalidated.");
+            scheduleTailorHistory("Live edit resume bullet");
+            persist();
+          });
+          li.addEventListener("blur", () => {
+            const bullet = tailorBulletById(roleId, bulletId);
+            if (!bullet) return;
+            const cleaned = cleanResumeEditText(li.innerText);
+            bullet.editedText = cleaned;
+            li.textContent = cleaned;
+            syncBulletEditorValue(bulletId, cleaned);
+            persist();
+            renderTailorAudit();
+            measureResumeFit();
+          });
+          li.addEventListener("keydown", event => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              li.blur();
+            } else if (event.key === "Escape") {
+              li.blur();
+            }
+          });
+        }
         ul.appendChild(li);
       });
       job.appendChild(ul);
