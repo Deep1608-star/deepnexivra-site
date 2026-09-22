@@ -499,15 +499,10 @@ export default async function handler(req, res) {
     }
 
     if (!attempt) {
-      const result = safeFallback(failureReasons.join("; ") || "AI tailoring models were unavailable");
-      if (!result.experiences.length) {
-        return res.status(422).json({ ok: false, message: "No role-specific evidence was available to build a safe fallback resume" });
-      }
-      return res.status(200).json({
-        ok: true,
-        result: result,
-        fallback: true,
-        fallbackReason: failureReasons.join("; ")
+      return res.status(503).json({
+        ok: false,
+        message: "High-quality resume generation is temporarily unavailable. Please retry.",
+        detail: failureReasons.join("; ")
       });
     }
 
@@ -587,14 +582,10 @@ export default async function handler(req, res) {
     result.documentTitle = result.targetRole + " — Tailored Resume";
 
     if (retainedBullets === 0) {
-      const fallback = safeFallback("AI output contained no bullets with valid same-role evidence");
-      if (!fallback.experiences.length) {
-        return res.status(422).json({
-          ok: false,
-          message: "No role-specific evidence-grounded bullets could be generated for this target job"
-        });
-      }
-      return res.status(200).json({ ok: true, result: fallback, fallback: true });
+      return res.status(422).json({
+        ok: false,
+        message: "The generated resume did not meet Deep Nexivra's evidence-quality threshold. Please retry."
+      });
     }
 
     return res.status(200).json({ ok: true, result: result });
@@ -602,13 +593,10 @@ export default async function handler(req, res) {
     const reason = error && error.name === "AbortError"
       ? "tailoring request timed out"
       : (error && error.message ? error.message : "tailoring request failed");
-    const fallback = safeFallback(reason);
-    if (fallback.experiences.length) {
-      return res.status(200).json({ ok: true, result: fallback, fallback: true });
-    }
     return res.status(500).json({
       ok: false,
-      message: "Unable to generate the tailored resume: " + reason
+      message: "Unable to generate a high-quality tailored resume. Please retry.",
+      detail: reason
     });
   }
 }
