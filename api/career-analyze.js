@@ -201,6 +201,83 @@ export default async function handler(req, res) {
     }
   };
 
+  function normalizeScanText(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[’\']/g, "")
+      .replace(/[^a-z0-9+#.]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function phraseCount(text, phrase) {
+    const hay = " " + normalizeScanText(text) + " ";
+    const needle = normalizeScanText(phrase);
+    if (!needle) return 0;
+    const token = " " + needle + " ";
+    let count = 0;
+    let from = 0;
+    while (true) {
+      const index = hay.indexOf(token, from);
+      if (index < 0) break;
+      count += 1;
+      from = index + token.length - 1;
+    }
+    return count;
+  }
+
+  function termPresent(text, keyword, aliases) {
+    const terms = [keyword].concat(Array.isArray(aliases) ? aliases : []).filter(Boolean);
+    return terms.some(function(term) { return phraseCount(text, term) > 0; });
+  }
+
+  function keywordRawWeight(item) {
+    const categoryBase = {
+      hard_skill: 1.55, tool: 1.55, certification: 1.6, qualification: 1.45,
+      responsibility: 1.25, domain: 1.15, soft_skill: 0.8
+    };
+    const importanceBase = { high: 1.45, medium: 1, low: 0.72 };
+    const frequencyBoost = 1 + Math.min(Math.max((item.frequency || 1) - 1, 0), 5) * 0.2;
+    return (categoryBase[item.category] || 1) * (importanceBase[item.importance] || 1) * frequencyBoost;
+  }
+
+  function enrichKeywordModel(items) {
+    const seen = new Set();
+    const cleaned = (Array.isArray(items) ? items : []).map(function(item) {
+      const keyword = String(item && item.keyword || "").trim();
+      const key = normalizeScanText(keyword);
+      if (!keyword || !key || seen.has(key)) return null;
+      seen.add(key);
+      const aliases = (Array.isArray(item.aliases) ? item.aliases : [])
+        .map(function(value) { return String(value || "").trim(); })
+        .filter(Boolean)
+        .slice(0, 4);
+      let frequency = phraseCount(jobDescription, keyword);
+      aliases.forEach(function(alias) { frequency = Math.max(frequency, phraseCount(jobDescription, alias)); });
+      frequency = Math.max(1, frequency);
+      return {
+        keyword: keyword, category: item.category || "domain", importance: item.importance || "medium",
+        aliases: aliases, frequency: frequency, present: termPresent(resume, keyword, aliases),
+        excluded: false, rawWeight: 0, points: 0
+      };
+    }).filter(Boolean).slice(0, 30);
+
+    cleaned.forEach(function(item) { item.rawWeight = keywordRawWeight(item); });
+    const total = cleaned.reduce(function(sum,item) { return sum + item.rawWeight; }, 0) || 1;
+    cleaned.forEach(function(item) {
+      item.points = Math.max(0.5, Math.round((item.rawWeight / total) * 1000) / 10);
+      delete item.rawWeight;
+    });
+    return cleaned;
+  }
+
+  function keywordScore(items) {
+    const active = (items || []).filter(function(item) { return !item.excluded; });
+    const total = active.reduce(function(sum,item) { return sum + Number(item.points || 0); }, 0);
+    if (!total) return 0;
+    const earned = active.reduce(function(sum,item) { return sum + (item.present ? Number(item.points || 0) : 0); }, 0);
+    return Math.max(0, Math.min(100, Math.round((earned / total) * 100)));
+  }
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
@@ -245,6 +322,14 @@ export default async function handler(req, res) {
     }
 
     const result = JSON.parse(outputText);
+    result.keywords = enrichKeywordModel(result.keywords);
+    result.keywordStats = {
+      score: keywordScore(result.keywords),
+      matched: result.keywords.filter(function(item) { return item.present; }).length,
+      missing: result.keywords.filter(function(item) { return !item.present; }).length,
+      total: result.keywords.length,
+      model: "weighted-keyword-v1"
+    };
 
     if (referenceRequirements.length) {
       const normalizeRequirement = function(value) {
@@ -311,7 +396,9 @@ export default async function handler(req, res) {
       result.requirements = requirementItems;
     }
 
-    if (requirementItems.length) {
+    if (result.keywordStats && result.keywordStats.total) {
+      result.scores.requirementMatch = clamp(result.keywordStats.score);
+    } else if (requirementItems.length) {
       const coveragePoints = requirementItems.reduce(function(total, item) {
         if (item.status === "direct") return total + 100;
         if (item.status === "transferable") return total + 55;
