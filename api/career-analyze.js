@@ -57,8 +57,12 @@ export default async function handler(req, res) {
     "Treat keyword presence as insufficient by itself for direct evidence.",
     "Use the Career Graph to find stronger source-backed relationships across roles, tools, achievements, education, and projects, but never treat graph structure as permission to add a claim that is not supported by candidate evidence.",
     "In evidence, paraphrase the actual supporting candidate fact.",
-    "Return 10-18 high-value role terms, tools, competencies, certifications, or domain phrases.",
-    "present=true only when candidate material genuinely contains or clearly supports the concept.",
+    "Return 18-30 high-value ATS search terms from the job posting. Prefer concrete tools, hard skills, certifications, qualifications, domain terms, named responsibilities, and genuinely meaningful soft skills.",
+    "For every keyword classify category as hard_skill, tool, certification, qualification, responsibility, soft_skill, or domain.",
+    "For every keyword classify importance as high, medium, or low based on whether it is a must-have, repeated core responsibility, preferred requirement, or incidental phrase.",
+    "Provide 0-4 common aliases or equivalent spellings only when they genuinely refer to the same concept.",
+    "Do not use generic filler terms such as team, work, role, candidate, company, opportunity, environment, responsibilities, or experience as keywords.",
+    "The server will calculate frequency, weighted points, and exact resume presence deterministically after extraction.",
     "Give 4-8 rewrite recommendations. When evidence is missing, make the recommendation conditional instead of inventing content.",
     "Generate 6-10 interview questions based on key responsibilities, gaps, and claims likely to be tested.",
     "Score requirementMatch from supported job requirement coverage.",
@@ -143,10 +147,16 @@ export default async function handler(req, res) {
         items: {
           type: "object",
           additionalProperties: false,
-          required: ["keyword","present"],
+          required: ["keyword","present","category","importance","aliases"],
           properties: {
             keyword: { type: "string" },
-            present: { type: "boolean" }
+            present: { type: "boolean" },
+            category: {
+              type: "string",
+              enum: ["hard_skill","tool","certification","qualification","responsibility","soft_skill","domain"]
+            },
+            importance: { type: "string", enum: ["high","medium","low"] },
+            aliases: { type: "array", items: { type: "string" }, maxItems: 4 }
           }
         }
       },
