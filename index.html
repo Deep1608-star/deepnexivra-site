@@ -343,10 +343,71 @@
             <div class="panel result-summary">
               <div><span class="eyebrow">Your result</span><h3 id="resultRole">Target role</h3><p id="resultSummary"></p><p id="matchRecommendation" class="match-recommendation"></p></div>
               <div class="row-actions result-actions">
-                <button class="primary-btn generate-tailored-cta" id="maximizeMatchFromScan">Generate Tailored Resume</button>
+                <button class="primary-btn generate-tailored-cta" id="maximizeMatchFromScan">Auto Optimize Resume</button>
                 <button class="secondary-btn hidden-support-control" id="saveApplication">Save application</button>
               </div>
             </div>
+
+            <div class="scanner-report-shell">
+              <article class="panel scanner-score-panel">
+                <span class="eyebrow">Job Match Score</span>
+                <div class="scanner-score-ring" id="scannerScoreRing" style="--scan-score:0">
+                  <div><strong id="scannerScoreValue">0</strong><span>/100</span></div>
+                </div>
+                <p id="scannerScoreLabel">Run a scan to calculate your weighted keyword match.</p>
+                <div class="scanner-stat-row">
+                  <div><strong id="scannerMatchedCount">0</strong><span>Matched</span></div>
+                  <div><strong id="scannerMissingCount">0</strong><span>Missing</span></div>
+                  <div><strong id="scannerKeywordCount">0</strong><span>Keywords</span></div>
+                </div>
+                <div class="scanner-target-note">Recommended target: <strong>80+</strong></div>
+              </article>
+
+              <article class="panel scanner-keyword-panel">
+                <div class="panel-heading scanner-heading">
+                  <div><span class="eyebrow">Keyword Analysis</span><h3>What the job is asking for</h3></div>
+                  <div class="scanner-filters">
+                    <button type="button" class="scanner-filter active" data-keyword-filter="all">All</button>
+                    <button type="button" class="scanner-filter" data-keyword-filter="missing">Missing</button>
+                    <button type="button" class="scanner-filter" data-keyword-filter="found">Found</button>
+                  </div>
+                </div>
+                <p class="scanner-panel-copy">Higher-frequency and higher-importance terms are worth more points. Exclude a term if it genuinely does not apply to the role or to you.</p>
+                <div id="scannerKeywordReport" class="scanner-keyword-report"></div>
+              </article>
+            </div>
+
+            <div class="scanner-detail-grid">
+              <article class="panel scanner-checks-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Resume Checks</span><h3>ATS & recruiter checks</h3></div>
+                  <span class="tag" id="scannerCheckSummary">—</span>
+                </div>
+                <div id="scannerChecks"></div>
+              </article>
+
+              <article class="panel scanner-editor-panel">
+                <div class="panel-heading">
+                  <div><span class="eyebrow">Live Edit</span><h3>Edit and watch the score move</h3></div>
+                  <div class="live-score-pill"><span>Live match</span><strong id="scannerLiveScore">0%</strong></div>
+                </div>
+                <textarea id="scannerLiveEditor" class="scanner-live-editor" spellcheck="true" placeholder="Your parsed resume will appear here after the scan."></textarea>
+                <div class="scanner-editor-footer">
+                  <small>Score updates locally as you edit. This does not claim to reproduce any employer's private ATS algorithm.</small>
+                  <button type="button" class="secondary-btn" id="applyLiveEditorResume">Use edited resume</button>
+                </div>
+              </article>
+            </div>
+
+            <article class="panel scanner-ai-panel hidden" id="scannerAiPanel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">AI Optimization</span><h3>Review optimized changes</h3></div>
+                <div class="row-actions">
+                  <button type="button" class="secondary-btn" id="scannerApplyAll">Apply all supported changes</button>
+                </div>
+              </div>
+              <div id="scannerSuggestionList"></div>
+            </article>
 
             <div class="analysis-grid simplified-hidden">
               <article class="panel"><div class="panel-heading"><h3>Requirement evidence map</h3><span class="tag">Core</span></div><div id="gapTable"></div></article>
