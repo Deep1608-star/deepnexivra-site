@@ -206,6 +206,7 @@ export default async function handler(req, res) {
       .toLowerCase()
       .replace(/[’\']/g, "")
       .replace(/[^a-z0-9+#.]+/g, " ")
+      .replace(/\.+(?=\s|$)/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
