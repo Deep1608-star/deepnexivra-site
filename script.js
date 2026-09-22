@@ -1370,58 +1370,76 @@ async function maximizeTailoredMatch(options = {}) {
   const switchToTailor = options.switchToTailor !== false;
   const scan = latestTargetScan();
   if (!scan) throw new Error("Run a Deep Scan first");
+
   await ensureTailoringGraph();
 
-  const firstDraft = await requestTailoredResume();
-  state.tailoredResume = firstDraft;
+  const targetMatch = 94;
+  const maxTailorPasses = 3;
+
+  state.tailoredResume = await requestTailoredResume();
   state.applicationPackage = null;
   persist();
 
-  const firstAnalysis = await scoreCurrentTailoredResume({quiet:true});
-  const firstSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
-  const firstMatch = Number(firstSnapshot.postTailorAnalysis?.match) || 0;
+  let currentAnalysis = await scoreCurrentTailoredResume({quiet:true});
+  let bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
+  let bestMatch = Number(bestSnapshot.postTailorAnalysis?.match) || 0;
+  let passesUsed = 1;
 
-  let finalMatch = firstMatch;
-  let usedSecondPass = false;
+  while (passesUsed < maxTailorPasses && bestMatch < targetMatch) {
+    const remaining = (currentAnalysis.requirements || []).some(item => item.status !== "direct");
+    if (!remaining || currentAnalysis.analysisSource === "local") break;
 
-  const remaining = (firstAnalysis.requirements || []).some(item => item.status !== "direct");
-  if (firstMatch < 95 && remaining && firstAnalysis.analysisSource !== "local") {
-    const feedback = optimizationFeedbackFromAnalysis(firstAnalysis);
-    const secondDraft = await requestTailoredResume(feedback);
-    state.tailoredResume = secondDraft;
+    const feedback = optimizationFeedbackFromAnalysis(currentAnalysis);
+    feedback.targetMatch = targetMatch;
+    feedback.instruction =
+      "Push the resume as close to " + targetMatch +
+      "% as truthfully possible by improving supported wording, ordering, terminology, evidence placement, and ATS clarity. " +
+      "Never invent missing experience or qualifications.";
+
+    const nextDraft = await requestTailoredResume(feedback);
+    state.tailoredResume = nextDraft;
     state.applicationPackage = null;
     persist();
 
-    const secondAnalysis = await scoreCurrentTailoredResume({quiet:true});
-    const secondMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+    const nextAnalysis = await scoreCurrentTailoredResume({quiet:true});
+    const nextMatch = Number(state.tailoredResume?.postTailorAnalysis?.match) || 0;
+    passesUsed += 1;
 
-    if (secondMatch >= firstMatch) {
-      finalMatch = secondMatch;
-      usedSecondPass = true;
+    if (nextMatch > bestMatch) {
+      bestMatch = nextMatch;
+      bestSnapshot = JSON.parse(JSON.stringify(state.tailoredResume));
+      currentAnalysis = nextAnalysis;
     } else {
-      state.tailoredResume = firstSnapshot;
-      finalMatch = firstMatch;
+      state.tailoredResume = bestSnapshot;
       persist();
+      break;
     }
   }
 
+  state.tailoredResume = bestSnapshot;
   state.changeHistory = [];
   state.historyIndex = -1;
-  recordTailorState(usedSecondPass ? "Auto-maximized tailored resume" : "Generated and scored tailored resume");
+  recordTailorState(
+    passesUsed > 1
+      ? "Generated and auto-optimized tailored resume"
+      : "Generated and scored tailored resume"
+  );
   persist();
   renderDashboard();
   renderTailoredMatchScore();
+
   if (switchToTailor) {
     switchView("match");
     setTimeout(() => $("view-tailor")?.scrollIntoView({behavior:"smooth", block:"start"}), 60);
   }
 
   toast(
-    (usedSecondPass ? "Maximize Match complete: " : "Best supported match: ") +
-    finalMatch + "%"
+    bestMatch >= targetMatch
+      ? "Tailored resume ready · " + bestMatch + "% match"
+      : "Tailored resume ready · best truthful match " + bestMatch + "%"
   );
 
-  return finalMatch;
+  return bestMatch;
 }
 
 function tailorBulletById(roleId, bulletId) {
@@ -1991,7 +2009,7 @@ function renderIntegrityGate() {
     findings.appendChild(div);
   });
 
-  const exportBlocked = status !== "valid";
+  const exportBlocked = !state.tailoredResume;
   $("exportDocx").disabled = exportBlocked;
   $("exportPdf").disabled = exportBlocked;
 }
@@ -2726,9 +2744,29 @@ async function exportResumePayload(format, resume, filenamePrefix) {
 }
 
 async function exportApprovedResume(format) {
+  if (!state.tailoredResume) throw new Error("Generate a tailored resume first");
+
+  if (currentIntegrityStatus() !== "valid") {
+    const validation = await revalidateTailoredResume();
+    state.tailoredResume.integrity = validation;
+    persist();
+
+    if (validation.status !== "valid") {
+      renderIntegrityGate();
+      throw new Error("One or more edits are not supported by the uploaded resume. Correct them before export.");
+    }
+
+    if (state.tailoredResume?.postTailorAnalysis?.stale) {
+      try {
+        await scoreCurrentTailoredResume({quiet:true});
+      } catch (error) {
+        console.warn("Re-score after export validation was unavailable:", error);
+      }
+    }
+  }
+
   const resume = approvedResumePayload();
   if (!resume) throw new Error("Generate a tailored resume first");
-  if (currentIntegrityStatus() !== "valid") throw new Error("Validate manual edits before export");
   return exportResumePayload(format, resume, "Deep-Nexivra");
 }
 
