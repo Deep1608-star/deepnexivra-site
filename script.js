@@ -1404,7 +1404,7 @@ async function requestTailoredResume(optimizationFeedback = null) {
   const graph = await ensureTailoringGraph();
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 275000);
+  const timer = setTimeout(() => controller.abort(), 155000);
 
   try {
     const response = await fetch("/api/tailor-resume", {
