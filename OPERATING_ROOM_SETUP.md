@@ -19,3 +19,7 @@ The Operating Room intake is implemented at `/api/operating-room` and intentiona
 - The visitor can optionally request a private conversation with Deep.
 - Server-side validation and a honeypot field are enabled.
 - If delivery variables are missing, the API returns `delivery_not_configured` and the UI clearly states that nothing was sent.
+
+## Deployment note
+
+After adding or changing Vercel environment variables, create a fresh deployment so the serverless function receives the updated values.
