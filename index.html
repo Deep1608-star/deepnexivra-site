@@ -3,72 +3,274 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Deep Patel — Business Operations Strategist & Systems Builder." />
-  <title>Deep Patel — Business Operations Strategist</title>
+  <meta name="theme-color" content="#07090d" />
+  <meta name="description" content="Deep Patel and Deep Nexivra help businesses remove operational friction, build better systems, and execute smoothly across functions and industries." />
+  <title>Deep Patel | Business Operations Strategist</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <main>
-    <section class="hero">
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Deep Patel home">
+      <span class="brand-mark">D</span>
+      <span><strong>Deep Patel</strong><small>Deep Nexivra</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#method">Method</a>
+      <a href="#operations">Operations</a>
+      <a href="#engage">Work with us</a>
+    </nav>
+    <a class="header-cta" href="#engage">Bring a problem <span>↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero shell">
       <div class="hero-copy">
-        <p class="eyebrow">DEEP PATEL</p>
-        <h1>Strategy → Systems → Execution</h1>
-        <p class="lead">I help businesses make operations run smoothly across sales, projects, product, delivery, people, and execution.</p>
+        <p class="eyebrow">BUSINESS OPERATIONS STRATEGIST · SYSTEMS BUILDER</p>
+        <h1>I make businesses <em>easier to run.</em></h1>
+        <p class="lead">Any industry. Any operating problem. I find the friction, redesign the system, and build execution that runs smoother — across sales, marketing, projects, product, finance, people, supply chain, service, and delivery.</p>
         <div class="actions">
-          <a class="primary" href="#operating-system">Explore my operating system</a>
-          <a class="secondary" href="#work">Selected work</a>
+          <a class="button primary" href="#engage">Bring me an operations problem <span>→</span></a>
+          <a class="button secondary" href="#method">See how I think</a>
+        </div>
+        <div class="hero-principle">
+          <span class="pulse"></span>
+          <p><strong>Industry is context.</strong> The operating problem is the work.</p>
         </div>
       </div>
 
-      <div class="core-stage" aria-label="Execution Core placeholder">
-        <div class="core">
-          <span class="ring ring-a"></span>
-          <span class="ring ring-b"></span>
-          <span class="ring ring-c"></span>
-          <span class="core-center"></span>
-          <span class="node n1">Strategy</span>
-          <span class="node n2">Sales</span>
-          <span class="node n3">Projects</span>
-          <span class="node n4">Product</span>
-          <span class="node n5">People</span>
-          <span class="node n6">Data</span>
+      <div class="core-stage" aria-label="Interactive business execution system">
+        <canvas id="execution-core" aria-hidden="true"></canvas>
+        <div class="core-hud">
+          <div class="hud-top"><span>EXECUTION CORE</span><span class="live-dot">LIVE SYSTEM</span></div>
+          <div class="hud-center">
+            <strong id="core-focus">FLOW</strong>
+            <small>FRICTION → SYSTEM → EXECUTION</small>
+          </div>
+          <span class="core-label label-strategy">Strategy</span>
+          <span class="core-label label-revenue">Revenue</span>
+          <span class="core-label label-product">Product</span>
+          <span class="core-label label-projects">Projects</span>
+          <span class="core-label label-people">People</span>
+          <span class="core-label label-delivery">Delivery</span>
+        </div>
+        <div class="core-fallback" aria-hidden="true">
+          <span></span><span></span><span></span>
         </div>
       </div>
     </section>
 
-    <section id="operating-system" class="section">
-      <p class="eyebrow">THE OPERATING SYSTEM</p>
-      <h2>Make the business easier to run.</h2>
-      <p class="section-copy">I study how work actually moves through a business, identify friction, redesign the process, connect the right systems, define ownership and metrics, and turn the result into a repeatable operating model.</p>
-      <div class="grid six">
-        <article><span>01</span><h3>Understand</h3><p>Map the real workflow, constraints, handoffs and bottlenecks.</p></article>
-        <article><span>02</span><h3>Simplify</h3><p>Remove unnecessary steps, ambiguity and operational drag.</p></article>
-        <article><span>03</span><h3>Systemize</h3><p>Build repeatable processes, standards, ownership and controls.</p></article>
-        <article><span>04</span><h3>Automate</h3><p>Use technology and AI where automation creates real leverage.</p></article>
-        <article><span>05</span><h3>Measure</h3><p>Track the few metrics that reveal flow, quality and performance.</p></article>
-        <article><span>06</span><h3>Improve</h3><p>Create feedback loops so the operating system keeps getting better.</p></article>
+    <section class="friction-strip" aria-label="Common operational friction">
+      <div class="friction-track">
+        <span>UNCLEAR OWNERSHIP</span><i>•</i>
+        <span>SLOW HANDOFFS</span><i>•</i>
+        <span>BOTTLENECKS</span><i>•</i>
+        <span>DISCONNECTED TOOLS</span><i>•</i>
+        <span>REWORK</span><i>•</i>
+        <span>POOR VISIBILITY</span><i>•</i>
+        <span>CAPACITY GAPS</span><i>•</i>
+        <span>EXECUTION DRIFT</span>
       </div>
     </section>
 
-    <section id="work" class="section">
-      <p class="eyebrow">WHERE I OPERATE</p>
-      <h2>One operating philosophy. Many business functions.</h2>
-      <div class="grid three">
-        <article><h3>Revenue Operations</h3><p>Lead flow, sales process, handoffs, pipeline discipline and execution visibility.</p></article>
-        <article><h3>Project Operations</h3><p>Planning, ownership, cadence, dependencies, risk, delivery and continuous improvement.</p></article>
-        <article><h3>Product Operations</h3><p>Prioritization, feedback loops, launch readiness, cross-functional coordination and measurement.</p></article>
-        <article><h3>Service & Delivery</h3><p>Work queues, turnaround time, quality controls, capacity and customer experience.</p></article>
-        <article><h3>People & Workflow</h3><p>Roles, decision rights, staffing logic, SOPs, communication and accountability.</p></article>
-        <article><h3>AI & Automation</h3><p>Practical automations and decision-support systems that reduce friction without adding complexity.</p></article>
+    <section class="section shell thesis">
+      <div class="section-kicker">
+        <span>01</span>
+        <p>THE THESIS</p>
+      </div>
+      <div class="thesis-grid">
+        <h2>Most business problems become <em>operations problems</em> before they become expensive problems.</h2>
+        <div class="thesis-copy">
+          <p>Growth gets messy when decisions, people, tools, handoffs, priorities, and information stop moving together.</p>
+          <p>That is where I operate: between strategy and day-to-day execution. I turn the way work actually happens into a system people can understand, run, measure, and improve.</p>
+        </div>
+      </div>
+      <div class="before-after">
+        <div class="state state-before">
+          <span>BEFORE</span>
+          <strong>Friction</strong>
+          <div class="chaos-map" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <p>Unclear ownership · reactive work · manual handoffs · invisible bottlenecks</p>
+        </div>
+        <div class="transform-arrow">→</div>
+        <div class="state state-after">
+          <span>AFTER</span>
+          <strong>Flow</strong>
+          <div class="flow-map" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <p>Clear ownership · repeatable systems · visible work · measurable execution</p>
+        </div>
       </div>
     </section>
 
-    <section class="section manifesto">
-      <p class="eyebrow">PRINCIPLE</p>
-      <h2>A business should not depend on heroics to operate well.</h2>
-      <p class="section-copy">The goal is a system where people know what matters, work flows cleanly, problems surface early, decisions happen faster, and performance improves by design.</p>
+    <section id="method" class="section shell method">
+      <div class="section-kicker">
+        <span>02</span>
+        <p>THE METHOD</p>
+      </div>
+      <div class="section-heading">
+        <h2>From operational friction to an operating system.</h2>
+        <p>The tools change. The industry changes. The underlying logic does not.</p>
+      </div>
+
+      <div class="method-flow">
+        <article class="method-step">
+          <div class="step-number">01</div>
+          <div><h3>Diagnose</h3><p>Map the real work, bottlenecks, constraints, decision points, handoffs, incentives, and failure modes.</p></div>
+          <span class="step-word">SEE</span>
+        </article>
+        <article class="method-step">
+          <div class="step-number">02</div>
+          <div><h3>Simplify</h3><p>Remove unnecessary motion, duplication, waiting, ambiguity, and process debt before adding more technology.</p></div>
+          <span class="step-word">CLEAR</span>
+        </article>
+        <article class="method-step">
+          <div class="step-number">03</div>
+          <div><h3>Systemize</h3><p>Define the workflow, ownership, standards, controls, cadence, tools, and decision rights that make execution repeatable.</p></div>
+          <span class="step-word">BUILD</span>
+        </article>
+        <article class="method-step">
+          <div class="step-number">04</div>
+          <div><h3>Execute</h3><p>Implement with the people doing the work, close adoption gaps, and turn the designed process into operating behavior.</p></div>
+          <span class="step-word">RUN</span>
+        </article>
+        <article class="method-step">
+          <div class="step-number">05</div>
+          <div><h3>Measure</h3><p>Create visibility around flow, capacity, quality, speed, cost, and the outcomes that actually matter.</p></div>
+          <span class="step-word">KNOW</span>
+        </article>
+        <article class="method-step">
+          <div class="step-number">06</div>
+          <div><h3>Improve</h3><p>Build feedback loops so the system gets stronger instead of slowly drifting back into friction.</p></div>
+          <span class="step-word">EVOLVE</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="operations" class="section shell operations">
+      <div class="section-kicker">
+        <span>03</span>
+        <p>THE OPERATING UNIVERSE</p>
+      </div>
+      <div class="section-heading">
+        <h2>One systems lens. Across the business.</h2>
+        <p>I am not positioning around one department. I am positioning around how work moves through the whole company.</p>
+      </div>
+
+      <div class="operations-grid">
+        <article class="operation-card" data-focus="REVENUE">
+          <span>01</span><h3>Revenue & Sales</h3><p>Lead flow, pipeline, qualification, handoffs, follow-up, forecasting, conversion, and sales discipline.</p>
+        </article>
+        <article class="operation-card" data-focus="MARKETING">
+          <span>02</span><h3>Marketing</h3><p>Campaign workflow, content operations, channel execution, demand handoff, measurement, and operating cadence.</p>
+        </article>
+        <article class="operation-card" data-focus="PROJECTS">
+          <span>03</span><h3>Projects</h3><p>Planning, dependencies, accountability, risk, status visibility, resource coordination, and delivery rhythm.</p>
+        </article>
+        <article class="operation-card" data-focus="PRODUCT">
+          <span>04</span><h3>Product</h3><p>Prioritization, feedback, launch readiness, cross-functional handoffs, product decisions, and learning loops.</p>
+        </article>
+        <article class="operation-card" data-focus="FINANCE">
+          <span>05</span><h3>Finance</h3><p>Approval flows, reporting cadence, spend visibility, controls, planning handoffs, and decision information.</p>
+        </article>
+        <article class="operation-card" data-focus="PEOPLE">
+          <span>06</span><h3>People & Workforce</h3><p>Roles, staffing logic, capacity, SOPs, accountability, training, communication, and workforce flow.</p>
+        </article>
+        <article class="operation-card" data-focus="SUPPLY">
+          <span>07</span><h3>Supply Chain</h3><p>Demand, inventory, sourcing, movement, exceptions, supplier handoffs, visibility, and service levels.</p>
+        </article>
+        <article class="operation-card" data-focus="SERVICE">
+          <span>08</span><h3>Service & Delivery</h3><p>Work queues, turnaround time, quality, capacity, escalation, customer experience, and delivery reliability.</p>
+        </article>
+        <article class="operation-card" data-focus="SYSTEMS">
+          <span>09</span><h3>Systems & Automation</h3><p>Tooling, integration, decision support, AI, automation, dashboards, and the digital layer that supports the process.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section shell boundaries">
+      <div class="section-kicker">
+        <span>04</span>
+        <p>INDUSTRY-AGNOSTIC BY DESIGN</p>
+      </div>
+      <div class="boundary-stage">
+        <div class="industry-orbit" aria-hidden="true">
+          <span>Healthcare</span><span>Technology</span><span>Finance</span><span>Media</span><span>Retail</span><span>Services</span><span>Manufacturing</span><span>Startups</span>
+          <div class="orbit-center"><strong>OPERATIONS</strong><small>THE COMMON LAYER</small></div>
+        </div>
+        <div class="boundary-copy">
+          <h2>The industry changes the constraints. It does not change the need for flow.</h2>
+          <p>Every business has work entering, decisions being made, resources being allocated, people coordinating, value being delivered, and feedback returning. That common layer is where operational advantage is built.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="engage" class="section shell engage">
+      <div class="section-kicker">
+        <span>05</span>
+        <p>WORK WITH DEEP NEXIVRA</p>
+      </div>
+      <div class="section-heading">
+        <h2>Choose how deeply you want us inside the problem.</h2>
+        <p>Start with guidance, bring in the team, or let us help build the operating system with you.</p>
+      </div>
+
+      <div class="engagement-grid">
+        <article class="engagement-card">
+          <div class="engage-top"><span>01</span><small>DIRECT</small></div>
+          <h3>1:1 Operations Advisory</h3>
+          <p>Bring a live operational problem to Deep. Diagnose the friction, pressure-test the system, and leave with a clearer execution path.</p>
+          <ul><li>Founder / CEO / COO thinking partner</li><li>Operational diagnosis</li><li>System and process guidance</li></ul>
+          <a href="#contact">Talk through the problem <span>→</span></a>
+        </article>
+        <article class="engagement-card featured">
+          <div class="engage-top"><span>02</span><small>TEAM</small></div>
+          <h3>Operations System Build</h3>
+          <p>Deep Nexivra works with your team to redesign a specific process or cross-functional operating system from diagnosis through implementation.</p>
+          <ul><li>Workflow and process redesign</li><li>Ownership, SOPs and operating cadence</li><li>Metrics, tooling and automation</li></ul>
+          <a href="#contact">Build the system <span>→</span></a>
+        </article>
+        <article class="engagement-card">
+          <div class="engage-top"><span>03</span><small>EMBEDDED</small></div>
+          <h3>Embedded Operations Partner</h3>
+          <p>For harder problems, bring the team closer to execution. We help drive the operating rhythm, solve bottlenecks, and strengthen the system as it runs.</p>
+          <ul><li>Ongoing operating support</li><li>Cross-functional execution</li><li>Continuous improvement</li></ul>
+          <a href="#contact">Explore an engagement <span>→</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section shell proof">
+      <div class="section-kicker">
+        <span>06</span>
+        <p>PROOF, NOT PLACEHOLDERS</p>
+      </div>
+      <div class="proof-grid">
+        <h2>Case studies will earn their place here.</h2>
+        <div>
+          <p>This portfolio will not invent client logos, outcomes, or transformation stories. As Deep Nexivra completes real engagements, this section becomes the evidence layer: problem → intervention → operating change → measurable result.</p>
+          <div class="proof-template">
+            <span>PROBLEM</span><i>→</i><span>SYSTEM</span><i>→</i><span>EXECUTION</span><i>→</i><span>RESULT</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="section shell closing">
+      <p class="eyebrow">DEEP PATEL · DEEP NEXIVRA</p>
+      <h2>Bring me the part of your business that feels harder to run than it should.</h2>
+      <p>We start there.</p>
+      <a class="button primary" href="#engage">Choose an engagement <span>↑</span></a>
+      <div class="closing-line"><span>DIAGNOSE</span><i>→</i><span>SYSTEMIZE</span><i>→</i><span>EXECUTE</span><i>→</i><span>IMPROVE</span></div>
     </section>
   </main>
-  <script src="/script.js" defer></script>
+
+  <footer class="site-footer shell">
+    <div><strong>DEEP PATEL</strong><small>Business Operations Strategist</small></div>
+    <p>Deep Nexivra · Strategy → Systems → Execution</p>
+  </footer>
+
+  <script type="module" src="/script.js"></script>
 </body>
 </html>
