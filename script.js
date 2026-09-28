@@ -1,5 +1,58 @@
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+const storyStyles = document.createElement('link');
+storyStyles.rel = 'stylesheet';
+storyStyles.href = '/story.css';
+document.head.appendChild(storyStyles);
+
+const storyStates = [
+  { name: 'FRICTION', description: 'See the noise, delays, rework and disconnected decisions.' },
+  { name: 'DIAGNOSE', description: 'Map the real workflow, constraints, handoffs and failure points.' },
+  { name: 'SIMPLIFY', description: 'Remove unnecessary motion before adding more process or technology.' },
+  { name: 'SYSTEMIZE', description: 'Create ownership, standards, cadence, controls and repeatable flow.' },
+  { name: 'EXECUTE', description: 'Turn the designed process into operating behavior with the team.' },
+  { name: 'FLOW', description: 'Make performance visible, measurable and continuously improvable.' }
+];
+
+function setupHeroStory() {
+  const hero = document.querySelector('.hero');
+  const heroCopy = hero?.querySelector('.hero-copy');
+  const coreStage = hero?.querySelector('.core-stage');
+  if (!hero || !heroCopy || !coreStage || reducedMotion) return;
+
+  hero.classList.add('story-enabled');
+  const sticky = document.createElement('div');
+  sticky.className = 'hero-sticky';
+  hero.insertBefore(sticky, hero.firstChild);
+  sticky.append(heroCopy, coreStage);
+
+  const rail = document.createElement('div');
+  rail.className = 'story-rail';
+  storyStates.forEach((state, index) => {
+    const item = document.createElement('div');
+    item.className = 'story-step';
+    item.dataset.storyIndex = String(index);
+    item.innerHTML = `<span>${state.name}</span>`;
+    rail.appendChild(item);
+  });
+  sticky.appendChild(rail);
+
+  const copy = document.createElement('div');
+  copy.className = 'story-state-copy';
+  copy.innerHTML = `<strong>${storyStates[0].name}</strong><span>${storyStates[0].description}</span>`;
+  sticky.appendChild(copy);
+
+  const hint = document.createElement('div');
+  hint.className = 'story-scroll-hint';
+  hint.textContent = 'Scroll through the operating journey';
+  sticky.appendChild(hint);
+
+  hero.dataset.storyIndex = '0';
+  coreStage.dataset.story = 'FRICTION';
+}
+
+setupHeroStory();
+
 if (!reducedMotion && 'IntersectionObserver' in window) {
   const revealTargets = document.querySelectorAll('.section-kicker, .section-heading, .thesis-grid, .before-after, .method-step, .operation-card, .boundary-stage, .engagement-card, .proof-grid');
   revealTargets.forEach((el) => el.classList.add('reveal'));
@@ -16,12 +69,20 @@ if (!reducedMotion && 'IntersectionObserver' in window) {
 }
 
 const coreFocus = document.getElementById('core-focus');
+const coreSubcopy = document.querySelector('.hud-center small');
+let operationHover = false;
 document.querySelectorAll('.operation-card').forEach((card) => {
   const focus = card.dataset.focus || 'FLOW';
-  card.addEventListener('pointerenter', () => { if (coreFocus) coreFocus.textContent = focus; });
-  card.addEventListener('pointerleave', () => { if (coreFocus) coreFocus.textContent = 'FLOW'; });
-  card.addEventListener('focusin', () => { if (coreFocus) coreFocus.textContent = focus; });
-  card.addEventListener('focusout', () => { if (coreFocus) coreFocus.textContent = 'FLOW'; });
+  card.addEventListener('pointerenter', () => {
+    operationHover = true;
+    if (coreFocus) coreFocus.textContent = focus;
+  });
+  card.addEventListener('pointerleave', () => { operationHover = false; });
+  card.addEventListener('focusin', () => {
+    operationHover = true;
+    if (coreFocus) coreFocus.textContent = focus;
+  });
+  card.addEventListener('focusout', () => { operationHover = false; });
 });
 
 function decodeBase64Asset(text) {
@@ -36,6 +97,7 @@ async function initExecutionCore() {
   const canvas = document.getElementById('execution-core');
   const stage = document.querySelector('.core-stage');
   const fallback = document.querySelector('.core-fallback');
+  const hero = stage?.closest('.hero');
   if (!canvas || !stage) return;
 
   try {
@@ -102,6 +164,7 @@ async function initExecutionCore() {
         object.frustumCulled = true;
         if (object.material) {
           object.material.envMapIntensity = 0.8;
+          object.material.transparent = true;
           object.material.needsUpdate = true;
         }
       });
@@ -113,7 +176,6 @@ async function initExecutionCore() {
 
     const buildProceduralFallback = () => {
       stage.dataset.core = 'procedural';
-
       core = new THREE.Mesh(
         new THREE.IcosahedronGeometry(0.68, 4),
         new THREE.MeshPhysicalMaterial({
@@ -123,7 +185,8 @@ async function initExecutionCore() {
           clearcoat: 1,
           clearcoatRoughness: 0.16,
           emissive: 0x172640,
-          emissiveIntensity: 0.65
+          emissiveIntensity: 0.65,
+          transparent: true
         })
       );
       system.add(core);
@@ -159,7 +222,8 @@ async function initExecutionCore() {
         metalness: 0.58,
         roughness: 0.22,
         emissive: 0x243e70,
-        emissiveIntensity: 0.7
+        emissiveIntensity: 0.7,
+        transparent: true
       });
 
       const nodePositions = [
@@ -195,6 +259,9 @@ async function initExecutionCore() {
       system.clear();
       buildProceduralFallback();
     }
+
+    const nodeBasePositions = nodes.map((node) => node.position.clone());
+    const ringMaterials = [ringA, ringB, ringC].map((ring) => ring?.material).filter(Boolean);
 
     const points = [];
     for (let i = 0; i < 64; i += 1) {
@@ -245,25 +312,88 @@ async function initExecutionCore() {
       }, { threshold: 0.01 }).observe(stage);
     }
 
+    let storyIndex = 0;
+    let storyProgress = 0;
+    const updateStory = () => {
+      if (!hero || reducedMotion || !hero.classList.contains('story-enabled')) return;
+      const rect = hero.getBoundingClientRect();
+      const total = Math.max(1, hero.offsetHeight - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / total));
+      storyProgress = progress;
+      const nextIndex = Math.min(storyStates.length - 1, Math.floor(progress * storyStates.length));
+      if (nextIndex === storyIndex && hero.dataset.storyIndex === String(nextIndex)) return;
+      storyIndex = nextIndex;
+      hero.dataset.storyIndex = String(storyIndex);
+      const state = storyStates[storyIndex];
+      stage.dataset.story = state.name;
+      if (!operationHover && coreFocus) coreFocus.textContent = state.name;
+      if (coreSubcopy) coreSubcopy.textContent = `${state.name === 'FRICTION' ? 'FIND' : state.name === 'FLOW' ? 'RUN' : state.name} → BETTER EXECUTION`;
+      const copy = hero.querySelector('.story-state-copy');
+      if (copy) copy.innerHTML = `<strong>${state.name}</strong><span>${state.description}</span>`;
+      hero.querySelectorAll('.story-step').forEach((step, index) => {
+        step.classList.toggle('active', index === storyIndex);
+        step.classList.toggle('complete', index < storyIndex);
+      });
+    };
+    window.addEventListener('scroll', updateStory, { passive: true });
+    window.addEventListener('resize', updateStory, { passive: true });
+    updateStory();
+
+    const stateParams = [
+      { spread: 1.10, systemScale: 0.96, ringOpacity: [0.28, 0.22, 0.18], coreScale: 0.94, cloud: 0.48, speed: 1.8, jitter: 0.12 },
+      { spread: 1.06, systemScale: 0.99, ringOpacity: [0.86, 0.28, 0.22], coreScale: 0.98, cloud: 0.38, speed: 1.25, jitter: 0.04 },
+      { spread: 0.91, systemScale: 1.00, ringOpacity: [0.62, 0.42, 0.28], coreScale: 1.00, cloud: 0.28, speed: 0.92, jitter: 0.01 },
+      { spread: 0.97, systemScale: 1.02, ringOpacity: [0.54, 0.92, 0.54], coreScale: 1.03, cloud: 0.24, speed: 0.82, jitter: 0.00 },
+      { spread: 1.00, systemScale: 1.04, ringOpacity: [0.58, 0.72, 0.96], coreScale: 1.06, cloud: 0.22, speed: 1.18, jitter: 0.00 },
+      { spread: 1.00, systemScale: 1.07, ringOpacity: [0.86, 0.86, 0.86], coreScale: 1.10, cloud: 0.18, speed: 0.72, jitter: 0.00 }
+    ];
+
     const clock = new THREE.Clock();
     const draw = () => {
       const t = clock.getElapsedTime();
+      const params = stateParams[storyIndex] || stateParams[stateParams.length - 1];
       system.rotation.y += (pointerX - system.rotation.y) * 0.035;
       system.rotation.x += (-pointerY - system.rotation.x) * 0.035;
+      system.scale.lerp(new THREE.Vector3(params.systemScale, params.systemScale, params.systemScale), 0.045);
 
       if (!reducedMotion) {
         if (core) {
-          core.rotation.y = t * 0.18;
+          core.rotation.y = t * 0.18 * params.speed;
           core.rotation.x = Math.sin(t * 0.4) * 0.08;
+          const cScale = params.coreScale + Math.sin(t * 1.1) * (storyIndex === 5 ? 0.018 : 0.009);
+          core.scale.lerp(new THREE.Vector3(cScale, cScale, cScale), 0.06);
+          if (core.material?.emissiveIntensity !== undefined) {
+            core.material.emissiveIntensity += (((storyIndex === 5 ? 1.25 : 0.72) - core.material.emissiveIntensity) * 0.04);
+          }
         }
-        if (ringA) ringA.rotation.z += 0.0018;
-        if (ringB) ringB.rotation.z -= 0.00135;
-        if (ringC) ringC.rotation.y += 0.0011;
-        nodes.forEach((node, index) => {
-          const pulse = 1 + Math.sin(t * 1.25 + index * 0.8) * 0.07;
-          node.scale.setScalar(pulse);
+        if (ringA) ringA.rotation.z += 0.0018 * params.speed;
+        if (ringB) ringB.rotation.z -= 0.00135 * params.speed;
+        if (ringC) ringC.rotation.y += 0.0011 * params.speed;
+        ringMaterials.forEach((material, index) => {
+          if (!material) return;
+          material.opacity += ((params.ringOpacity[index] - material.opacity) * 0.05);
         });
-        pointCloud.rotation.y = t * 0.012;
+        nodes.forEach((node, index) => {
+          const base = nodeBasePositions[index];
+          if (base) {
+            const jitter = params.jitter;
+            const target = base.clone().multiplyScalar(params.spread);
+            if (jitter) {
+              target.x += Math.sin(t * 2.1 + index * 1.7) * jitter;
+              target.y += Math.cos(t * 1.7 + index * 1.3) * jitter;
+              target.z += Math.sin(t * 1.4 + index) * jitter * 0.7;
+            }
+            node.position.lerp(target, 0.055);
+          }
+          const pulse = 1 + Math.sin(t * 1.25 + index * 0.8) * (storyIndex === 0 ? 0.12 : storyIndex === 5 ? 0.035 : 0.065);
+          node.scale.setScalar(pulse);
+          if (node.material?.emissiveIntensity !== undefined) {
+            const targetGlow = storyIndex === 5 ? 1.1 : storyIndex === 0 ? 0.48 : 0.72;
+            node.material.emissiveIntensity += ((targetGlow - node.material.emissiveIntensity) * 0.04);
+          }
+        });
+        pointCloud.rotation.y = t * 0.012 * params.speed;
+        pointCloud.material.opacity += ((params.cloud - pointCloud.material.opacity) * 0.04);
       }
 
       renderer.render(scene, camera);
