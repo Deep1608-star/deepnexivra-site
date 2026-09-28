@@ -205,4 +205,4 @@ function buildOperationsConsole() {
 
 buildOperationsConsole();
 import('/problem.js');
-import('/lab.js');
+import('/thinking.js');
