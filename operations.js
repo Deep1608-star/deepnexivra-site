@@ -122,7 +122,7 @@ function buildOperationsConsole() {
         <div><small>WE REDESIGN</small><ul id="ops-redesign">${list(operationModels.ALL.redesign)}</ul></div>
         <div><small>TARGET STATE</small><ul id="ops-target">${list(operationModels.ALL.target)}</ul></div>
       </div>
-      <a class="ops-cta" href="#engage">Bring this operating problem to Deep Nexivra <span>→</span></a>
+      <a class="ops-cta" href="#contact">Bring this operating problem to Deep Nexivra <span>→</span></a>
     </div>`;
 
   grid.before(consoleEl);
@@ -204,3 +204,4 @@ function buildOperationsConsole() {
 }
 
 buildOperationsConsole();
+import('/problem.js');
