@@ -1,4 +1,5 @@
 const ALLOWED_FUNCTIONS = new Set(['REVENUE','MARKETING','PROJECTS','PRODUCT','FINANCE','PEOPLE','SUPPLY','SERVICE','SYSTEMS']);
+const DEFAULT_TO_EMAIL = 'deepnexivra@gmail.com';
 
 const clean = (value, max = 500) => typeof value === 'string' ? value.trim().slice(0, max) : '';
 const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
@@ -40,11 +41,11 @@ module.exports = async function handler(req, res) {
   }
 
   const apiKey = process.env.RESEND_API_KEY;
-  const toEmail = process.env.OPERATING_ROOM_TO_EMAIL;
+  const toEmail = process.env.OPERATING_ROOM_TO_EMAIL || DEFAULT_TO_EMAIL;
   const fromEmail = process.env.OPERATING_ROOM_FROM_EMAIL;
   const bookingUrl = process.env.OPERATING_ROOM_BOOKING_URL || null;
 
-  if (!apiKey || !toEmail || !fromEmail) {
+  if (!apiKey || !fromEmail) {
     return res.status(503).json({ ok: false, error: 'delivery_not_configured' });
   }
 
