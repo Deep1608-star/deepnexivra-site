@@ -1,6 +1,5 @@
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Lightweight section reveal. Content remains fully visible when motion is reduced.
 if (!reducedMotion && 'IntersectionObserver' in window) {
   const revealTargets = document.querySelectorAll('.section-kicker, .section-heading, .thesis-grid, .before-after, .method-step, .operation-card, .boundary-stage, .engagement-card, .proof-grid');
   revealTargets.forEach((el) => el.classList.add('reveal'));
@@ -16,22 +15,13 @@ if (!reducedMotion && 'IntersectionObserver' in window) {
   revealTargets.forEach((el) => revealObserver.observe(el));
 }
 
-// Let the operating-universe cards temporarily become the focus of the core.
 const coreFocus = document.getElementById('core-focus');
 document.querySelectorAll('.operation-card').forEach((card) => {
   const focus = card.dataset.focus || 'FLOW';
-  card.addEventListener('pointerenter', () => {
-    if (coreFocus) coreFocus.textContent = focus;
-  });
-  card.addEventListener('pointerleave', () => {
-    if (coreFocus) coreFocus.textContent = 'FLOW';
-  });
-  card.addEventListener('focusin', () => {
-    if (coreFocus) coreFocus.textContent = focus;
-  });
-  card.addEventListener('focusout', () => {
-    if (coreFocus) coreFocus.textContent = 'FLOW';
-  });
+  card.addEventListener('pointerenter', () => { if (coreFocus) coreFocus.textContent = focus; });
+  card.addEventListener('pointerleave', () => { if (coreFocus) coreFocus.textContent = 'FLOW'; });
+  card.addEventListener('focusin', () => { if (coreFocus) coreFocus.textContent = focus; });
+  card.addEventListener('focusout', () => { if (coreFocus) coreFocus.textContent = 'FLOW'; });
 });
 
 async function initExecutionCore() {
@@ -61,8 +51,7 @@ async function initExecutionCore() {
     const system = new THREE.Group();
     scene.add(system);
 
-    const ambient = new THREE.AmbientLight(0xb9c9e2, 1.15);
-    scene.add(ambient);
+    scene.add(new THREE.AmbientLight(0xb9c9e2, 1.15));
 
     const key = new THREE.PointLight(0xc8dcff, 38, 18, 1.7);
     key.position.set(3.2, 4.2, 5.2);
@@ -72,16 +61,18 @@ async function initExecutionCore() {
     rim.position.set(-4.5, -2.5, 2.5);
     scene.add(rim);
 
-    const coreMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0x9eb5dc,
-      metalness: 0.74,
-      roughness: 0.2,
-      clearcoat: 1,
-      clearcoatRoughness: 0.16,
-      emissive: 0x172640,
-      emissiveIntensity: 0.65
-    });
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.68, 4), coreMaterial);
+    const core = new THREE.Mesh(
+      new THREE.IcosahedronGeometry(0.68, 4),
+      new THREE.MeshPhysicalMaterial({
+        color: 0x9eb5dc,
+        metalness: 0.74,
+        roughness: 0.2,
+        clearcoat: 1,
+        clearcoatRoughness: 0.16,
+        emissive: 0x172640,
+        emissiveIntensity: 0.65
+      })
+    );
     system.add(core);
 
     const inner = new THREE.Mesh(
@@ -134,12 +125,13 @@ async function initExecutionCore() {
       nodes.push(node);
       system.add(node);
 
-      const lineGeometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), position.clone().multiplyScalar(0.94)]);
-      const line = new THREE.Line(lineGeometry, lineMaterial);
-      system.add(line);
+      const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        position.clone().multiplyScalar(0.94)
+      ]);
+      system.add(new THREE.Line(lineGeometry, lineMaterial));
     });
 
-    // Small restrained data field gives depth without turning the site into sci-fi decoration.
     const points = [];
     for (let i = 0; i < 72; i += 1) {
       const radius = 2.7 + Math.random() * 1.2;
@@ -167,8 +159,7 @@ async function initExecutionCore() {
       camera.updateProjectionMatrix();
     };
     resize();
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(stage);
+    new ResizeObserver(resize).observe(stage);
 
     let pointerX = 0;
     let pointerY = 0;
@@ -183,15 +174,15 @@ async function initExecutionCore() {
     });
 
     let visible = true;
-    const visibilityObserver = new IntersectionObserver((entries) => {
-      visible = entries[0]?.isIntersecting ?? true;
-    }, { threshold: 0.01 });
-    visibilityObserver.observe(stage);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0]?.isIntersecting ?? true;
+      }, { threshold: 0.01 }).observe(stage);
+    }
 
     const clock = new THREE.Clock();
-    const renderFrame = () => {
+    const draw = () => {
       const t = clock.getElapsedTime();
-
       system.rotation.y += (pointerX - system.rotation.y) * 0.035;
       system.rotation.x += (-pointerY - system.rotation.x) * 0.035;
 
@@ -210,18 +201,16 @@ async function initExecutionCore() {
       }
 
       renderer.render(scene, camera);
-      if (!reducedMotion) requestAnimationFrame(renderFrame);
     };
 
     if (reducedMotion) {
-      renderer.render(scene, camera);
+      draw();
     } else {
-      const loop = () => {
-        if (visible) renderFrame();
-        else requestAnimationFrame(loop);
+      const frame = () => {
+        requestAnimationFrame(frame);
+        if (visible && !document.hidden) draw();
       };
-      // renderFrame already schedules the next frame while visible.
-      renderFrame();
+      frame();
     }
 
     if (fallback) fallback.style.display = 'none';
